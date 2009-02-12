@@ -1,5 +1,6 @@
 =Intallation=
+ 
+  * Extract *inc.zip* to *_`<`EPOC32`>`\include_*, then the headers can be found in *_`<`EPOC32`>`\include\html_*.
 
-Extract inc.zip to `<`EPOC32`>`\include, then the headers can be found in `<`EPOC32`>`\include\html.
+  * Extract *lib`_``<`PLATFORM`>`.zip* to *_`<`EPOC32`>`\release_*, then the static libs can be found in *_`<`EPOC32`>`\release\winscw\udeb\htmlcontrol.lib_* and *_`<`EPOC32`>`\release\armv5\urel\htmlcontrol.lib_* (or *_`<`EPOC32`>`\release\thumb\urel\htmlcontrol.lib_*).
 
-Extract lib`_``<`PLATFORM`>`.zip to `<`EPOC32`>`\release, then the static libs can be found in `<`EPOC32`>`\release\winscw\udeb\htmlcontrol.lib and `<`EPOC32`>`\release\armv5\urel\htmlcontrol.lib(or `<`EPOC32`>`\release\thumb\urel\htmlcontrol.lib)
