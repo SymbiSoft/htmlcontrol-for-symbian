@@ -1,7 +1,6 @@
- # [# Create the control]
-   {{{
-   #include <html\htmlcontrol.h>
+==Create the control==
+{{{
+#include <html\htmlcontrol.h>
 
-   //CCoeControl* iControl
-   iControl = CHtmlControl::NewL(NULL);
-   }}}
+//CCoeControl* iControl
+iControl = CHtmlControl::NewL(NULL);
