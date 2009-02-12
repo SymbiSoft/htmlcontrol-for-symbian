@@ -1,4 +1,4 @@
- # Create the control
+ # [WikiSyntax#Create_the_control Create the control]
    {{{
    #include <html\htmlcontrol.h>
 
