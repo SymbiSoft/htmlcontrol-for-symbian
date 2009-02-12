@@ -7,7 +7,9 @@ iControl = CHtmlControl::NewL(NULL);
 }}}
 
 ==Append HTML content==
+{{{
 _LIT(KHtml, "");
 iControl->AppendContentL(KHtml);
+}}}
 
 ==Using styles==
