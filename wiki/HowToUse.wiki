@@ -1,4 +1,6 @@
-==Create the control==
+<wiki:toc max_depth="3" />
+
+=Create the control=
 {{{
 #include <html\htmlcontrol.h>
 
@@ -11,7 +13,7 @@ AddToStackL(iControl );
 
 CHtmlControl::NewL的唯一参数是父控件的指针。如果将CHtmlControl用于组合组件中，则传入父控件的指针；否则，传入NULL即可。
 
-==Append HTML content==
+=Add HTML content=
 最简单的方法是使用AppendContentL，它将HTML添加到文档的末端，例如：
 {{{
 _LIT(KHtml, "<b>Hello world</b>");
@@ -48,7 +50,7 @@ iControl->Refresh();
 iControl->DrawNow();
 }}}
 
-==Access Elements==
+=Access Elements=
 HtmlControl使用Body元素作为最顶级的容器元素，可以调用Body()获得Body元素指针。例如：
 {{{
   CHtmlElement* body = iControl->Body();
@@ -105,7 +107,7 @@ e1->SetProperty(KHStrInnerHTML, KNullDesC);
 iControl->ClearContent();
 }}}
 
-==Using styles==
+=Using styles=
 HtmlControl支持CSS，请看下面的例子：
 {{{
 _LIT(KHtml, "<div style='font-size:large;color:red'>Hello world</div>");
@@ -137,12 +139,22 @@ _LIT(KStyleSheet, "INPUT { border:2 }"
 HtmlCtlLib::AddGlobalStyleSheetL(KStyleSheet);
 }}}
 
+=Using Layout=
+使用CSS属性中的left、top、width、height、margin、padding进行元素的定位。
+ * left和top指定元素相对于容器的位置。一般都不推荐使用left和top定位元素，因为绝对定位的方式在各种屏幕大小下效果不相同。
+ * 使用width和height控制元素的宽度和高度，单位是像素。也可以使用百分比，例如width:100%，则无论在何种屏幕大小下，都将占满横向的宽度。
+ * 使用margin控制元素与相邻元素的距离。
+ * 使用padding控制容器中的元素的布局，只有BODY和DIV元素支持。
+这几个CSS属性的详细用法可以参考CSS文档。
 
+DIV或BODY将作为其它元素的容器，容器内的元素将继承容器的文字样式，同时使用容器的左上角作为原点。例如：
+{{{
+_LIT(KHtml, "<div style='width:100%; height:50; border:1 black solid; padding:auto auto; color:red; font-weight:bold'>Hello world</div>");
+iControl->AppendContentL(KHtml);
+iControl->RefreshAndDraw();
+}}}
+实际效果如下：
 
-
-
-
-
-
+这里padding:auto auto指示容器中的元素左右居中，上下居中。
 
 
