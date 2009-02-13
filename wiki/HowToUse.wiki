@@ -80,7 +80,7 @@ CHtmlElement* e = iControl->ElementByTag(KHStrDiv);
 如果需要枚举控件中的元素，可以使用THtmlElementIter，下面的例子枚举了控件中的img元素：
 {{{
 #include <html\htmlelementiter.h>
-_LIT(KHtml, "<img src='1.gif'><img src='2.gif'><img src='3.gif'>');
+_LIT(KHtml, "<img src='1.gif'><img src='2.gif'><img src='3.gif'>");
 iControl->AppendContentL(KHtml);
 THtmlElementIter iter(iControl->Body(), KNullDesC, KHStrImg);
 while(it.Next())
@@ -89,4 +89,60 @@ while(it.Next())
 }
 }}}
 
+如果需要删除控件中的元素，可以使用RemoveElement方法，例如：
+{{{
+_LIT(KHtml, "<div id='a'>Hello</div> <div id='a'>world</div>");
+iControl->AppendContentL(KHtml);
+CHtmlElement* e1 = iControl->Element(_L("a"), 0); //hello
+iControl->RemoveElement(e1);
+}}}
+如果需要清除某个元素的内容，可以设置innerHTML为空，例如：
+{{{
+e1->SetProperty(KHStrInnerHTML, KNullDesC);
+}}}
+清除控件所有的内容，可以这样：
+{{{
+iControl->ClearContent();
+}}}
+
 ==Using styles==
+HtmlControl支持CSS，请看下面的例子：
+{{{
+_LIT(KHtml, "<div style='font-size:large;color:red'>Hello world</div>");
+iControl->AppendContentL(KHtml);
+iControl->RefreshAndDraw();
+}}}
+也可以使用样式表，例如:
+{{{
+_LIT(KStyleSheet, ".noname { font-size:large;color:red }");
+iControl->AddStyleSheetL(KStyleSheet);
+_LIT(KHtml, "<div class='noname'>Hello world</div>");
+iControl->AppendContentL(KHtml);
+iControl->RefreshAndDraw();
+}}}
+可以多次使用AddStyleSheetL添加样式定义。如果要删除样式定义，可以通过指定选择符删除，例如：
+{{{
+iControl->RemoveStyleClass(_L("noname"));
+}}}
+也可以使用ClearStyleSheet清除所有自定义的样式，例如:
+{{{
+iControl->ClearStyleSheet();
+}}}
+
+如果需要定义一个整个应用程序中所有HtmlControl都有效的样式表，可以使用HtmlCtlLib::AddGlobalStyleSheetL, 例如：
+{{{
+_LIT(KStyleSheet, "INPUT { border:2 }"
+                  "TEXTAREA { border:2 }"
+);
+HtmlCtlLib::AddGlobalStyleSheetL(KStyleSheet);
+}}}
+
+
+
+
+
+
+
+
+
+
