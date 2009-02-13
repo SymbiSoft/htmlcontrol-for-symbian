@@ -182,7 +182,28 @@ padding padding-top padding-right padding-bottom padding-left
  * 其它 
 filter
 
-=Using List and Grid=
+=Handle events=
+使用CHtmlControl::SetEventObserver设置处理控件事件的回调函数，例如
+{{{
+iControl->SetEventObserver(this);
+}}}
+HtmlControl产生的事件类型有：
+ * EOnClick
+单击事件。例如链接、按钮等被点击时，产生该事件；
+ * EOnChanged
+用户改变SELECT元素当前选定项时，产生该事件；
+ * EOnSubmit
+提交Form时产生该事件；
+ * EOnGainFocus
+元素获得焦点时产生该事件；
+ * EOnLostFocus
+元素失去焦点时产生该事件；
+ * EOnSlideLeft
+当手指在屏幕从右向左划过一定距离时产生该事件；
+ * EOnSlideRight
+用手指在屏幕从左向右划过一定距离时产生该事件。
+
+=Create List and Grid=
 HtmlControl特别支持传统Symbian界面的List和Grid。使用List的步骤为
  # 利用DIV元素作为载体
 {{{
@@ -218,5 +239,42 @@ list->SetProperty(KHStrListItemCount, 100);
 可以用同样的方法创建Grid，只需将KHStrCreateList改为KHStrCreateGrid即可。
 Grid每行的列表项个数取决于KItemHtml里最外层DIV的宽度，例如如果宽度为100，而屏幕宽度为240，则每行2个列表项。
 
+=Using Transition=
+Transition是指控件内容变化时的渐变效果，HtmlControl内置了两个Transition类：
+ * CSlideTransition
+实现水平或垂直的平移切换效果；
+ * CFadeTransition
+实现淡入效果。
+以下是使用CSlideTransition的例子，当用户按下左键时，屏幕内容将向左滑动，直至新的内容显示到屏幕上。这里的关键是使用iSlideTransition->StartL(CSlideTransition::ESlideLeft);替换了RefreshAndDraw(); 同理，如果在这里使用iFadeTransition->StartL()，则可以实现旧内容淡出，新内容淡入的效果。
 
+{{{
+#include <html\slidetrans.h>
+
+iSlideTransition = CSlideTransition::NewL(iControl);
+}}}
+
+{{{
+_LIT(KHtml, "<div id='a'>Hello world</a>");
+iControl->AppendContentL(KHtml);
+iControl->RefreshAndDraw();
+}}}
+
+{{{
+TKeyResponse CSomeClass::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode aType  )
+{
+  if (aKeyEvent.iCode == EKeyLeftArrow)
+  {
+     iControl->ClearContent();
+
+     _LIT(KHtml, "Another Page");
+     iControl->AppendContentL(KHtml);
+
+     iSlideTransition->StartL(CSlideTransition::ESlideLeft);
+
+     return EKeyWasConsumed;
+  }
+  else
+    return CBaseClass::OfferKeyEventL(aKeyEvent, aType);
+}
+}}}
 
