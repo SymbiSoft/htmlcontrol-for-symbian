@@ -51,25 +51,25 @@ iControl->DrawNow();
 }}}
 
 以下是HtmlControl支持的HTML标签和属性：
-|| 标签 || HTML属性 || 扩展属性 || 运行期属性 ||
-|| body || style class || || ||
-|| b || || || ||
-|| strong || || || ||
-|| i || || || ||
-|| u || || || ||
-|| font || color size style || || ||
-|| br || || || ||
-|| p || align || || ||
-|| hr || width height color size align || || ||
-|| img || id name src width height align style class || focus-src animation || ||
-|| a || id name style class || || ||
-|| div || id name width height align style class || focusing focus-style focus-class down-style down-class line-wrap || ||
-|| form || id name action method enctype style class ||  ||  ||
-|| input || id name type value checked disabled readonly  style class|| max-length input-mode || ||
-|| select || id name value disabled style class || selectedIndex textArray valueArray optionArray || ||
-|| textarea || id name disabled style class || draw-lines line-color || ||
-|| object || id name width height align classid data type style class || || ||
-|| embed || id name width height align src style class || || ||
+|| 标签 || HTML属性 || 扩展属性 ||
+|| body || style class || ||
+|| b || || ||
+|| strong || || ||
+|| i || || ||
+|| u || || ||
+|| font || color size style || ||
+|| br || || ||
+|| p || align || ||
+|| hr || width height color size align || ||
+|| img || id name src width height align style class || focus-src animation ||
+|| a || id name style class || ||
+|| div || id name width height align style class || focusing focus-style focus-class down-style down-class line-wrap ||
+|| form || id name action method enctype style class ||  ||
+|| input || id name type value checked disabled readonly  style class|| max-length input-mode ||
+|| select || id name value disabled style class || selectedIndex textArray valueArray optionArray ||
+|| textarea || id name disabled style class || draw-lines line-color ||
+|| object || id name width height align classid data type style class || ||
+|| embed || id name width height align src style class || ||
 
 =Access Elements=
 HtmlControl使用Body元素作为最顶级的容器元素，可以调用Body()获得Body元素指针。例如：
@@ -160,20 +160,24 @@ _LIT(KStyleSheet, "INPUT { border:2 }"
 HtmlCtlLib::AddGlobalStyleSheetL(KStyleSheet);
 }}}
 
-=Using Layout=
-使用CSS属性中的left、top、width、height、margin、padding进行元素的定位。
- * left和top指定元素相对于容器的位置。一般都不推荐使用left和top定位元素，因为绝对定位的方式在各种屏幕大小下效果不相同。
- * 使用width和height控制元素的宽度和高度，单位是像素。也可以使用百分比，例如width:100%，则无论在何种屏幕大小下，都将占满横向的宽度。
- * 使用margin控制元素与相邻元素的距离。
- * 使用padding控制容器中的元素的布局，只有BODY和DIV元素支持。
-这几个CSS属性的详细用法可以参考CSS文档。
-
-DIV或BODY将作为其它元素的容器，容器内的元素将继承容器的文字样式，同时使用容器的左上角作为原点。例如：
-{{{
-_LIT(KHtml, "<div style='width:100%; height:50; border:1 black solid; padding:auto auto; color:red; font-weight:bold'>Hello world</div>");
-iControl->AppendContentL(KHtml);
-iControl->RefreshAndDraw();
-}}}
-实际效果如下：
-
-这里padding:auto auto指示容器中的元素左右居中，上下居中。
+以下是HtmlControl支持的CSS属性：
+字体
+color font-family font-size font-weight text-decoration line-height 
+文本
+vertical-align text-align
+背景
+background-color background-image background-position background-repeat 
+定位
+top left 
+尺寸
+height max-height width max-width 
+布局
+clear overflow display visibility 
+外补丁
+margin margin-top margin-right margin-bottom margin-left 
+边框
+border border-color border-style border-width border-top border-right border-bottom border-left
+内补丁
+padding padding-top padding-right padding-bottom padding-left 
+其它 
+filter
