@@ -1,4 +1,4 @@
-#Getting Started
+#summary Getting Started
 <wiki:toc max_depth="3" />
 
 =Create the control=
