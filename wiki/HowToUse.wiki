@@ -161,23 +161,62 @@ HtmlCtlLib::AddGlobalStyleSheetL(KStyleSheet);
 }}}
 
 以下是HtmlControl支持的CSS属性：
-字体
-color font-family font-size font-weight text-decoration line-height 
-文本
+ * 字体
+color font-family font-size font-weight text-decoration line-height
+ * 文本
 vertical-align text-align
-背景
-background-color background-image background-position background-repeat 
-定位
+ * 背景
+background-color background-image background-position background-repeat
+ * 定位
 top left 
-尺寸
+ * 尺寸
 height max-height width max-width 
-布局
+ * 布局
 clear overflow display visibility 
-外补丁
+ * 外补丁
 margin margin-top margin-right margin-bottom margin-left 
-边框
+ * 边框
 border border-color border-style border-width border-top border-right border-bottom border-left
-内补丁
+ * 内补丁
 padding padding-top padding-right padding-bottom padding-left 
-其它 
+ * 其它 
 filter
+
+=Using List and Grid=
+HtmlControl特别支持传统Symbian界面的List和Grid。使用List的步骤为
+ # 利用DIV元素作为载体
+{{{
+_LIT(KHtml, "<div id='list' style='width:100%;height:100%;'></div>");
+iControl->AppendContentL(KHtml);
+CHtmlElement* list = iControl->Element(_L("list"));
+}}}
+ # 创建List
+{{{
+list->InvokeL(KHStrCreateList, (MListItemRenderer*)this);
+}}}
+ # 设置列表项
+{{{
+_LIT(KItemHtml, "<div id='item' class='item' focus-class='item-highlight'>"
+"<div style='height:26; width:30; border-right:1px dotted; padding:auto 4'><img src='' width='16' height='16'></div>"
+"<div id='item-title' line-wrap='scroll' style='padding:auto 2;height:26; font-size:15;'></div>"
+"</div>");
+list->SetProperty(KHStrListItemHtml, KItemHtml);	
+}}}
+ # 在回调方法中填入数据
+{{{
+void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
+{
+  aElement->ElementByTag(KHStrImg)->SetProperty(KHStrSrc, _L("images/1.gif"));
+  aElement->Element(_L("item-title"))->SetProperty(KHStrInnerHtml, _L("item title"));
+}
+}}}
+ # 设置列表项的数量
+{{{
+list->SetProperty(KHStrListItemCount, 100);
+}}}
+
+可以用同样的方法创建Grid，只需将KHStrCreateList改为KHStrCreateGrid即可。
+Grid每行的列表项个数取决于KItemHtml里最外层DIV的宽度，例如如果宽度为100，而屏幕宽度为240，则每行2个列表项。
+
+
+
