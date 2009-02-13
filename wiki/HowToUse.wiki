@@ -50,6 +50,27 @@ iControl->Refresh();
 iControl->DrawNow();
 }}}
 
+以下是HtmlControl支持的HTML标签和属性：
+|| 标签 || HTML属性 || 扩展属性 || 运行期属性 ||
+|| body || style class || || ||
+|| b || || || ||
+|| strong || || || ||
+|| i || || || ||
+|| u || || || ||
+|| font || color size style || || ||
+|| br || || || ||
+|| p || align || || ||
+|| hr || width height color size align || || ||
+|| img || id name src width height align style class || focus-src animation || ||
+|| a || id name style class || || ||
+|| div || id name width height align style class || focusing focus-style focus-class down-style down-class line-wrap || ||
+|| form || id name action method enctype style class ||  ||  ||
+|| input || id name type value checked disabled readonly  style class|| max-length input-mode || ||
+|| select || id name value disabled style class || selectedIndex textArray valueArray optionArray || ||
+|| textarea || id name disabled style class || draw-lines line-color || ||
+|| object || id name width height align classid data type style class || || ||
+|| embed || id name width height align src style class || || ||
+
 =Access Elements=
 HtmlControl使用Body元素作为最顶级的容器元素，可以调用Body()获得Body元素指针。例如：
 {{{
@@ -156,5 +177,3 @@ iControl->RefreshAndDraw();
 实际效果如下：
 
 这里padding:auto auto指示容器中的元素左右居中，上下居中。
-
-
