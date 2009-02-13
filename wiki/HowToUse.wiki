@@ -2,14 +2,50 @@
 {{{
 #include <html\htmlcontrol.h>
 
-//CCoeControl* iControl
 iControl = CHtmlControl::NewL(NULL);
+iControl->SetRect(ClientRect());
+iControl->SetMopParent(this);
+iControl->ActivateL();
+AddToStackL(iControl );
 }}}
 
+CHtmlControl::NewL的唯一参数是父控件的指针。如果将CHtmlControl用于组合组件中，则传入父控件的指针；否则，传入NULL即可。
+
 ==Append HTML content==
+最简单的方法是使用AppendContentL，它将HTML添加到文档的末端，例如：
 {{{
-_LIT(KHtml, "");
+_LIT(KHtml, "<b>Hello world</b>");
 iControl->AppendContentL(KHtml);
+iControl->RefreshAndDraw();
+}}}
+你可以不断调用AppendContentL添加新的HTML到控件里，但每次添加的HTML必须是完整的HTML文本，例如以下的代码是错误的：
+{{{
+//WRONG
+_LIT(KHtml1, "<b>Hello world");
+iControl->AppendContentL(KHtml1);
+_LIT(KHtml2, "</b>");
+iControl->AppendContentL(KHtml2);
+}}}
+第二种方法使用InsertContentL, 它可以指定新加入的HTML的位置，例如：
+{{{
+_LIT(KHtml1, "<div id='a'>world</div>");
+iControl->AppendContentL(KHtml1);
+_LIT(KHtml2, "Hello ");
+iControl->InsertContentL(iControl->Element(_L("a")), EBeforeBegin, KHtml2);
+iControl->RefreshAndDraw();
+}}}
+第三种方法是使用元素的innerText和innerHTML属性，例如：
+{{{
+_LIT(KHtml1, "<div id='a'></div>");
+iControl->AppendContentL(KHtml1);
+_LIT(KHtml2, "<b>Hello world</b>");
+iControl->Element(_L("a"))->SetProperty(KHStrInnerHtml, KHtml2);
+iControl->RefreshAndDraw();
+}}}
+无论使用哪种方法，最后都应该调用Refresh方法，以更新控件内部结构。而调用RefreshAndDraw则相当于相继调用Refresh和DrawNow，即
+{{{
+iControl->Refresh();
+iControl->DrawNow();
 }}}
 
 ==Using styles==
