@@ -274,7 +274,7 @@ void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
   title->SetProperty(KHStrInnerText, entry.iName);
 }
 }}}
-Note: Don't call Refresh or RefreshAndDraw in RenderListItemL.
+  Note: Don't call Refresh or RefreshAndDraw in RenderListItemL.
  # Set list item count, and then update the whole list.
 {{{
 list->SetProperty(KHStrListItemCount, 100);
