@@ -229,12 +229,12 @@ iControl->SetEventObserver(this);
 }}}
 The supported event types are:
  * *EOnClick*      Click event. Fired by A/INPUT/DIV;
- * EOnChanged    Fired by SELECT after selection changed.
- * EOnSubmit     Fired by FORM. 
- * EOnGainFocus  Fired by any focusing element after receiving focus.
- * EOnLostFocus  Fired by any focusing element after focus lost.
- * EOnSlideLeft  Fired after the finger sliding from right to left.
- * EOnSlideRight Fired after the finger sliding from left to right.
+ * *EOnChanged*    Fired by SELECT after selection changed.
+ * *EOnSubmit*     Fired by FORM. 
+ * *EOnGainFocus*  Fired by any focusing element after receiving focus.
+ * *EOnLostFocus*  Fired by any focusing element after focus lost.
+ * *EOnSlideLeft*  Fired after the finger sliding from right to left.
+ * *EOnSlideRight* Fired after the finger sliding from left to right.
 
 =Create List and Grid=
 HtmlControl support standard Symbian List and Grid. The following are the steps to create such UI.
