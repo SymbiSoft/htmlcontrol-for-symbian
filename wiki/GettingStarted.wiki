@@ -31,6 +31,11 @@ AddToStackL(iControl );
 
 CHtmlControl::NewL的唯一参数是父控件的指针。如果将CHtmlControl用于组合组件中，则传入父控件的指针；否则，传入NULL即可。
 
+为了让HtmlControl能够响应系统资源的变化，应该重载AppUi的HandleResourceChangeL方法，并加入
+{{{
+HtmlCtlLib::ReportResourceChange(aType);
+}}}
+
 =Add HTML content=
 最简单的方法是使用AppendContentL，它将HTML添加到文档的末端，例如：
 {{{
@@ -47,6 +52,7 @@ _LIT(KHtml2, "</b>");
 iControl->AppendContentL(KHtml2);
 }}}
 但即使是加入错误的HTML，例如不支持的标签，HtmlControl也不会抛出任何异常。
+
 第二种方法使用InsertContentL, 它可以指定新加入的HTML的位置，例如：
 {{{
 _LIT(KHtml1, "<div id='a'>world</div>");
