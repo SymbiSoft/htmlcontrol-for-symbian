@@ -1,6 +1,23 @@
 #summary Getting Started
 <wiki:toc max_depth="3" />
 
+=Modify MMP file=
+HtmlControl作为静态库提供，所以在MMP文件中加入
+{{{
+STATICLIBRARY htmlcontrol.lib
+}}}
+另外还需要加入一些依赖库
+{{{
+LIBRARY	bafl.lib eikdlg.lib eikcoctl.lib eikctl.lib
+LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
+LIBRARY form.lib etext.lib uiklaf.lib
+LIBRARY aknskins.lib aknskinsrv.lib aknswallpaperutils.lib aknicon.lib
+LIBRARY imageconversion.lib charconv.lib
+LIBRARY inetprotutil.lib
+//LIBRARY touchfeedback.lib
+}}}
+其中的touchfeedback.lib，只有在S60第五版中才需要。
+
 =Create the control=
 {{{
 #include <html\htmlcontrol.h>
