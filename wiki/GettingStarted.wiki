@@ -275,7 +275,6 @@ void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
 }
 }}}
 Note: Don't call Refresh or RefreshAndDraw in RenderListItemL.
-
  # Set list item count, and then update the whole list.
 {{{
 list->SetProperty(KHStrListItemCount, 100);
