@@ -6,7 +6,7 @@ HtmlControl作为静态库提供，所以在MMP文件中加入
 {{{
 STATICLIBRARY htmlcontrol.lib
 }}}
-另外还需要加入一些依赖库
+另外还需要加入一些依赖库，对于S60，它们是
 {{{
 LIBRARY	bafl.lib eikdlg.lib eikcoctl.lib eikctl.lib
 LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
@@ -17,6 +17,16 @@ LIBRARY inetprotutil.lib
 //LIBRARY touchfeedback.lib
 }}}
 其中的touchfeedback.lib，只有在S60第五版中才需要。
+
+对于UIQ，他们是
+{{{
+LIBRARY	bafl.lib eikdlg.lib eikctl.lib apgrfx.lib 
+LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
+LIBRARY form.lib etext.lib uiklaf.lib
+LIBRARY skins.lib quiconfigclient.lib qikutils.lib qikdlg.lib qikctl.lib
+LIBRARY imageconversion.lib
+LIBRARY inetprotutil.lib
+}}}
 
 =Create the control=
 {{{
