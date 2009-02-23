@@ -1,5 +1,4 @@
 #summary Getting Started
-<wiki:toc max_depth="4" />
 
 =Modify MMP file=
 HtmlControl is provided as static lib, so add a statement in MMP file like this,
@@ -85,24 +84,24 @@ No matter what method you use，please keep in mind that you need to call Refres
 
 The following table shows the supported HTML tags and properties.
 || Tag || HTML Property || Extended Property ||
-|| body || style class || &nbsp; ||
-|| b || || ||
-|| strong || || ||
-|| i || || ||
-|| u || || ||
-|| font || color size style || ||
-|| br || || ||
-|| p || align || ||
-|| hr || width height color size align || ||
+|| body || style class || - ||
+|| b || || - ||
+|| strong || || - ||
+|| i || || - ||
+|| u || || - ||
+|| font || color size style || - ||
+|| br || || - ||
+|| p || align || - ||
+|| hr || width height color size align || - ||
 || img || id name src width height align style class || focus-src animation ||
-|| a || id name style class || ||
+|| a || id name style class || - ||
 || div || id name width height align style class || focusing focus-style focus-class down-style down-class line-wrap ||
-|| form || id name action method enctype style class ||  ||
+|| form || id name action method enctype style class || - ||
 || input || id name type value checked disabled readonly  style class|| max-length input-mode ||
 || select || id name value disabled style class || selectedIndex textArray valueArray optionArray ||
 || textarea || id name disabled style class || draw-lines line-color ||
-|| object || id name width height align classid data type style class || ||
-|| embed || id name width height align src style class || ||
+|| object || id name width height align classid data type style class || - ||
+|| embed || id name width height align src style class || - ||
 
 =Access Elements=
 HtmlControl use body element as the top level container element，call Body() to get the pointer of it. e.g.
