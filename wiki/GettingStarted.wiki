@@ -85,10 +85,10 @@ No matter what method you use，please keep in mind that you need to call Refres
 The following table shows the supported HTML tags and properties.
 || Tag || HTML Property || Extended Property ||
 || body || style class || - ||
-|| b || || - ||
-|| strong || || - ||
-|| i || || - ||
-|| u || || - ||
+|| b || - || - ||
+|| strong || - || - ||
+|| i || - || - ||
+|| u || - || - ||
 || font || color size style || - ||
 || br || || - ||
 || p || align || - ||
