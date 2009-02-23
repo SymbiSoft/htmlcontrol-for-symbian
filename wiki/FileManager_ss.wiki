@@ -1,5 +1,11 @@
+#summary Screenshots of example FileManager
+
 http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-02-23_105102.jpg
+
 http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-02-23_105127.jpg
+
 http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-02-23_105151.jpg
+
 http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-02-23_105215.jpg
+
 http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-02-23_105809.jpg
