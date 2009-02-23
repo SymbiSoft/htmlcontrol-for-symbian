@@ -240,10 +240,11 @@ void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
   title->SetProperty(KHStrInnerText, entry.iName);
 }
 }}}
-注意在RenderListItemL中不需要调用Refresh或RefreshAndDraw。
- # 设置列表项的数量
+  注意在RenderListItemL中不需要调用Refresh或RefreshAndDraw。
+ # 设置列表项的数量，并更新整个列表
 {{{
 list->SetProperty(KHStrListItemCount, 100);
+list->InvokeL(KHStrUpdateAll);
 }}}
 
 可以用同样的方法创建Grid，只需将KHStrCreateList改为KHStrCreateGrid即可。
