@@ -1,8 +1,0 @@
-#summary Tutorials
-
-=How to use resource text=
-=About font size=
-=How to use images=
-=Scalable UI=
-=About scrollbars=
-=Margins and paddings=
