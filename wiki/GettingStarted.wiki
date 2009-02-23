@@ -187,7 +187,7 @@ HtmlCtlLib::AddGlobalStyleSheetL(KStyleSheet);
 
 以下是HtmlControl支持的CSS属性：
  * 字体
-color font-family font-size font-weight text-decoration line-height
+color font-family font-size font-weight font-style text-decoration line-height
  * 文本
 vertical-align text-align
  * 背景
