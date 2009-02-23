@@ -29,6 +29,7 @@ iControl->AppendContentL(KHtml1);
 _LIT(KHtml2, "</b>");
 iControl->AppendContentL(KHtml2);
 }}}
+但即使是加入错误的HTML，例如不支持的标签，HtmlControl也不会抛出任何异常。
 第二种方法使用InsertContentL, 它可以指定新加入的HTML的位置，例如：
 {{{
 _LIT(KHtml1, "<div id='a'>world</div>");
@@ -37,7 +38,7 @@ _LIT(KHtml2, "Hello ");
 iControl->InsertContentL(iControl->Element(_L("a")), EBeforeBegin, KHtml2);
 iControl->RefreshAndDraw();
 }}}
-第三种方法是使用元素的innerText和innerHTML属性，例如：
+第三种方法是使用元素的innerText和innerHtml属性，例如：
 {{{
 _LIT(KHtml1, "<div id='a'></div>");
 iControl->AppendContentL(KHtml1);
@@ -83,7 +84,7 @@ HtmlControl使用Body元素作为最顶级的容器元素，可以调用Body()�
 CHtmlElement* Element(const TDesC& aId, TInt aIndex = 0) const;
 CHtmlElement* ElementByTag(const TDesC& aTagName, TInt aIndex = 0) const;
 }}}
-只要不更改控件的内容，返回的指针一直有效，调用者不需要删除该指针。
+只要指向的HTML元素仍然存在，返回的指针就一直有效，调用者不需要删除该指针。
 注意在HtmlControl中，HTML中的Name属性最终将转化为ID属性；另外，元素的ID并不要求唯一。
 例如：
 {{{
@@ -120,9 +121,9 @@ iControl->AppendContentL(KHtml);
 CHtmlElement* e1 = iControl->Element(_L("a"), 0); //hello
 iControl->RemoveElement(e1);
 }}}
-如果需要清除某个元素的内容，可以设置innerHTML为空，例如：
+如果需要清除某个元素的内容，可以设置innerHtml为空，例如：
 {{{
-e1->SetProperty(KHStrInnerHTML, KNullDesC);
+e1->SetProperty(KHStrInnerHtml, KNullDesC);
 }}}
 清除控件所有的内容，可以这样：
 {{{
@@ -213,20 +214,33 @@ list->InvokeL(KHStrCreateList, (MListItemRenderer*)this);
 }}}
  # 设置列表项
 {{{
-_LIT(KItemHtml, "<div id='item' class='item' focus-class='item-highlight'>"
-"<div style='height:26; width:30; border-right:1px dotted; padding:auto 4'><img src='' width='16' height='16'></div>"
-"<div id='item-title' line-wrap='scroll' style='padding:auto 2;height:26; font-size:15;'></div>"
+_LIT(KItemHtml, 
+"<div id='item' style='width:100%; height:22;' class='item' focus-class='focus-item'>"
+	"<div style='width:20;height:100%;border-right:1 dotted;padding:auto auto'><img src='' width='16' height='16'></div>"
+	"<div id='title' style='padding:auto 0 auto 2; width:auto; height:100%' line-wrap='scroll'></div>"
 "</div>");
-list->SetProperty(KHStrListItemHtml, KItemHtml);	
+list->SetProperty(KHStrListItemHtml, KItemHtml);
 }}}
  # 在回调方法中填入数据
 {{{
 void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
 {
-  aElement->ElementByTag(KHStrImg)->SetProperty(KHStrSrc, _L("images/1.gif"));
-  aElement->Element(_L("item-title"))->SetProperty(KHStrInnerHtml, _L("item title"));
+  const TMyEntry& entry = iFileList[aIndex];
+	
+  CHtmlElement* icon = aElement->ElementByTag(KHStrImg);
+  CHtmlElement* title = aElement->Element(_L("title"));
+	
+  if(entry.iAtt & KEntryAttVolume)
+    icon->SetProperty(KHStrSrc, _L("images/drive.mbm"));
+  else if(entry.iAtt & KEntryAttDir)
+    icon->SetProperty(KHStrSrc, _L("images/folder.mbm"));
+  else
+    icon->SetProperty(KHStrSrc, _L("images/file.mbm"));
+
+  title->SetProperty(KHStrInnerText, entry.iName);
 }
 }}}
+注意在RenderListItemL中不需要调用Refresh或RefreshAndDraw。
  # 设置列表项的数量
 {{{
 list->SetProperty(KHStrListItemCount, 100);
