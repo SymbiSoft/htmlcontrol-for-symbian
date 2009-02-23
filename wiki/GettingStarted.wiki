@@ -149,16 +149,19 @@ _LIT(KHtml, "<div id='a'>Hello</div> <div id='a'>world</div>");
 iControl->AppendContentL(KHtml);
 CHtmlElement* e1 = iControl->Element(_L("a"), 0); //hello
 iControl->RemoveElement(e1);
+iControl->RefreshAndDraw();
 }}}
 
 To clear the content of DIV/A/FORM element, 
 {{{
 e1->SetProperty(KHStrInnerHtml, KNullDesC);
+iControl->RefreshAndDraw();
 }}}
 
 To clear all content of the control,
 {{{
 iControl->ClearContent();
+iControl->RefreshAndDraw();
 }}}
 
 =Using styles=
