@@ -228,7 +228,7 @@ Call *CHtmlControl::SetEventObserver* to setup the event callback, e.g.
 iControl->SetEventObserver(this);
 }}}
 The supported event types are:
- * EOnClick      Click event. Fired by A/INPUT/DIV;
+ * *EOnClick*      Click event. Fired by A/INPUT/DIV;
  * EOnChanged    Fired by SELECT after selection changed.
  * EOnSubmit     Fired by FORM. 
  * EOnGainFocus  Fired by any focusing element after receiving focus.
