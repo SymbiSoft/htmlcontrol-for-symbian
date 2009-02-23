@@ -24,7 +24,7 @@ LIBRARY	bafl.lib eikdlg.lib eikctl.lib apgrfx.lib
 LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
 LIBRARY form.lib etext.lib uiklaf.lib
 LIBRARY skins.lib quiconfigclient.lib qikutils.lib qikdlg.lib qikctl.lib
-LIBRARY imageconversion.lib
+LIBRARY imageconversion.lib  charconv.lib 
 LIBRARY inetprotutil.lib
 }}}
 
