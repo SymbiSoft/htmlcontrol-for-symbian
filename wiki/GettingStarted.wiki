@@ -1,6 +1,5 @@
 #summary Getting Started
-
-<wiki:toc max_depth="3" />
+<wiki:toc max_depth="4" />
 
 =Modify MMP file=
 HtmlControl is provided as static lib, so add a statement in MMP file like this,
@@ -243,12 +242,10 @@ _LIT(KHtml, "<div id='list' style='width:100%;height:100%;'></div>");
 iControl->AppendContentL(KHtml);
 CHtmlElement* list = iControl->Element(_L("list"));
 }}}
-
  # Create list.
 {{{
 list->InvokeL(KHStrCreateList, (MListItemRenderer*)this);
 }}}
-
  # Set list item template.
 {{{
 _LIT(KItemHtml, 
@@ -258,7 +255,6 @@ _LIT(KItemHtml,
 "</div>");
 list->SetProperty(KHStrListItemHtml, KItemHtml);
 }}}
-
  # Render the list item in callback.
 {{{
 void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
