@@ -1,11 +1,11 @@
 #summary Getting Started
 
 =Modify MMP file=
-HtmlControl is provided as static lib, so add a statement in MMP file like this,
+HtmlControl is provided as static library, so add a statement in MMP file like this,
 {{{
 STATICLIBRARY htmlcontrol.lib
 }}}
-Some system libs must be included at the same time, for S60, they are
+Some system libraries must be included at the same time, for S60, they are
 {{{
 LIBRARY	bafl.lib eikdlg.lib eikcoctl.lib eikctl.lib
 LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
@@ -38,21 +38,21 @@ iControl->ActivateL();
 AddToStackL(iControl );
 }}}
 
-You should pass the parent control pointer as the only parameter of CHtmlControl::NewL. Use NULL if it is the top level control.
+You should pass the parent control pointer as the only parameter of *CHtmlControl::NewL*. Use NULL if it is the top level control.
 
-In order to allow HtmlControl to response the system resource changes, you should override HandleResourceChangeL of AppUi, and add following statement,
+In order to allow HtmlControl to response the system resource changes, you should override *HandleResourceChangeL* of AppUi, and add following statement,
 {{{
 HtmlCtlLib::ReportResourceChange(aType);
 }}}
 
 =Add HTML content=
-The simple way is to add HTML content is AppendContentL，which add the HTML to the end of the control, e.g.
+The simple way is to add HTML content is *AppendContentL*，which add the HTML to the end of the control, e.g.
 {{{
 _LIT(KHtml, "<b>Hello world</b>");
 iControl->AppendContentL(KHtml);
 iControl->RefreshAndDraw();
 }}}
-You can keep calling AppendContentL to add new content, but the content of each call must be well-formed HTML text. The following code is wrong,
+You can keep calling *AppendContentL* to add new content, but the content of each call must be well-formed HTML text. The following code is wrong,
 {{{
 //WRONG
 _LIT(KHtml1, "<b>Hello world");
@@ -62,7 +62,7 @@ iControl->AppendContentL(KHtml2);
 }}}
 note: HtmlControl can handle WRONG HTML and produce no error.
 
-The second way is to use InsertContentL, which has additional parameter to specify the position, e.g.
+The second way is to use *InsertContentL*, which has additional parameters to specify the position, e.g.
 {{{
 _LIT(KHtml1, "<div id='a'>world</div>");
 iControl->AppendContentL(KHtml1);
@@ -71,7 +71,7 @@ iControl->InsertContentL(iControl->Element(_L("a")), EBeforeBegin, KHtml2);
 iControl->RefreshAndDraw();
 }}}
 
-The third way is to use innerText or innerHtml property of elements，e.g.
+The third way is to use *innerText* or *innerHtml* property of elements，e.g.
 {{{
 _LIT(KHtml1, "<div id='a'></div>");
 iControl->AppendContentL(KHtml1);
@@ -104,18 +104,18 @@ The following table shows the supported HTML tags and properties.
 || embed || id name width height align src style class || - ||
 
 =Access Elements=
-HtmlControl use body element as the top level container element，call Body() to get the pointer of it. e.g.
+HtmlControl use BODY element as the top level element，call *Body* to get the pointer of it. e.g.
 {{{
   CHtmlElement* body = iControl->Body();
 }}}
 
-Use these two methods to get element pointer,
+To get element pointer,
 {{{
 CHtmlElement* Element(const TDesC& aId, TInt aIndex = 0) const;
 CHtmlElement* ElementByTag(const TDesC& aTagName, TInt aIndex = 0) const;
 }}}
-The pointer will remain valid until the related element is removed. Caller must not delete the return pointer.
-Note: In CHtmlControl，property Name will treat as property ID, and ID is not demand to be unique.
+The return pointer will remain valid until the related element is removed. Caller must not delete this return pointer.
+Note: In CHtmlControl，property *name* will treat as property *id*, and *id* is not demand to be unique.
 e.g.：
 {{{
 _LIT(KHtml, "<div id='a'>Hello</div> <div id='a'>world</div>");
@@ -131,7 +131,7 @@ iControl->AppendContentL(KHtml);
 CHtmlElement* e = iControl->ElementByTag(KHStrDiv);
 }}}
 
-To enumerate elements, you can use THtmlElementIter, e.g.
+To enumerate elements,
 {{{
 #include <html\htmlelementiter.h>
 _LIT(KHtml, "<img src='1.gif'><img src='2.gif'><img src='3.gif'>");
@@ -143,7 +143,7 @@ while(it.Next())
 }
 }}}
 
-Use RemoveElement to delete element from control, e.g.
+To delete element from control, 
 {{{
 _LIT(KHtml, "<div id='a'>Hello</div> <div id='a'>world</div>");
 iControl->AppendContentL(KHtml);
@@ -151,12 +151,12 @@ CHtmlElement* e1 = iControl->Element(_L("a"), 0); //hello
 iControl->RemoveElement(e1);
 }}}
 
-To clear the content of DIV/A/FORM element, you can set their property innerHtml as empty, e.g.
+To clear the content of DIV/A/FORM element, 
 {{{
 e1->SetProperty(KHStrInnerHtml, KNullDesC);
 }}}
 
-Clear all content of the control,
+To clear all content of the control,
 {{{
 iControl->ClearContent();
 }}}
@@ -178,16 +178,16 @@ iControl->AppendContentL(KHtml);
 iControl->RefreshAndDraw();
 }}}
 
-To delete CSS class, e.g.
+To delete CSS class,
 {{{
 iControl->RemoveStyleClass(_L("noname"));
 }}}
-To clear all classes, e.g.
+To clear all CSS classes, 
 {{{
 iControl->ClearStyleSheet();
 }}}
 
-To add CSS styles available for all CHtmlControl in the application, you can use HtmlCtlLib::AddGlobalStyleSheetL, e.g.
+To add CSS styles that available for all CHtmlControl in the application, you can use *HtmlCtlLib::AddGlobalStyleSheetL*, e.g.
 {{{
 _LIT(KStyleSheet, "INPUT { border:2 }"
                   "TEXTAREA { border:2 }"
@@ -220,7 +220,7 @@ filter
 Note: All length unit is px, e.g. style='width:50'，here '50' is equal to '50px'; and style='width:50pt', here '50pt' is equal to '50px' too.
 
 =Handle events=
-Call CHtmlControl::SetEventObserver to setup the event callback, e.g.
+Call *CHtmlControl::SetEventObserver* to setup the event callback, e.g.
 {{{
 iControl->SetEventObserver(this);
 }}}
@@ -234,7 +234,7 @@ The supported event types are:
  * EOnSlideRight Fired after the finger sliding from left to right.
 
 =Create List and Grid=
-HtmlControl support standard Symbian List and Grid。The following are the steps to create such list.
+HtmlControl support standard Symbian List and Grid. The following are the steps to create such UI.
  # Use DIV as container.
 {{{
 _LIT(KHtml, "<div id='list' style='width:100%;height:100%;'></div>");
@@ -273,7 +273,7 @@ void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
   title->SetProperty(KHStrInnerText, entry.iName);
 }
 }}}
-  Note: Don't call Refresh or RefreshAndDraw in RenderListItemL.
+  Note: Don't call *Refresh* or *RefreshAndDraw* in *RenderListItemL*.
  # Set list item count, and then update the whole list.
 {{{
 list->SetProperty(KHStrListItemCount, 100);
@@ -281,31 +281,31 @@ list->InvokeL(KHStrUpdateAll);
 iControl->RefreshAndDraw();
 }}}
 
-You can create grid in same way, only replace KHStrCreateList with KHStrCreateGrid.
-The columns of grid depends on the width of list item. 
+You can create grid in same way, only to replace KHStrCreateList with KHStrCreateGrid.
+The columns of grid depends on the width of the list item. 
 
-To update a single item in the list(e.g. the status of an SMS message change from unread to read), you can call KHStrUpdate on the list, e.g.
+To update a single item in the list(e.g. the status of an SMS message change from unread to read), you can call *KHStrUpdate* on the list, e.g.
 {{{
 list->InvokeL(KHStrUpdate, 50);
 iControl->RefreshAndDraw();
 }}}
-If the 50th item is in the view, the list will fire RenderListItemL to rerender this item.
+If the 50th item is in the view, then the list will fire *RenderListItemL* to rerender this item.
 
-To delete one or more items in the list, just set KHStrListItemCount to new count，and then call KHStrUpdateAll on the list, e.g.
+To delete one or more items in the list, just set *KHStrListItemCount* to the new count，and then call *KHStrUpdateAll* on the list, e.g.
 {{{
 list->SetProperty(KHStrListItemCount, 0);
 list->InvokeL(KHStrUpdateAll);
 iControl->RefreshAndDraw();
 }}}
 
-When there is no items in the list, it is blank by default. However, you can set some content to display, e.g.
+When there is no item in the list, the list is blank by default. However, you can set some content to display, e.g.
 {{{
 _LIT(KEmptyHtml, "<p align='center'>(No Data)</p>");
 list->SetProperty(KHStrListEmptyHtml, KEmptyHtml);
 }}}
 
 =Using Transition=
-Transition is the effect when content change. There are two transition effects built in CHtmlControl:
+Transition is the effect on content change. There are two transition effects built in CHtmlControl:
  * CSlideTransition   Slide horizontally or vertically effect.
  * CFadeTransition    Fade in effect。
 
@@ -341,3 +341,4 @@ TKeyResponse CSomeClass::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
     return CBaseClass::OfferKeyEventL(aKeyEvent, aType);
 }
 }}}
+
