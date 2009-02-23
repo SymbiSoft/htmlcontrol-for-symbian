@@ -189,7 +189,7 @@ HtmlCtlLib::AddGlobalStyleSheetL(KStyleSheet);
  * 字体
 color font-family font-size font-weight font-style text-decoration line-height
  * 文本
-vertical-align text-align
+text-align
  * 背景
 background-color background-image background-position background-repeat
  * 定位
