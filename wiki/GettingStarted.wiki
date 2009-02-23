@@ -46,7 +46,7 @@ HtmlCtlLib::ReportResourceChange(aType);
 }}}
 
 =Add HTML content=
-The simple way is to add HTML content is *AppendContentL*，which add the HTML to the end of the control, e.g.
+The simple way is to add HTML content is *AppendContentL*, which add the HTML to the end of the control, e.g.
 {{{
 _LIT(KHtml, "<b>Hello world</b>");
 iControl->AppendContentL(KHtml);
@@ -341,4 +341,3 @@ TKeyResponse CSomeClass::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
     return CBaseClass::OfferKeyEventL(aKeyEvent, aType);
 }
 }}}
-
