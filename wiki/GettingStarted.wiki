@@ -2,11 +2,11 @@
 <wiki:toc max_depth="3" />
 
 =Modify MMP file=
-HtmlControl作为静态库提供，所以在MMP文件中加入
+HtmlControl is provided as static lib, so add a statement in MMP file like this,
 {{{
 STATICLIBRARY htmlcontrol.lib
 }}}
-另外还需要加入一些依赖库，对于S60，它们是
+Some system libs must be included at the same time, for S60, they are
 {{{
 LIBRARY	bafl.lib eikdlg.lib eikcoctl.lib eikctl.lib
 LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
@@ -16,9 +16,9 @@ LIBRARY imageconversion.lib charconv.lib
 LIBRARY inetprotutil.lib
 //LIBRARY touchfeedback.lib
 }}}
-其中的touchfeedback.lib，只有在S60第五版中才需要。
+note: 'touchfeedback.lib' is only required in S60 5th Edition.
 
-对于UIQ，他们是
+And for UIQ, they are
 {{{
 LIBRARY	bafl.lib eikdlg.lib eikctl.lib apgrfx.lib 
 LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
@@ -39,21 +39,21 @@ iControl->ActivateL();
 AddToStackL(iControl );
 }}}
 
-CHtmlControl::NewL的唯一参数是父控件的指针。如果将CHtmlControl用于组合组件中，则传入父控件的指针；否则，传入NULL即可。
+You should pass the parent control pointer as the only parameter of CHtmlControl::NewL. Use NULL if it is the top level control.
 
-为了让HtmlControl能够响应系统资源的变化，应该重载AppUi的HandleResourceChangeL方法，并加入
+In order to allow HtmlControl to response the system resource changes, you should override HandleResourceChangeL of AppUi, and add following statement,
 {{{
 HtmlCtlLib::ReportResourceChange(aType);
 }}}
 
 =Add HTML content=
-最简单的方法是使用AppendContentL，它将HTML添加到文档的末端，例如：
+The simple way is to add HTML content is AppendContentL，which add the HTML to the end of the control, e.g.
 {{{
 _LIT(KHtml, "<b>Hello world</b>");
 iControl->AppendContentL(KHtml);
 iControl->RefreshAndDraw();
 }}}
-你可以不断调用AppendContentL添加新的HTML到控件里，但每次添加的HTML必须是完整的HTML文本，例如以下的代码是错误的：
+You can keep calling AppendContentL to add new content, but the content of each call must be well-formed HTML text. The following code is wrong,
 {{{
 //WRONG
 _LIT(KHtml1, "<b>Hello world");
@@ -61,9 +61,9 @@ iControl->AppendContentL(KHtml1);
 _LIT(KHtml2, "</b>");
 iControl->AppendContentL(KHtml2);
 }}}
-但即使是加入错误的HTML，例如不支持的标签，HtmlControl也不会抛出任何异常。
+note: HtmlControl can handle WRONG HTML and produce no error.
 
-第二种方法使用InsertContentL, 它可以指定新加入的HTML的位置，例如：
+The second way is to use InsertContentL, which has additional parameter to specify the position, e.g.
 {{{
 _LIT(KHtml1, "<div id='a'>world</div>");
 iControl->AppendContentL(KHtml1);
@@ -71,7 +71,8 @@ _LIT(KHtml2, "Hello ");
 iControl->InsertContentL(iControl->Element(_L("a")), EBeforeBegin, KHtml2);
 iControl->RefreshAndDraw();
 }}}
-第三种方法是使用元素的innerText和innerHtml属性，例如：
+
+The third way is to use innerText or innerHtml property of elements，e.g.
 {{{
 _LIT(KHtml1, "<div id='a'></div>");
 iControl->AppendContentL(KHtml1);
@@ -79,14 +80,11 @@ _LIT(KHtml2, "<b>Hello world</b>");
 iControl->Element(_L("a"))->SetProperty(KHStrInnerHtml, KHtml2);
 iControl->RefreshAndDraw();
 }}}
-无论使用哪种方法，最后都应该调用Refresh方法，以使控件更新内部各个元素的位置和状态。而调用RefreshAndDraw则相当于相继调用Refresh和DrawNow，即
-{{{
-iControl->Refresh();
-iControl->DrawNow();
-}}}
 
-以下是HtmlControl支持的HTML标签和属性：
-|| 标签 || HTML属性 || 扩展属性 ||
+No matter what method you use，please keep in mind that you need to call Refresh or RefreshAndDraw(Refresh+DrawNow) to update the control state.
+
+The following table shows the supported HTML tags and properties.
+|| Tag || HTML Property || Extended Property ||
 || body || style class || ||
 || b || || ||
 || strong || || ||
@@ -107,35 +105,34 @@ iControl->DrawNow();
 || embed || id name width height align src style class || ||
 
 =Access Elements=
-HtmlControl使用Body元素作为最顶级的容器元素，可以调用Body()获得Body元素指针。例如：
+HtmlControl use body element as the top level container element，call Body() to get the pointer of it. e.g.
 {{{
   CHtmlElement* body = iControl->Body();
 }}}
 
-使用以下两个方法可以获取控件中某个元素的指针：
+Use these two methods to get element pointer,
 {{{
 CHtmlElement* Element(const TDesC& aId, TInt aIndex = 0) const;
 CHtmlElement* ElementByTag(const TDesC& aTagName, TInt aIndex = 0) const;
 }}}
-只要指向的HTML元素仍然存在，返回的指针就一直有效，调用者不需要删除该指针。
-注意在HtmlControl中，HTML中的Name属性最终将转化为ID属性；另外，元素的ID并不要求唯一。
-例如：
+The pointer will remain valid until the related element is removed. Caller must not delete the return pointer.
+Note: In CHtmlControl，property Name will treat as property ID, and ID is not demand to be unique.
+e.g.：
 {{{
 _LIT(KHtml, "<div id='a'>Hello</div> <div id='a'>world</div>");
 iControl->AppendContentL(KHtml);
 CHtmlElement* e1 = iControl->Element(_L("a"), 0); //hello
 CHtmlElement* e2 = iControl->Element(_L("a"), 1); //world
 }}}
-也可以通过标签名称得到元素指针，例如：
+
+Following code demonstrated how to get element pointer by tag name.
 {{{
 _LIT(KHtml, "<div>Hello world </div>");
 iControl->AppendContentL(KHtml);
 CHtmlElement* e = iControl->ElementByTag(KHStrDiv);
 }}}
 
-不是所有HTML的标签都可以通过ID或者标签名称引用，例如：b u i font p hr等。
-
-如果需要枚举控件中的元素，可以使用THtmlElementIter，下面的例子枚举了控件中的img元素：
+To enumerate elements, you can use THtmlElementIter, e.g.
 {{{
 #include <html\htmlelementiter.h>
 _LIT(KHtml, "<img src='1.gif'><img src='2.gif'><img src='3.gif'>");
@@ -147,30 +144,33 @@ while(it.Next())
 }
 }}}
 
-如果需要删除控件中的元素，可以使用RemoveElement方法，例如：
+Use RemoveElement to delete element from control, e.g.
 {{{
 _LIT(KHtml, "<div id='a'>Hello</div> <div id='a'>world</div>");
 iControl->AppendContentL(KHtml);
 CHtmlElement* e1 = iControl->Element(_L("a"), 0); //hello
 iControl->RemoveElement(e1);
 }}}
-如果需要清除某个元素的内容，可以设置innerHtml为空，例如：
+
+To clear the content of DIV/A/FORM element, you can set their property innerHtml as empty, e.g.
 {{{
 e1->SetProperty(KHStrInnerHtml, KNullDesC);
 }}}
-清除控件所有的内容，可以这样：
+
+Clear all content of the control,
 {{{
 iControl->ClearContent();
 }}}
 
 =Using styles=
-HtmlControl支持CSS，请看下面的例子：
+HtmlControl support CSS，e.g.
 {{{
 _LIT(KHtml, "<div style='font-size:large;color:red'>Hello world</div>");
 iControl->AppendContentL(KHtml);
 iControl->RefreshAndDraw();
 }}}
-也可以使用样式表，例如:
+
+StyleSheet is also supprted, e.g.
 {{{
 _LIT(KStyleSheet, ".noname { font-size:large;color:red }");
 iControl->AddStyleSheetL(KStyleSheet);
@@ -178,16 +178,17 @@ _LIT(KHtml, "<div class='noname'>Hello world</div>");
 iControl->AppendContentL(KHtml);
 iControl->RefreshAndDraw();
 }}}
-可以多次使用AddStyleSheetL添加样式定义。如果要删除样式定义，可以通过指定选择符删除，例如：
+
+To delete CSS class, e.g.
 {{{
 iControl->RemoveStyleClass(_L("noname"));
 }}}
-也可以使用ClearStyleSheet清除所有自定义的样式，例如:
+To clear all classes, e.g.
 {{{
 iControl->ClearStyleSheet();
 }}}
 
-如果需要定义一个整个应用程序中所有HtmlControl都有效的样式表，可以使用HtmlCtlLib::AddGlobalStyleSheetL, 例如：
+To add CSS styles available for all CHtmlControl in the application, you can use HtmlCtlLib::AddGlobalStyleSheetL, e.g.
 {{{
 _LIT(KStyleSheet, "INPUT { border:2 }"
                   "TEXTAREA { border:2 }"
@@ -195,57 +196,59 @@ _LIT(KStyleSheet, "INPUT { border:2 }"
 HtmlCtlLib::AddGlobalStyleSheetL(KStyleSheet);
 }}}
 
-以下是HtmlControl支持的CSS属性：
- * 字体
+The following table shows the supported CSS properties.
+ * Font
 color font-family font-size font-weight font-style text-decoration line-height
- * 文本
+ * Text
 text-align
- * 背景
+ * Background
 background-color background-image background-position background-repeat
- * 定位
+ * Position
 top left 
- * 尺寸
+ * Dimension
 height max-height width max-width 
- * 布局
+ * Layout
 clear overflow display visibility 
- * 外补丁
+ * Margin
 margin margin-top margin-right margin-bottom margin-left 
- * 边框
+ * Border
 border border-color border-style border-width border-top border-right border-bottom border-left
- * 内补丁
+ * Padding
 padding padding-top padding-right padding-bottom padding-left 
- * 其它 
+ * Misc
 filter
 
-在使用样式表时需要注意,  所有长度单位都默认是px，其他长度单位都忽略，并认为是px。例如style='width:50'，这里50等于50px，同样，style='width:50pt'也被认为是50px。
+Note: All length unit is px, e.g. style='width:50'，here '50' is equal to '50px'; and style='width:50pt', here '50pt' is equal to '50px' too.
 
 =Handle events=
-使用CHtmlControl::SetEventObserver设置处理控件事件的回调函数，例如
+Call CHtmlControl::SetEventObserver to setup the event callback, e.g.
 {{{
 iControl->SetEventObserver(this);
 }}}
-HtmlControl产生的事件类型有：
- * EOnClick      单击事件。例如链接、按钮等被点击时，产生该事件；
- * EOnChanged    用户改变SELECT元素当前选定项时，产生该事件；
- * EOnSubmit     提交Form时产生该事件；
- * EOnGainFocus  元素获得焦点时产生该事件；
- * EOnLostFocus  元素失去焦点时产生该事件；
- * EOnSlideLeft  当手指在屏幕从右向左划过一定距离时产生该事件；
- * EOnSlideRight 用手指在屏幕从左向右划过一定距离时产生该事件。
+The supported event types are:
+ * EOnClick      Click event. Fired by A/INPUT/DIV;
+ * EOnChanged    Fired by SELECT after selection changed.
+ * EOnSubmit     Fired by FORM. 
+ * EOnGainFocus  Fired by any focusing element after receiving focus.
+ * EOnLostFocus  Fired by any focusing element after focus lost.
+ * EOnSlideLeft  Fired after the finger sliding from right to left.
+ * EOnSlideRight Fired after the finger sliding from left to right.
 
 =Create List and Grid=
-HtmlControl特别支持传统Symbian界面的List和Grid。使用List的步骤为
- # 利用DIV元素作为载体
+HtmlControl support standard Symbian List and Grid。The following are the steps to create such list.
+ # Use DIV as container.
 {{{
 _LIT(KHtml, "<div id='list' style='width:100%;height:100%;'></div>");
 iControl->AppendContentL(KHtml);
 CHtmlElement* list = iControl->Element(_L("list"));
 }}}
- # 创建List
+
+ # Create list.
 {{{
 list->InvokeL(KHStrCreateList, (MListItemRenderer*)this);
 }}}
- # 设置列表项
+
+ # Set list item template.
 {{{
 _LIT(KItemHtml, 
 "<div id='item' style='width:100%; height:22;' class='item' focus-class='focus-item'>"
@@ -254,7 +257,8 @@ _LIT(KItemHtml,
 "</div>");
 list->SetProperty(KHStrListItemHtml, KItemHtml);
 }}}
- # 在回调方法中填入数据
+
+ # Render the list item in callback.
 {{{
 void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
 {
@@ -273,43 +277,44 @@ void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
   title->SetProperty(KHStrInnerText, entry.iName);
 }
 }}}
-  注意在RenderListItemL中不需要调用Refresh或RefreshAndDraw。
- # 设置列表项的数量，并更新整个列表
+Note: Don't call Refresh or RefreshAndDraw in RenderListItemL.
+
+ # Set list item count, and then update the whole list.
 {{{
 list->SetProperty(KHStrListItemCount, 100);
 list->InvokeL(KHStrUpdateAll);
 iControl->RefreshAndDraw();
 }}}
 
-可以用同样的方法创建Grid，只需将KHStrCreateList改为KHStrCreateGrid即可。
-Grid每行的列表项个数取决于KItemHtml里最外层DIV的宽度，例如如果宽度为100，而屏幕宽度为240，则每行2个列表项。
+You can create grid in same way, only replace KHStrCreateList with KHStrCreateGrid.
+The columns of grid depends on the width of list item. 
 
-当需要更新里列表中某个项目的状态时，例如一条短信从未读状态转为已读状态，可以使用KHStrUpdate命令，例如
+To update a single item in the list(e.g. the status of an SMS message change from unread to read), you can call KHStrUpdate on the list, e.g.
 {{{
 list->InvokeL(KHStrUpdate, 50);
 iControl->RefreshAndDraw();
 }}}
-如果第50个项目当前可见，则控件将调用RenderListItemL要求重新设置元素的状态。
+If the 50th item is in the view, the list will fire RenderListItemL to rerender this item.
 
-如果你需要删除一个或多个列表项目，则需要重新设置KHStrListItemCount，并使用KHStrUpdateAll更新整个列表，例如
+To delete one or more items in the list, just set KHStrListItemCount to new count，and then call KHStrUpdateAll on the list, e.g.
 {{{
 list->SetProperty(KHStrListItemCount, 0);
 list->InvokeL(KHStrUpdateAll);
 iControl->RefreshAndDraw();
 }}}
 
-当列表中没有项目时，默认显示空白，也可以定制特别的显示信息，例如
+When there is no items in the list, it is blank by default. However, you can set some content to display, e.g.
 {{{
 _LIT(KEmptyHtml, "<p align='center'>(No Data)</p>");
 list->SetProperty(KHStrListEmptyHtml, KEmptyHtml);
 }}}
 
 =Using Transition=
-Transition是指控件内容变化时的渐变效果，HtmlControl内置了两个Transition类：
- * CSlideTransition   实现水平或垂直的平移切换效果；
- * CFadeTransition    实现淡入效果。
+Transition is the effect when content change. There are two transition effects built in CHtmlControl:
+ * CSlideTransition   Slide horizontally or vertically effect.
+ * CFadeTransition    Fade in effect。
 
-以下是使用CSlideTransition的例子，当用户按下左键时，屏幕内容将向左滑动，直至新的内容显示到屏幕上。这里的关键是使用iSlideTransition->StartL(CSlideTransition::ESlideLeft);替换了RefreshAndDraw(); 同理，如果在这里使用iFadeTransition->StartL()，则可以实现旧内容淡出，新内容淡入的效果。
+The following example shows how simple is to use transition class. When user press the left key, the screen will slide from right to left.
 
 {{{
 #include <html\slidetrans.h>
