@@ -268,10 +268,31 @@ void CBasicDemoAppUi::RenderListItemL(CHtmlElement* aElement, TInt aIndex)
 {{{
 list->SetProperty(KHStrListItemCount, 100);
 list->InvokeL(KHStrUpdateAll);
+iControl->RefreshAndDraw();
 }}}
 
 可以用同样的方法创建Grid，只需将KHStrCreateList改为KHStrCreateGrid即可。
 Grid每行的列表项个数取决于KItemHtml里最外层DIV的宽度，例如如果宽度为100，而屏幕宽度为240，则每行2个列表项。
+
+当需要更新里列表中某个项目的状态时，例如一条短信从未读状态转为已读状态，可以使用KHStrUpdate命令，例如
+{{{
+list->InvokeL(KHStrUpdate, 50);
+iControl->RefreshAndDraw();
+}}}
+如果第50个项目当前可见，则控件将调用RenderListItemL要求重新设置元素的状态。
+
+如果你需要删除一个或多个列表项目，则需要重新设置KHStrListItemCount，并使用KHStrUpdateAll更新整个列表，例如
+{{{
+list->SetProperty(KHStrListItemCount, 0);
+list->InvokeL(KHStrUpdateAll);
+iControl->RefreshAndDraw();
+}}}
+
+当列表中没有项目时，默认显示空白，也可以定制特别的显示信息，例如
+{{{
+_LIT(KEmptyHtml, "<p align='center'>(No Data)</p>");
+list->SetProperty(KHStrListEmptyHtml, KEmptyHtml);
+}}}
 
 =Using Transition=
 Transition是指控件内容变化时的渐变效果，HtmlControl内置了两个Transition类：
