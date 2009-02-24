@@ -69,7 +69,7 @@ The expression is 'skin#id1,id2'. id1 and id2 compose a TAknsItemID value, and t
  * If id1 and id2 are both exists, then id1 is iMajor and id2 is iMinor. 
  * If id2 is omitted, then id1 is iMinor, iMajor will be EAknsMajorSkin.
  * If id1 and id2 are both omitted, then id1 will be EAknsMajorSkin, id2 will be EAknsMinorQsnBgScreen.
- Check aknsconstants.hrh for more information.
+Check aknsconstants.hrh for more information.
    
 ===1.6. S60 skin frame. ===
 e.g.
@@ -78,6 +78,7 @@ background-image: frame#10005a26,1400
 background-image: frame#1400
 }}}
 The expression is 'frame#id1,id2'. Please refer to 1.5 Skin for the details of id1 and id2.
+
 In aknscontants.hrh, you can find the following definition which define a fram,
 {{{
 // General list highlight frame
@@ -108,6 +109,7 @@ The express is 'icon#id1,id2'.Please refer to 1.5 for the details of id1 and id2
 background-image: skin#101F61AA,0
 }}}
 The expression is 'skin#SkinUid,PatchIndex,MultiBitmapIndex. All numbers are in hex.
+
 Check QSkinIds.h for more information.
   
 ===1.9 UIQ skin icon. ===
