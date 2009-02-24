@@ -17,6 +17,7 @@ font-size:medium
  || large || 17 || 18 || 28 ||
  || x-large || 19 || 22 || 32 ||
  || xx-large || 24 || 26 || 38 ||
+
  # Use relative value, real size=medium size + relative value. e.g.
  {{{
  font-size: +5
