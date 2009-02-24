@@ -143,6 +143,14 @@ while(it.Next())
 }
 }}}
 
+After you got the element pointer, you can change the element properties and styles. e.g.
+{{{
+CHtmlElement* e = iControl->Element(_L("a"), 0);
+e->SetStyle(KHStrVisibility, KHStrHidden); //e->SetStyle(KHStrDisplay, KHStrNone); 
+iControl->RefreshAndDraw();
+}}}
+The above code will hide the specific element.
+
 To delete element from control, 
 {{{
 _LIT(KHtml, "<div id='a'>Hello</div> <div id='a'>world</div>");
