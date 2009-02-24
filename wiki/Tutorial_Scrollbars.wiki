@@ -1,0 +1,15 @@
+#summary Tutorial Using scrollbar.
+
+Scrollbar can be setup for DIV element, by using CSS property overflow. e.g.
+{{{
+<div style='width:80%;height:80%;border:1;overflow:scroll'></div>
+}}}
+http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-02-24_164013.jpg
+
+After added some content
+
+http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-02-24_175613.jpg
+
+
+
+
