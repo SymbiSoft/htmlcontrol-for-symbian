@@ -1,11 +1,11 @@
 #summary Tutorial FontSize
 
-1.Use absolute value, the unit is pixel. e.g.
+1.Absolute value, the unit is pixel. e.g.
 {{{
 font-size:10
 }}}
 
-2.Use size name. e.g.
+2.Size name. e.g.
 {{{
 font-size:medium
 }}}
@@ -20,7 +20,7 @@ Following table shows the supported font size name and their real size in differ
 || xx-large || 24 || 26 || 38 ||
 
 
-3.Use relative value, real size=medium size + relative value. e.g.
+3.Relative value, real size=medium size + relative value. e.g.
 {{{
  font-size: +5
 }}}
