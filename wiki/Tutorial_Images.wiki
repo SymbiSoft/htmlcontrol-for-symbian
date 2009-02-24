@@ -130,8 +130,8 @@ The default image search path is application private path, on all availabe volum
 {{{
 <img src='images/pic.gif'>
 }}}
-For Symibian 9.0 downwards, the control will try to locate the image on '!:/system/apps/<APPNAME>/images/pic.gif', ! represented all availabe volum.
-For Symibian 9.0 onwards, the control will try to locate the image on '!:/private/<SECUREID>/images/pic.gif', ! represented all availabe volum.
+For Symibian 9.0 downwards, the control will try to locate the image on `!:/system/apps/<APPNAME>/images/pic.gif`, ! represented all availabe volum.
+For Symibian 9.0 onwards, the control will try to locate the image on `!:/private/<SECUREID>/images/pic.gif`, ! represented all availabe volum.
 
 You can also add custom search path, e.g.
 {{{
