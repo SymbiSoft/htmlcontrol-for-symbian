@@ -5,6 +5,7 @@ HtmlControl support local image resource and system skin.
 1. Image source expression.
 
 1.1. Mbm file.
+
 a) given a bitmap file name and bitmap index. e.g.
 {{{
 <img src='pic.mbm#1'>
@@ -22,8 +23,8 @@ Note: All numbers are in hex. e.g.
 <img src='pic.mbm#A,B'>
 }}}
 
-There are 3 predfined bitmap file names,
-  
+There are 3 predfined bitmap file names:
+
 1) avkon.mbm(S60 only). e.g.
 {{{
 <img src='avkon.mbm#4078,4079'>
@@ -120,8 +121,8 @@ The default image search path is application private path, on all availabe volum
 {{{
 <img src='images/pic.gif'>
 }}}
-For Symibian 9.0 downwards, the control will try to locate the image on !:/system/apps/<APPNAME>/images/pic.gif, ! represented all availabe volum.
-For Symibian 9.0 onwards, the control will try to locate the image on !:/private/<SECUREID>/images/pic.gif, ! represented all availabe volum.
+For Symibian 9.0 downwards, the control will try to locate the image on '!:/system/apps/<APPNAME>/images/pic.gif', ! represented all availabe volum.
+For Symibian 9.0 onwards, the control will try to locate the image on '!:/private/<SECUREID>/images/pic.gif', ! represented all availabe volum.
 
 You can also add custom search path, e.g.
 {{{
