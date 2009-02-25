@@ -137,7 +137,8 @@ For Symibian 9.0 onwards, the control will try to locate the image on `!:/privat
 
 You can also add custom search path, e.g.
 {{{
-HtmlCtlLib::AddSearchPathL(_L("c:\\data\\others"));
+HtmlCtlLib::AddSearchPathL(_L("c:\\data\\others\\"));
+Note: the path must end of backlash.
 }}}
   
 ==3. Image cache policy.==
