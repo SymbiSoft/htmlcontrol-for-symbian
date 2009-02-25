@@ -1,0 +1,69 @@
+// HtmlControl.mmp
+//
+// Created: 09/08/07
+// Author:  ytom
+//
+
+// using relative paths for sourcepath and user includes
+// exports are unfrozen
+
+TARGET        htmlcontrol.lib
+TARGETTYPE    lib
+UID           0x01000000 0
+
+SOURCEPATH    ..\src
+SOURCE	htmlcontrol.cpp
+SOURCE	htmlelement.cpp
+SOURCE	htmlelementiter.cpp
+SOURCE	htmlctlenv.cpp
+SOURCE	htmlparser.cpp
+SOURCE	htmlstrings.cpp
+SOURCE	htmlctlutils.cpp
+SOURCE  controlimpl.cpp
+SOURCE	elementimpl.cpp
+SOURCE	measurestatus.cpp
+SOURCE	style.cpp
+SOURCE	rstyle.cpp 
+SOURCE	stylesheet.cpp
+SOURCE	image.cpp
+SOURCE	imageimpl.cpp
+SOURCE	imagepool.cpp
+SOURCE	gcproxy.cpp
+SOURCE	writablebitmap.cpp
+SOURCE	list.cpp
+SOURCE	scrollbar.cpp
+SOURCE	inputeditor.cpp
+SOURCE	utils.cpp
+SOURCE	element_a.cpp
+SOURCE	element_body.cpp
+SOURCE	element_div.cpp
+SOURCE	element_form.cpp
+SOURCE	element_hr.cpp
+SOURCE	element_img.cpp
+SOURCE	element_input.cpp
+SOURCE	element_object.cpp
+SOURCE	element_p.cpp
+SOURCE	element_select.cpp
+SOURCE	element_text.cpp
+SOURCE	element_textarea.cpp
+SOURCE	fadetrans.cpp
+SOURCE	slidetrans.cpp
+
+USERINCLUDE   ..\inc
+SYSTEMINCLUDE \Epoc32\include
+
+#ifdef UIQ_UMTS_AVAILABLE
+MACRO __UIQ__ __SYMBIAN_9_ONWARDS__ __SYMBIAN_8_ONWARDS__
+#else
+	#ifdef EKA2
+MACRO __SERIES60__ __SERIES60_3_ONWARDS__ __SYMBIAN_9_ONWARDS__ __SYMBIAN_8_ONWARDS__
+	#else
+		#ifdef __SERIES60_21__
+MACRO __SERIES60__ __SERIES60_3_DOWNWARDS__ __SYMBIAN_9_DOWNWARDS__ __SYMBIAN_8_DOWNWARDS__
+		#else
+MACRO __SERIES60__ __SERIES60_3_DOWNWARDS__ __SYMBIAN_9_DOWNWARDS__ __SYMBIAN_8_ONWARDS__
+		#endif
+	#endif
+#endif
+
+
