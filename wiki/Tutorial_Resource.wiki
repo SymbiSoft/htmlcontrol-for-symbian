@@ -14,4 +14,4 @@ Example 2:
 {{{
 _LIT(KHtml, "<input type='button' *value='"MAKESTR(R_QTN_CAPTION)"'>");
 }}}
-Adding start before property name will make the property value load from resource.
+Adding star before property name will make the property value load from resource.
