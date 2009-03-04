@@ -1,9 +1,14 @@
 #summary Change Logs
 
 -------------htmlcontrol 1.1-------------------
+
 Fixed the scrollbar display problem in some theme.
-Removed the old transition class and add new transition support.
+
+Removed the old transition class and add new transition+easing support.
+
 Improved the line-wrap='clip' behavior.
 
+
 -------------htmlcontrol 1.0-------------------
+
 First release
