@@ -37,9 +37,7 @@ public:
 private:
 	void ClearCache();
 	
-	void MeasureSingleLine(CHcMeasureStatus& aStatus);
 	void RefreshSingleLine();
-	void MeasureMultiLine(CHcMeasureStatus& aStatus);
 	void RefreshMultiLine();
 	void DrawSingleLine(CFbsBitGc& aGc) const;
 	void DrawMultiLine(CFbsBitGc& aGc) const;
@@ -56,6 +54,8 @@ private:
 	THcTextStyle iStyle;
 	RArray<TTextRect> iRects;
 	TInt iCacheWidth;
+	TInt iClippedRectIndex;
+	TInt iClippedCharCount;
 };
 
 inline TInt CHtmlElementText::TextRectCount() const
@@ -82,7 +82,7 @@ public:
 	inline TBool IsEndingWithTwoBr() const;
 	void RemoveLastLineIfEmpty();
 
-	void WrapTextL(CHcMeasureStatus& aStatus);
+	void WrapTextL(CHcMeasureStatus& aStatus, TBool aForceFullWrap);
 
 private:
 	//properties

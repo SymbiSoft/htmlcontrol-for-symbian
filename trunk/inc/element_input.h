@@ -69,7 +69,7 @@ public:
 
 inline TBool CHtmlElementInput::CanFocus() const
 {
-	return !iFlags.IsSet(EDisabled) && !iState.IsSet(EElementStateHidden) && iInputType!=EHidden;
+	return !iFlags.IsSet(EDisabled) && iInputType!=EHidden;
 }
 
 CHtmlElementInput::TInputType CHtmlElementInput::InputType() const

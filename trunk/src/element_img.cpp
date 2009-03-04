@@ -215,7 +215,7 @@ void CHtmlElementImg::Measure(CHcMeasureStatus& aStatus)
 	{
 		TBool ani = iImage->Location().iType==ELTFileGeneral && ((CHcImageGeneral*)iImage)->FrameCount()>1
 			&& iAnimation 
-			&& !(iParent->iState.IsSet(EElementStateFaded) || iOwner->Impl()->iState.IsSet(EHCSDisplayOnly));
+			&& !(iParent->iState.IsSet(EElementStateFaded) || iOwner->Impl()->iState.IsSet(EHCSInTransition));
 		
 		iState.Clear(EElementStateError);
 		iState.Assign(EElementStateStatic, !ani);
@@ -238,7 +238,7 @@ void CHtmlElementImg::Refresh()
 	
 	if(iImage
 			&& !iImage->IsLoaded() 
-			&& !iOwner->Impl()->iState.IsSet(EHCSDisplayOnly)) {
+			&& !iOwner->Impl()->iState.IsSet(EHCSInTransition)) {
 		iImage->AddLoadedEventSubscriber(this);
 	}
 

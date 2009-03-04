@@ -1,7 +1,7 @@
 #summary Getting Started
 
 =Modify MMP file=
-HtmlControl is provided as static library, so add a statement in MMP file like this,
+HtmlControl is provided as static library, so add the following statement to your MMP file:
 {{{
 STATICLIBRARY htmlcontrol.lib
 }}}
@@ -316,19 +316,13 @@ list->SetProperty(KHStrListEmptyHtml, KEmptyHtml);
 }}}
 
 =Using Transition=
-Transition is the effect on content change. There are two transition effects built in CHtmlControl:
- * CSlideTransition   Slide horizontally or vertically effect.
- * CFadeTransition    Fade in effect。
+Transition is the effect on content change. There are 8 transition effects built in CHtmlControl.
 
 The following example shows how simple is to use transition class. When user press the left key, the screen will slide from right to left.
 
 {{{
-#include <html\slidetrans.h>
+#include <html\transition.h>
 
-iSlideTransition = CSlideTransition::NewL(iControl);
-}}}
-
-{{{
 _LIT(KHtml, "<div id='a'>Hello world</a>");
 iControl->AppendContentL(KHtml);
 iControl->RefreshAndDraw();
@@ -344,7 +338,7 @@ TKeyResponse CSomeClass::OfferKeyEventL(const TKeyEvent& aKeyEvent, TEventCode a
      _LIT(KHtml, "Another Page");
      iControl->AppendContentL(KHtml);
 
-     iSlideTransition->StartL(CSlideTransition::ESlideLeft);
+     iControl->Tansition()->Perform(iControl->Body(), MTransition::ESlideLeft, 200*1000, 5);
 
      return EKeyWasConsumed;
   }

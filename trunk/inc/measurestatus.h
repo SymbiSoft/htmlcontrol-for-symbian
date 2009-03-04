@@ -41,7 +41,7 @@ public:
 	void NewLine(TBool aForce=EFalse);
 	inline TInt LineNumber() const;
 	inline THcLineInfo& LineInfo(TInt aLineNumber);
-	inline THcLineInfo& CurrenTHcLineInfo();
+	inline THcLineInfo& CurrentLineInfo();
 	
 	void WrapTextL(const TDesC& aSource, TInt aFirstLineWidth, TInt aOtherLineWidth, const CFont& aFont, CArrayFix<TPtrC>& aWrappedArray);
 	inline TBool CanWrapText() const;
@@ -98,7 +98,7 @@ inline THcLineInfo& CHcMeasureStatus::LineInfo(TInt aLineNumber)
 	return (*iLines)[aLineNumber];
 }
 
-inline THcLineInfo& CHcMeasureStatus::CurrenTHcLineInfo()
+inline THcLineInfo& CHcMeasureStatus::CurrentLineInfo()
 {
 	return (*iLines)[iLineNumber];
 }

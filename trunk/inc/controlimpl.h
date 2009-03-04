@@ -15,11 +15,13 @@ class CHtmlElementImpl;
 class CHtmlElementDiv;
 class CHtmlElementBody;
 class CHcScrollbar;
+class CWritableBitmap;
+class CTransition;
 
 enum THtmlControlState
 {
 	EHCSAutoFocusDisabled,
-	EHCSDisplayOnly,
+	EHCSInTransition,
 	EHCSFocusValid,
 	EHCSSlideOccured,
 	EHCSNeedRefresh,
@@ -35,14 +37,15 @@ public:
 	void CreateBodyL();	
 	
 	inline CHtmlElementBody* Body() const;
-	inline const CFbsBitmap* OffScreenBitmap() const;
-	inline TInt ContentVersion() const;
+	inline CWritableBitmap* OffScreenBitmap() const;
+	inline void SetOffScreenBitmap(CWritableBitmap* aBitmap);
 	inline CHtmlCtlEnv* Env() const;
+	inline CTransition* Transition() const;
 	
-	void Refresh(TInt aOption=0);
+	void Refresh(TBool aInTransition=EFalse);
 	void DrawOffscreen();
 	void Draw(const TRect& aRect);
-	
+
 	CHtmlElementImpl* FocusedElement() const;
 	void SetFocusTo(CHtmlElementImpl* aElement);
 	void ScrollToView(CHtmlElementImpl* aElement);
@@ -100,7 +103,7 @@ private:
 			EScrolling,
 			EEnding
 		};
-		TInt iState;
+		TState iState;
 		TInt iScrollPos;
 		TInt iTextWidth;
 		TRect iBox;
@@ -155,13 +158,15 @@ private:
 	void QuickScroll(CHtmlElementDiv* aContainer);
 	void DoScrollText();
 	
+	//transition
+	void DrawTransition();
+	
 private:	
 	CHtmlControl* iControl;
 	CHtmlElementBody* iBody;
 	CHcStyleSheet* iStyleSheet;
 	CHcStyle* iTempUsageStyle;
-	CFbsBitmap* iOffScreenBitmap;
-	TUint32 iContentVersion;
+	CWritableBitmap* iOffScreenBitmap;
 	RPointerArray<CCoeControl> iControls;
 	RArray<THcLineInfo> iLines;
 	TTextScrollInfo iTextScrollInfo;
@@ -172,6 +177,7 @@ private:
 	CTimer* iTextScrollTimer;
 	CHtmlCtlEnv* iEnv;
 	MHtmlCtlEventObserver* iObserver;
+	CTransition* iTransition;
 };
 
 inline CHtmlElementBody* CHtmlControlImpl::Body() const
@@ -194,14 +200,14 @@ inline RArray<THcLineInfo>& CHtmlControlImpl::Lines()
 	return iLines;
 }
 
-inline const CFbsBitmap* CHtmlControlImpl::OffScreenBitmap() const
+inline CWritableBitmap* CHtmlControlImpl::OffScreenBitmap() const
 {
 	return iOffScreenBitmap;
 }
 
-inline TInt CHtmlControlImpl::ContentVersion() const
+inline void CHtmlControlImpl::SetOffScreenBitmap(CWritableBitmap* aBitmap)
 {
-	return iContentVersion;
+	iOffScreenBitmap = aBitmap;
 }
 
 inline CHtmlCtlEnv* CHtmlControlImpl::Env() const
@@ -212,6 +218,11 @@ inline CHtmlCtlEnv* CHtmlControlImpl::Env() const
 inline void CHtmlControlImpl::SetEventObserver(MHtmlCtlEventObserver* aObserver)
 {
 	iObserver = aObserver;
+}
+
+inline CTransition* CHtmlControlImpl::Transition() const
+{
+	return iTransition;
 }
 
 #endif

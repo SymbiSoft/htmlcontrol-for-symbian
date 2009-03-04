@@ -240,7 +240,7 @@ void CHtmlElementImpl::DoMeasure(CHcMeasureStatus& aStatus, const CHcStyle& aSty
 		aStatus.iPosition.iX = iPosition.iX + width + margins.iRight;
 	
 	if(!aStyle.IsSet(CHcStyle::ETop))
-		aStatus.CurrenTHcLineInfo().SetHeightIfGreater(iLineHeight);
+		aStatus.CurrentLineInfo().SetHeightIfGreater(iLineHeight);
 
 	if(aStyle.IsSet(CHcStyle::EClearRight))
 		aStatus.NewLine();

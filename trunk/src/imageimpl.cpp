@@ -665,7 +665,7 @@ CHcDecodeProcess* CHcDecodeProcess::NewL(CHcImageGeneral* aImage)
 	return self;
 }
 
-CHcDecodeProcess::CHcDecodeProcess(CHcImageGeneral* aImage):CActive(EPriorityNormal),iImage(aImage)
+CHcDecodeProcess::CHcDecodeProcess(CHcImageGeneral* aImage):CActive(EPriorityLow),iImage(aImage)
 {
 	CActiveScheduler::Add(this);	
 }
@@ -717,12 +717,11 @@ void CHcDecodeProcess::ContinueDecode()
 	);
 	if(error!=KErrNone) 
 	{
+#ifdef __WINSCW__
+		RDebug::Print(_L("CHcDecodeProcess: decode failed %i: %S"), error, &iImage->iLocation.iFileName);
+#endif
 		iImage->iError = error;
 		delete this;
-		
-#ifdef __WINSCW__
-		RDebug::Print(_L("CHcDecodeProcess: decode failed %i: %S"), iImage->iError, &iImage->iLocation.iFileName);
-#endif
 	}
 }
 
@@ -754,12 +753,12 @@ void CHcDecodeProcess::RunL()
 	iImage->iLoaded = ETrue;
 	if(iStatus!=KErrNone) 
 	{
+#ifdef __WINSCW__
+		RDebug::Print(_L("CHcDecodeProcess: decode failed %i: %S"), iStatus.Int(), &iImage->Location().iFileName);
+#endif
+		
 		iImage->iError = iStatus.Int();
 		delete this;
-		
-#ifdef __WINSCW__
-		RDebug::Print(_L("CHcDecodeProcess: decode failed %i: %S"), iImage->iError, &iImage->Location().iFileName);
-#endif
 	}
 	else 
 	{

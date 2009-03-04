@@ -20,12 +20,11 @@
 
 //Forward declaration
 class CHtmlControlImpl;
+class MTransition;
 
 #define KParserFlagsIgnoreFontSize 		0x0001
 #define KParserFlagsRemoveRedundantBr	0x0002
 #define KParserFlagsIgnoreLayout	 	0x0004
-
-#define KRefreshOptionDisplayOnly 0x0001
 
 enum TInsertPosition
 {
@@ -61,9 +60,8 @@ public:
 	
 	/**
 	 * Refresh the control layout. Must call after change the content or set element properties.
-	 * @param aOptions see KRefreshOptionXXXX.
 	 */
-	void Refresh(TInt aOption=0);
+	void Refresh();
 	
 	/**
 	 * Refresh() + DrawNow()
@@ -145,20 +143,14 @@ public:
 	void SetEventObserver(MHtmlCtlEventObserver* aObserver);
 	
 	/**
-	 * Draw to the offscreen bitmap.
-	 */
-	void DrawOffscreen() const;
-	
-	/**
 	 * Get offscreen bitmap.
 	 */
 	const CFbsBitmap* OffScreenBitmap() const;
 	
 	/**
-	 * Get document version. It is increasing after every change of the document.
-	 * @return document version.
+	 * Get transition interface.
 	 */
-	TInt ContentVersion() const;
+	MTransition* Transition() const;
 	
 	inline CHtmlControlImpl* Impl() const;
 	inline CWindowGc& SystemGc() const;

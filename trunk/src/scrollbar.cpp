@@ -322,23 +322,46 @@ CHcScrollbarDrawer::~CHcScrollbarDrawer()
 			pool.Remove(iComponents[i].iImage);
 	}
 	
-	delete iBgMiddleBmp;
-	delete iBgMiddleBmpMask;
-	delete iHandleMiddleBmp;
-	delete iHandleMiddleBmpMask;
+	delete iBgBmp;
+	delete iBgBmpMask;
+	delete iHandleBmp;
+	delete iHandleBmpMask;
 }
 
 #ifdef __SERIES60_3_ONWARDS__
-static TInt DetectSkinImageHeight(CWritableBitmap* aBitmap)
+static void DrawScrollSkinImage(const TAknsItemID& aItemID, CWritableBitmap* aBitmap, CWritableBitmap* aBitmapMask, TSize& aSize)
 {
-	TSize size = aBitmap->SizeInPixels();
+	TRect rect = TRect(TPoint(0,0), aSize);
+	aBitmap->Gc().SetBrushColor(TRgb(0x123456));
+	aBitmap->Gc().Clear(rect);	
+	aBitmapMask->Gc().SetBrushColor(TRgb::Gray256(0));
+	aBitmapMask->Gc().Clear(rect);
+	
+	CAknsBasicBackgroundControlContext* ctx = CAknsBasicBackgroundControlContext::NewL(aItemID,	rect, EFalse );
+	AknsDrawUtils::DrawBackground( AknsUtils::SkinInstance(),
+                                 ctx,
+                                 NULL,
+                                 aBitmap->Gc(),
+                                 rect.iTl,
+                                 rect,
+                                 KAknsDrawParamRGBOnly);
+	AknsDrawUtils::DrawBackground( AknsUtils::SkinInstance(),
+                                 ctx,
+                                 NULL,
+                                 aBitmapMask->Gc(),
+                                 rect.iTl,
+                                 rect,
+                                 KAknsSDMAlphaOnly);
+	delete ctx;
+	
+	TSize ret;
 	TInt last = 0;
 	TBitmapUtil bu(aBitmap);
-	bu.Begin(TPoint(size.iWidth-1,size.iHeight-1));
-	for(TInt i=size.iHeight-1;i>=0;i--) 
+	bu.Begin(TPoint(aSize.iWidth-1,aSize.iHeight-1));
+	for(TInt i=aSize.iHeight-1;i>=0;i--) 
 	{
 		bu.SetPos(TPoint(0, i));
-		for(TInt j=0;j<size.iWidth;j++) 
+		for(TInt j=0;j<aSize.iWidth;j++) 
 		{
 			TUint32 c = bu.GetPixel();
 			if(c!=0x563412)
@@ -350,8 +373,31 @@ static TInt DetectSkinImageHeight(CWritableBitmap* aBitmap)
 		}
 	}
 out:
+	ret.iHeight = last;
+	last = 0;
+	
+	bu.SetPos(TPoint(aSize.iWidth-1,aSize.iHeight-1));
+	for(TInt i=aSize.iWidth-1;i>=0;i--) 
+	{
+		bu.SetPos(TPoint(i,0));
+		for(TInt j=0;j<aSize.iHeight;j++) 
+		{
+			TUint32 c = bu.GetPixel();
+			if(c!=0x563412)
+			{
+				last = i+1;
+				goto out2;
+			}
+			bu.IncYPos();
+		}
+	}
+	
+out2:
+	ret.iWidth = last;
+	
 	bu.End();
-	return last;
+	
+	aSize = ret;
 }
 #endif
 
@@ -381,10 +427,10 @@ void CHcScrollbarDrawer::ConstructL()
 
 	TSize size = HtmlCtlUtils::ScreenSize(EOrientationPortrait);
 	size.iWidth = iDefaultScrollBarBreadth;
-	iBgMiddleBmp = CWritableBitmap::NewL(size, EColor16M);
-	iBgMiddleBmpMask = CWritableBitmap::NewL(size, EGray256);
-	iHandleMiddleBmp = CWritableBitmap::NewL(size, EColor16M);
-	iHandleMiddleBmpMask = CWritableBitmap::NewL(size, EGray256);
+	iBgBmp = CWritableBitmap::NewL(size, EColor16M);
+	iBgBmpMask = CWritableBitmap::NewL(size, EGray256);
+	iHandleBmp = CWritableBitmap::NewL(size, EColor16M);
+	iHandleBmpMask = CWritableBitmap::NewL(size, EGray256);
 #endif
 
 #ifdef __UIQ__
@@ -403,77 +449,48 @@ void CHcScrollbarDrawer::InitDrawer()
 	iArrowHeight = 0;
 	
 #ifdef __SERIES60_3_ONWARDS__	
-	CAknsBasicBackgroundControlContext* ctx;
+	CWritableBitmap* helper = CWritableBitmap::NewL(iBgBmp->SizeInPixels(), EColor16M);
+	CWritableBitmap* helperMask = CWritableBitmap::NewL(iBgBmp->SizeInPixels(), EGray256);
+	TRect rect;
 	
-	iBgMiddleBmp->Gc().SetBrushColor(TRgb(0x123456));
-	iBgMiddleBmp->Gc().Clear();	
-	iBgMiddleBmpMask->Gc().SetBrushColor(TRgb::Gray256(0));
-	iBgMiddleBmpMask->Gc().Clear();
+	TSize sizeTop = TSize(iWidth, iWidth);
+	DrawScrollSkinImage(KAknsIIDQsnCpScrollBgTop, helper, helperMask, sizeTop);
+	rect = TRect(TPoint(0,0),TSize(iWidth, sizeTop.iHeight));
+	iBgBmp->Gc().DrawBitmap(rect, helper, TRect(TPoint(0,0), sizeTop));
+	iBgBmpMask->Gc().DrawBitmap(rect, helperMask, TRect(TPoint(0,0), sizeTop));
 	
-	TRect rect = TRect(TPoint(0,0), iBgMiddleBmp->SizeInPixels());
+	TSize sizeMid = TSize(iWidth ,100);
+	DrawScrollSkinImage(KAknsIIDQsnCpScrollBgMiddle, helper, helperMask, sizeMid);
+	rect = TRect(TPoint(0,sizeTop.iHeight), TSize(iWidth, iBgBmp->SizeInPixels().iHeight));
+	iBgBmp->Gc().DrawBitmap(rect, helper, TRect(TPoint(0,0), sizeMid));
+	iBgBmpMask->Gc().DrawBitmap(rect, helperMask, TRect(TPoint(0,0), sizeMid));
 	
-	ctx = CAknsBasicBackgroundControlContext::NewL(KAknsIIDQsnCpScrollBgMiddle,	rect, EFalse );
-	AknsDrawUtils::DrawBackground( AknsUtils::SkinInstance(),
-                                 ctx,
-                                 NULL,
-                                 iBgMiddleBmp->Gc(),
-                                 rect.iTl,
-                                 rect,
-                                 KAknsDrawParamRGBOnly);
-	AknsDrawUtils::DrawBackground( AknsUtils::SkinInstance(),
-                                 ctx,
-                                 NULL,
-                                 iBgMiddleBmpMask->Gc(),
-                                 rect.iTl,
-                                 rect,
-                                 KAknsSDMAlphaOnly);
-	delete ctx;
-	TInt h = DetectSkinImageHeight(iBgMiddleBmp);
-	if(h>0 && h<rect.Size().iHeight)
-	{
-		TRect sourceRect = TRect(TPoint(0,0),TSize(iWidth, h));
-		TPoint pt(0, h);	
-		while(pt.iY < rect.Size().iHeight)
-		{
-			iBgMiddleBmp->Gc().BitBlt(pt, iBgMiddleBmp, sourceRect);
-			iBgMiddleBmpMask->Gc().BitBlt(pt, iBgMiddleBmpMask, sourceRect);
-			pt.iY += h;
-		}
-	}
+	TSize sizeBot = TSize(iWidth, iWidth);
+	DrawScrollSkinImage(KAknsIIDQsnCpScrollBgBottom, helper, helperMask, sizeBot);
+	rect = TRect(TPoint(0, iBgBmp->SizeInPixels().iHeight-sizeBot.iHeight), TSize(iWidth, sizeBot.iHeight));
+	iBgBmp->Gc().DrawBitmap(rect, helper, TRect(TPoint(0,0), sizeBot));
+	iBgBmpMask->Gc().DrawBitmap(rect, helperMask, TRect(TPoint(0,0), sizeBot));
 	
-	iHandleMiddleBmp->Gc().SetBrushColor(TRgb(0x123456));
-	iHandleMiddleBmp->Gc().Clear();
-	iHandleMiddleBmpMask->Gc().SetBrushColor(TRgb::Gray256(0));
-	iHandleMiddleBmpMask->Gc().Clear();
+	sizeTop = TSize(iWidth, iWidth);
+	DrawScrollSkinImage(KAknsIIDQsnCpScrollHandleTop, helper, helperMask, sizeTop);
+	rect = TRect(TPoint(0,0), TSize(iWidth, sizeTop.iHeight));
+	iHandleBmp->Gc().DrawBitmap(rect, helper, TRect(TPoint(0,0), sizeTop));
+	iHandleBmpMask->Gc().DrawBitmap(rect, helperMask, TRect(TPoint(0,0), sizeTop));
 	
-	ctx = CAknsBasicBackgroundControlContext::NewL(KAknsIIDQsnCpScrollHandleMiddle,	rect, EFalse );
-	AknsDrawUtils::DrawBackground( AknsUtils::SkinInstance(),
-                                 ctx,
-                                 NULL,
-                                 iHandleMiddleBmp->Gc(),
-                                 rect.iTl,
-                                 rect,
-                                 KAknsDrawParamRGBOnly);
-	AknsDrawUtils::DrawBackground( AknsUtils::SkinInstance(),
-                                 ctx,
-                                 NULL,
-                                 iHandleMiddleBmpMask->Gc(),
-                                 rect.iTl,
-                                 rect,
-                                 KAknsSDMAlphaOnly);
-	delete ctx;
-	h = DetectSkinImageHeight(iHandleMiddleBmp);
-	if(h>0 && h< rect.Size().iHeight)
-	{
-		TRect sourceRect = TRect(TPoint(0,0),TSize(iWidth, h));
-		TPoint pt(0, h);
-		while(pt.iY < rect.Size().iHeight)
-		{
-			iHandleMiddleBmp->Gc().BitBlt(pt, iHandleMiddleBmp, sourceRect);
-			iHandleMiddleBmpMask->Gc().BitBlt(pt, iHandleMiddleBmpMask, sourceRect);
-			pt.iY += h;
-		}
-	}
+	sizeMid = TSize(iWidth, 100);
+	DrawScrollSkinImage(KAknsIIDQsnCpScrollHandleMiddle, helper, helperMask, sizeMid);
+	rect = TRect(TPoint(0,sizeTop.iHeight), TSize(iWidth, iHandleBmp->SizeInPixels().iHeight));
+	iHandleBmp->Gc().DrawBitmap(rect, helper, TRect(TPoint(0,0), sizeMid));
+	iHandleBmpMask->Gc().DrawBitmap(rect, helperMask, TRect(TPoint(0,0), sizeMid));
+	
+	sizeBot = TSize(iWidth, iWidth);
+	DrawScrollSkinImage(KAknsIIDQsnCpScrollHandleBottom, helper, helperMask, sizeBot);
+	rect = TRect(TPoint(0, iHandleBmp->SizeInPixels().iHeight-sizeBot.iHeight), TSize(iWidth, sizeBot.iHeight));
+	iHandleBmp->Gc().DrawBitmap(rect, helper, TRect(TPoint(0,0), sizeBot));
+	iHandleBmpMask->Gc().DrawBitmap(rect, helperMask, TRect(TPoint(0,0), sizeBot));
+	
+	delete helper;
+	delete helperMask;
 #endif
 	
 #ifdef __UIQ__
@@ -559,47 +576,31 @@ void CHcScrollbarDrawer::Draw(CFbsBitGc& aGc, const CHcScrollbar& aScrollbar) co
 	aGc.SetBrushStyle(CGraphicsContext::ENullBrush);
 
 #ifdef __SERIES60_3_ONWARDS__
-	TRect rect1 = aScrollbar.iRect;
-	rect1.iTl.iX -= 1;
-	rect1.iBr.iX -= 1;
-	rect1.iBr.iY = rect1.iTl.iY + Min(iWidth, rect1.Height()/2);
-	AknsDrawUtils::DrawCachedImage(AknsUtils::SkinInstance(), aGc, rect1, KAknsIIDQsnCpScrollBgTop);
+	TRect rect;
+	TPoint pt;
 	
-	TRect rect2 = aScrollbar.iRect;
-	rect2.iTl.iX -= 1;
-	rect2.iBr.iX -= 1;
-	rect2.iTl.iY = rect2.iBr.iY - Min(iWidth, rect2.Height()/2);
-	AknsDrawUtils::DrawCachedImage(AknsUtils::SkinInstance(), aGc, rect2, KAknsIIDQsnCpScrollBgBottom);
+	rect = aScrollbar.iRect;
+	rect.iTl.iX -= 1;
+	rect.iBr.iX -= 1;
+	rect.iBr.iY = rect.iTl.iY + aScrollbar.iRect.Height()/2;
+	aGc.AlphaBlendBitmaps(rect.iTl, iBgBmp, TRect(TPoint(0,0), rect.Size()), iBgBmpMask, TPoint(0,0));
 	
-	if(rect2.iTl.iY>rect1.iBr.iY)
-	{
-		rect1.iTl.iY = rect1.iBr.iY;
-		rect1.iBr.iY = rect2.iTl.iY;
-
-		aGc.AlphaBlendBitmaps(rect1.iTl, iBgMiddleBmp, TRect(TPoint(0,0), 
-				rect1.Size()), iBgMiddleBmpMask, TPoint(0,0));
-	}
+	rect.iTl.iY = rect.iBr.iY;
+	rect.iBr.iY = aScrollbar.iRect.iBr.iY;
+	pt = TPoint(0, iBgBmp->SizeInPixels().iHeight-rect.Height());
+	aGc.AlphaBlendBitmaps(rect.iTl, iBgBmp, TRect(pt, rect.Size()), iBgBmpMask, pt);
 	
-	rect1 = aScrollbar.iThumbRect;
-	rect1.iTl.iX -= 1;
-	rect1.iBr.iX -= 1;
-	rect1.iBr.iY = rect1.iTl.iY + Min(iWidth, rect1.Height()/2);
-	AknsDrawUtils::DrawCachedImage(AknsUtils::SkinInstance(), aGc, rect1, KAknsIIDQsnCpScrollHandleTop);
+	rect = aScrollbar.iThumbRect;
+	rect.iTl.iX -= 1;
+	rect.iBr.iX -= 1;
+	rect.iBr.iY = rect.iTl.iY + aScrollbar.iThumbRect.Height()/2;
+	aGc.AlphaBlendBitmaps(rect.iTl, iHandleBmp, TRect(TPoint(0,0), rect.Size()), iHandleBmpMask, TPoint(0,0));
 	
-	rect2 = aScrollbar.iThumbRect;
-	rect2.iTl.iX -= 1;
-	rect2.iBr.iX -= 1;
-	rect2.iTl.iY = rect2.iBr.iY - Min(iWidth, rect2.Height()/2);
-	AknsDrawUtils::DrawCachedImage(AknsUtils::SkinInstance(), aGc, rect2, KAknsIIDQsnCpScrollHandleBottom);	
+	rect.iTl.iY = rect.iBr.iY;
+	rect.iBr.iY = aScrollbar.iThumbRect.iBr.iY;
+	pt = TPoint(0, iHandleBmp->SizeInPixels().iHeight-rect.Height());
+	aGc.AlphaBlendBitmaps(rect.iTl, iHandleBmp, TRect(pt, rect.Size()), iHandleBmpMask, pt);
 	
-	if(rect2.iTl.iY>rect1.iBr.iY)
-	{
-		rect1.iTl.iY = rect1.iBr.iY;
-		rect1.iBr.iY = rect2.iTl.iY;
-
-		aGc.AlphaBlendBitmaps(rect1.iTl, iHandleMiddleBmp, TRect(TPoint(0,0), 
-				rect1.Size()), iHandleMiddleBmpMask, TPoint(0,0));
-	}
 #endif
 		
 #ifdef __SERIES60_3_DOWNWARDS__
