@@ -129,10 +129,10 @@ private:
 	TComponentImage iComponents[8];
 	TBool iCustomDraw;
 
-	CWritableBitmap* iBgMiddleBmp;
-	CWritableBitmap* iBgMiddleBmpMask;
-	CWritableBitmap* iHandleMiddleBmp;
-	CWritableBitmap* iHandleMiddleBmpMask;
+	CWritableBitmap* iBgBmp;
+	CWritableBitmap* iBgBmpMask;
+	CWritableBitmap* iHandleBmp;
+	CWritableBitmap* iHandleBmpMask;
 	
 	friend class CHcScrollbar;
 };

@@ -19,8 +19,8 @@
 TBool HtmlCtlUtils::IsOrientationLandscape() 
 {
 #ifdef __SERIES60_3_ONWARDS__
-	TSize size;
-	return AknLayoutUtils::LayoutMetricsSize(AknLayoutUtils::EControlPaneBottom, size);
+	TSize size = HtmlCtlUtils::ScreenSize(EOrientationCurrent);
+	return size.iWidth>size.iHeight;
 #endif
 	
 #ifdef __SERIES60_3_DOWNWARDS__

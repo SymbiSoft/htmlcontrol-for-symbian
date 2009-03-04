@@ -11,6 +11,7 @@
 #include "list.h"
 #include "utils.h"
 #include "writablebitmap.h"
+#include "transimpl.h"
 
 #include "element_body.h"
 #include "element_div.h"
@@ -45,6 +46,7 @@ CHtmlControlImpl::~CHtmlControlImpl()
 	
 	iObserver = NULL;
 	delete iOffScreenBitmap;
+	delete iTransition;
 	
 	FreeElementList(iBody, iBody->iPrev);
 	iEnv->ImagePool().RemoveLoadedEventSubscriber(this);
@@ -72,6 +74,8 @@ void CHtmlControlImpl::ConstructL()
 	
 	iStyleSheet = new (ELeave) CHcStyleSheet();
 	iTempUsageStyle = new (ELeave) CHcStyle();
+	
+	iTransition = CTransition::NewL();
 }
 
 void  CHtmlControlImpl::CreateBodyL()
@@ -206,7 +210,7 @@ void CHtmlControlImpl::FireEventL(const THtmlCtlEvent& aEvent)
 
 void CHtmlControlImpl::OnTimerL(TInt aError, TInt aIndex)
 {
-	if(aError!=KErrNone)
+	if(aError!=KErrNone || iState.IsSet(EHCSInTransition))
 		return;
 
 	if(aIndex==0) //iDelayRefreshTimer
@@ -224,7 +228,7 @@ void CHtmlControlImpl::NotifyImageLoaded(CHcImage*)
 		iDelayRefreshTimer->After(50*1000);
 }
 
-void CHtmlControlImpl::Refresh(TInt aOption)
+void CHtmlControlImpl::Refresh(TBool aInTransition)
 {
 	if(!iOffScreenBitmap)
 	{
@@ -235,12 +239,14 @@ void CHtmlControlImpl::Refresh(TInt aOption)
 				CEikonEnv::Static()->ScreenDevice()->DisplayMode());
 	}
 	else if(iOffScreenBitmap->SizeInPixels()!=iControl->Size())
-		((CWritableBitmap*)iOffScreenBitmap)->ResizeWithGcL(iControl->Size());
+		iOffScreenBitmap->ResizeWithGcL(iControl->Size());
 	
 	if(iDelayRefreshTimer->IsActive())
 		iDelayRefreshTimer->Cancel();
 	if(iTextScrollTimer->IsActive())
 		iTextScrollTimer->Cancel();
+	if(iTransition && iTransition->IsActive())
+		iTransition->Cancel();
 	
 	if(!iState.IsSet(EHCSFocusValid))
 	{
@@ -249,8 +255,9 @@ void CHtmlControlImpl::Refresh(TInt aOption)
 		
 		SetFocusTo(iBody);
 	}
-
-	iState.Assign(EHCSDisplayOnly, aOption & KRefreshOptionDisplayOnly);
+	
+	iState.Assign(EHCSInTransition, aInTransition);
+	
 	iEnv->MeasureStatus().Measure(this);
 	
 	CHtmlElementImpl* e = iBody;
@@ -265,17 +272,16 @@ void CHtmlControlImpl::Refresh(TInt aOption)
 	
 	iState.Clear(EHCSNeedRefresh);
 	iState.Set(EHCSNeedRedraw);
-	iContentVersion++;
 }
 
 void CHtmlControlImpl::DrawOffscreen()
 {
-	((CWritableBitmap*)iOffScreenBitmap)->Gc().CancelClippingRect();
+	iOffScreenBitmap->Gc().CancelClippingRect();
 	CHtmlElementImpl* current = iBody;
 	do
 	{
 		if(!current->iState.IsSet(EElementStateHidden))
-			current->Draw(((CWritableBitmap*)iOffScreenBitmap)->Gc());
+			current->Draw(iOffScreenBitmap->Gc());
 		current = current->iNext;
 	}
 	while(current && current!=iBody);
@@ -768,7 +774,7 @@ void CHtmlControlImpl::UpdateVFEs(CHtmlElementDiv* aContainer)
 	{
 		if(e->TypeId()==EElementTypeA)
 		{
-			if(e->CanFocus())
+			if(e->CanFocus() && !e->iState.IsSet(EElementStateHidden))
 			{
 				link = (CHtmlElementA*) e;
 				linkRect = TRect();
@@ -789,7 +795,7 @@ void CHtmlControlImpl::UpdateVFEs(CHtmlElementDiv* aContainer)
 			continue;
 		}
 		
-		if((e->CanFocus() || link) && HcUtils::Intersects(e->Rect(), displayRect))
+		if((e->CanFocus() && !e->iState.IsSet(EElementStateHidden) || link) && HcUtils::Intersects(e->Rect(), displayRect))
 		{
 			if(link)
 			{
@@ -1129,13 +1135,17 @@ void CHtmlControlImpl::HandleKeyDown(CHtmlElementDiv* aContainer, TBool aScrolle
 }
 
 TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, const TKeyEvent &aKeyEvent, TEventCode aType) 
-{
-	if(aContainer->iFocusedElement) 
+{	
+	if(aContainer->iFocusedElement
+		&& aContainer->iFocusedElement->CanFocus() 
+		&& !aContainer->iFocusedElement->iState.IsSet(EElementStateHidden))
 	{
 		if(aContainer->iFocusedElement->TypeId()==EElementTypeDiv
 				&& ((CHtmlElementDiv*)aContainer->iFocusedElement)->IsContainer())
+		{
 			if(OfferKeyEventL2((CHtmlElementDiv*)aContainer->iFocusedElement, aKeyEvent, aType)==EKeyWasConsumed)
 				return EKeyWasConsumed;
+		}
 		 
 		if(VisibilityTest(aContainer->iFocusedElement, aContainer->iDisplayRect)
 				&& aContainer->iFocusedElement->OfferKeyEventL(aKeyEvent, aType)==EKeyWasConsumed)
@@ -1194,28 +1204,24 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 
 TKeyResponse CHtmlControlImpl::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode aType) 
 {
-	if(iState.IsSet(EHCSDisplayOnly))
-	{
-		
-	}
-	else
-	{
-		TRAPD(error,
-			OfferKeyEventL2(iBody, aKeyEvent, aType);
-		);
-		
-		if(error==KErrAbort)
-			return EKeyWasConsumed;
-		else
-			User::LeaveIfError(error);
-		
-		if(iState.IsSet(EHCSNeedRefresh))
-			Refresh();
-		
-		if(iState.IsSet(EHCSNeedRedraw))
-			iControl->DrawNow();
-	}
+	if(iState.IsSet(EHCSInTransition))
+		return EKeyWasConsumed;
 	
+	TRAPD(error,
+		OfferKeyEventL2(iBody, aKeyEvent, aType);
+	);
+	
+	if(error==KErrAbort)
+		return EKeyWasConsumed;
+	else
+		User::LeaveIfError(error);
+	
+	if(iState.IsSet(EHCSNeedRefresh))
+		Refresh();
+	
+	if(iState.IsSet(EHCSNeedRedraw))
+		iControl->DrawNow();
+
 	return EKeyWasConsumed;
 }
 
@@ -1266,41 +1272,59 @@ void CHtmlControlImpl::GetElementByPosition(CHtmlElementDiv* aTopContainer, cons
 		return;
 	}
 	
-	CHtmlElementImpl* e = aTopContainer->iNext;
+	CHtmlElementImpl* e = aTopContainer->iEnd->iPrev;
 	CHtmlElementA* link = NULL;
 	aElement = aTopContainer;
 	
-	while(e!=aTopContainer->iEnd)
+	while(e!=aTopContainer)
 	{
-		if(e->TypeId()==EElementTypeA)
+		if(e->TypeId()==EElementTypeAEnd)
 		{
-			if(e->CanFocus())
-				link = (CHtmlElementA*) e;
-			e = e->iNext;
+			link = ((CHtmlElementAEnd*)e)->iStart;
+			if(!link->CanFocus() || link->iState.IsSet(EElementStateHidden))
+				link = NULL;
+			e = e->iPrev;
 			continue;
 		}
-		else if(e->TypeId()==EElementTypeAEnd)
+		else if(e->TypeId()==EElementTypeA)
 		{
 			link = NULL;
-			e = e->iNext;
+			e = e->iPrev;
 			continue;
 		}
-		
-		if((e->CanFocus() || link) && HitTest(e, aPoint))
+		else if(e->TypeId()==EElementTypeDivEnd)
 		{
-			if(e->TypeId()==EElementTypeDiv && ((CHtmlElementDiv*)e)->IsContainer())
+			if(e->iParent->IsContainer())
 			{
-				GetElementByPosition((CHtmlElementDiv*)e, aPoint, aElement, aContainer, aArea);
-				return;
+				if(e->iParent->CanFocus()
+						&& !e->iParent->iState.IsSet(EElementStateHidden)
+						&& HitTest(e->iParent, aPoint))
+				{
+					GetElementByPosition(e->iParent, aPoint, aElement, aContainer, aArea);
+					return;
+				}
+				else
+				{
+					e = e->iParent->iPrev;
+					continue;
+				}
 			}
+			else
+			{
+				e = e->iPrev;
+				continue;
+			}
+		}
 			
+		if((e->CanFocus() && !e->iState.IsSet(EElementStateHidden) || link) && HitTest(e, aPoint))
+		{
 			if(link)
 				aElement = link;
 			else
 				aElement = e;
 			break;
 		}
-		e = e->iNext;
+		e = e->iPrev;
 	}
 	
 	if(aTopContainer->iList && !aTopContainer->iList->IsEmpty())
@@ -1312,22 +1336,18 @@ void CHtmlControlImpl::GetElementByPosition(CHtmlElementDiv* aTopContainer, cons
 
 void CHtmlControlImpl::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 {
-	if(iState.IsSet(EHCSDisplayOnly))
-	{
-		
-	}
-	else
-	{
-		TRAPD(error,
-			HandlePointerEventL2(aPointerEvent);
-		);
-		
-		if(error==KErrAbort)
-			return;
-		else
-			User::LeaveIfError(error);
-	}
+	if(iState.IsSet(EHCSInTransition))
+		return;
 	
+	TRAPD(error,
+		HandlePointerEventL2(aPointerEvent);
+	);
+	
+	if(error==KErrAbort)
+		return;
+	else
+		User::LeaveIfError(error);
+
 	if(iState.IsSet(EHCSNeedRefresh))
 		Refresh();
 	
@@ -1522,5 +1542,6 @@ void CHtmlControlImpl::NotifyScrollPosChanged()
 	else if(!iState.IsSet(EHCSNeedRefresh))
 		QuickScroll(iTapInfo.iContainer);	
 }
+
 
 

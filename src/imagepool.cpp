@@ -33,7 +33,7 @@ CHcImagePool::~CHcImagePool()
 
 void CHcImagePool::ConstructL()
 {
-	iTimer = CHcTimer<CHcImagePool>::NewL(*this);
+	iTimer = CHcTimer<CHcImagePool>::NewL(*this,0,EPriorityLow);
 	iFsSession.Connect();
 	
 #ifdef __SERIES60_3_ONWARDS__

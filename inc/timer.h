@@ -5,10 +5,10 @@ template <class T>
 class CHcTimer : public CTimer
 {
 public:
-	static CHcTimer<T>* NewL(T& aOwner, TInt aIndex=0);
+	static CHcTimer<T>* NewL(T& aOwner, TInt aIndex=0, TInt aPriority=EPriorityStandard);
 	
 protected:
-	CHcTimer(T& aOwner, TInt aIndex);
+	CHcTimer(T& aOwner, TInt aIndex, TInt aPriority);
 	void RunL();
 	TInt RunError(TInt aError);
 	
@@ -18,9 +18,9 @@ private:
 };
 
 template <class T>
-CHcTimer<T>* CHcTimer<T>::NewL(T& aOwner, TInt aIndex) 
+CHcTimer<T>* CHcTimer<T>::NewL(T& aOwner, TInt aIndex, TInt aPriority) 
 {
-	CHcTimer<T>* self = new (ELeave)CHcTimer<T>(aOwner, aIndex);
+	CHcTimer<T>* self = new (ELeave)CHcTimer<T>(aOwner, aIndex, aPriority);
 	CleanupStack::PushL(self);
 	self->ConstructL();
 	CleanupStack::Pop();
@@ -28,7 +28,7 @@ CHcTimer<T>* CHcTimer<T>::NewL(T& aOwner, TInt aIndex)
 }
 
 template <class T>
-CHcTimer<T>::CHcTimer(T& aOwner, TInt aIndex):CTimer(EPriorityStandard),iOwner(aOwner), iIndex(aIndex)
+CHcTimer<T>::CHcTimer(T& aOwner, TInt aIndex, TInt aPriority):CTimer(aPriority),iOwner(aOwner), iIndex(aIndex)
 {
 	CActiveScheduler::Add(this);
 }

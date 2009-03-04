@@ -81,8 +81,7 @@ public:
 
 inline TBool CHtmlElementDiv::CanFocus() const
 {
-	return (iFlags.IsSet(EFocusing) || IsContainer()) 
-		&& !iFlags.IsSet(EDisabled) && !iState.IsSet(EElementStateHidden); 
+	return (iFlags.IsSet(EFocusing) || IsContainer()) && !iFlags.IsSet(EDisabled); 
 }
 
 inline TBool CHtmlElementDiv::IsContainer() const

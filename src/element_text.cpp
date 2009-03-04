@@ -232,7 +232,7 @@ void CHtmlElementText::Measure(CHcMeasureStatus& aStatus)
 	iStyle = aStatus.CurrentTextStyle();
 	const TRect& parentRect = iParent->iDisplayRect;
 
-	if(aStatus.iPosition.iX>=parentRect.iBr.iX && !IsBeginningWithBr() 
+	if(aStatus.iPosition.iX>=parentRect.iBr.iX && !IsBeginningWithBr()
 			|| iParent->LineWrapMode()!=ELWAuto)
 		aStatus.NewLine();
 	
@@ -261,10 +261,85 @@ void CHtmlElementText::Measure(CHcMeasureStatus& aStatus)
 		}
 	}
 	aStatus.SetCurrentLineAlign(iStyle.iAlign);
-	if(iParent->LineWrapMode()==ELWAuto)
-		MeasureMultiLine(aStatus);
-	else
-		MeasureSingleLine(aStatus);
+	iClippedRectIndex = -1;
+	for(TInt i=0;i<iBlockArray.Count();i++) 
+	{
+		CTextBlock* tb = iBlockArray[i];
+		THcTextStyle style = iStyle;
+		style.Add(tb->iStyle);
+		tb->iFont = iOwner->Impl()->GetFont(style);
+		TInt leftToParent = aStatus.iPosition.iX - iParent->iDisplayRect.iTl.iX;
+		if(leftToParent!=tb->iLeftToParent)
+		{
+			tb->ClearCache();
+			tb->iLeftToParent = leftToParent;
+		}
+		tb->iTopToBeginning = aStatus.iPosition.iY - iPosition.iY;
+		tb->iLineHeight = style.GetLineHeight(tb->iFont->HeightInPixels());
+		
+		if(iParent->LineWrapMode()==ELWScroll)
+		{
+			aStatus.CurrentLineInfo().SetHeightIfGreater(tb->iLineHeight);
+			for(TInt j=0;j<tb->iTextArray.Count();j++)
+			{
+				HBufC* text = tb->iTextArray[j];
+				if(text)
+					aStatus.iPosition.iX += tb->iFont->TextWidthInPixels(*text);
+			}
+		}
+		else
+		{
+			tb->WrapTextL(aStatus, iParent->LineWrapMode()==ELWClip);
+			if(tb->iLines->Count()>1)
+			{
+				TPtrC line = (*tb->iLines)[0];
+				aStatus.CurrentLineInfo().SetHeightIfGreater(tb->iLineHeight);
+				aStatus.iPosition.iX += tb->iFont->TextWidthInPixels(line);
+	
+				aStatus.NewLine(ETrue);
+				
+				iParent->iContentSize.iWidth = iParent->iDisplayRect.Width();
+				
+				line.Set((*tb->iLines)[tb->iLines->Count()-1]);
+				aStatus.CurrentLineInfo().iHeight = tb->iLineHeight;
+				if(line.Length()>0)
+					aStatus.iPosition.iX += tb->iFont->TextWidthInPixels(line) + 1;
+				else
+					aStatus.NewLine(ETrue);
+				aStatus.iPosition.iY += (tb->iLines->Count()-2)*tb->iLineHeight;
+			}
+			else if(tb->iLines->Count()==1)
+			{
+				TPtrC line = (*tb->iLines)[0];
+				aStatus.CurrentLineInfo().SetHeightIfGreater(tb->iLineHeight);
+				
+				if(line.Length()>0)
+					aStatus.iPosition.iX +=  tb->iFont->TextWidthInPixels(line) + 1;
+				else
+					aStatus.NewLine(ETrue);
+			}
+			
+			if(tb->iNewLineAtTheEnd)
+			{
+				aStatus.CurrentLineInfo().SetHeightIfGreater(tb->iLineHeight);
+				aStatus.NewLine(ETrue);
+			}
+			
+			tb->iLineNumber = aStatus.LineNumber();
+			if(!tb->FullWrapped())
+			{
+				if(!iOwner->Impl()->iState.IsSet(EHCSInTransition))
+					iOwner->Impl()->MeasureTextContinued();
+				break;
+			}
+		}
+	}
+	
+	if(iParent->LineWrapMode()==ELWScroll)
+		aStatus.NewLine(EFalse);
+
+	if(iStyle.IsSet(THcTextStyle::EAlign))
+		aStatus.NewLine(EFalse);
 	
 	if(aStatus.LineNumber()!=iLineNumber)
 	{
@@ -274,7 +349,7 @@ void CHtmlElementText::Measure(CHcMeasureStatus& aStatus)
 	else
 		iSize.iWidth = aStatus.iPosition.iX - iPosition.iX;
 	if(aStatus.iPosition.iX!=iParent->iDisplayRect.iTl.iX)
-		iSize.iHeight = aStatus.iPosition.iY - iPosition.iY + aStatus.CurrenTHcLineInfo().iHeight;
+		iSize.iHeight = aStatus.iPosition.iY - iPosition.iY + aStatus.CurrentLineInfo().iHeight;
 	else
 		iSize.iHeight = aStatus.iPosition.iY - iPosition.iY;
 	
@@ -287,21 +362,285 @@ void CHtmlElementText::Refresh()
 	if(iState.IsSet(EElementStateHidden))
 		return;
 	
-	if(iParent->LineWrapMode()==ELWAuto)
-		RefreshMultiLine();
-	else
+	if(iParent->LineWrapMode()==ELWScroll)
 		RefreshSingleLine();
+	else
+		RefreshMultiLine();
+}
+
+void CHtmlElementText::RefreshSingleLine()
+{
+	TInt totalWidth = 0;
+	iClippedRectIndex = -1;
+	const THcLineInfo& aLineInfo = iOwner->Impl()->LineInfo(iLineNumber);
+	for(TInt i=0;i<iBlockArray.Count();i++) 
+	{
+		CTextBlock* tb = iBlockArray[i];
+		for(TInt j=0;j<tb->iTextArray.Count();j++)
+		{
+			HBufC* text = tb->iTextArray[j];
+			if(text==NULL || text->Length()==0)
+				continue;
+			
+			TInt lineWidth = tb->iFont->TextWidthInPixels(*text);
+			TPoint pos(iParent->iDisplayRect.iTl.iX + totalWidth, tb->iTopToBeginning + iPosition.iY);
+
+			TRect rect;
+			rect.iTl.iX = pos.iX + aLineInfo.iXOffset;
+			rect.iTl.iY = pos.iY + (aLineInfo.iHeight - tb->iLineHeight)/2;
+			rect.iBr.iX = rect.iTl.iX + lineWidth;
+			
+	#ifdef __SYMBIAN_9_ONWARDS__
+			rect.iTl.iY +=  (tb->iLineHeight - tb->iFont->FontMaxHeight())/2 - 1;
+			rect.iBr.iY = rect.iTl.iY + tb->iFont->FontMaxHeight() + 2;
+	#else
+			rect.iTl.iY +=  (tb->iLineHeight - (tb->iFont->HeightInPixels()+2))/2 - 1;
+			rect.iBr.iY = rect.iTl.iY + (tb->iFont->HeightInPixels()+2) + 2;
+	#endif
+			
+			if(rect.iTl.iY>=iParent->iClippingRect.iTl.iY-rect.Height() 
+					&& rect.iBr.iY<=iParent->iClippingRect.iBr.iY+rect.Height())
+			{
+	#ifdef __SYMBIAN_9_ONWARDS__
+				tb->iBaseLine = (tb->iFont->FontMaxHeight() - tb->iFont->HeightInPixels())/2 + Max(tb->iFont->AscentInPixels(), tb->iFont->FontMaxAscent());
+	#else
+				tb->iBaseLine = 1 + tb->iFont->AscentInPixels();
+	#endif			
+				TTextRect tr;
+				tr.iBlock = tb;
+				tr.iRect = rect;
+				tr.iLineIndex = j;
+				iRects.Append(tr);
+				
+				if(totalWidth + lineWidth>iParent->iDisplayRect.Width() && iClippedRectIndex==-1)
+				{
+					iClippedRectIndex = iRects.Count()-1;
+					TInt spaceLeft =  iParent->iDisplayRect.Width() - totalWidth;
+					TInt excessWidth;
+					TInt k = tb->iFont->TextCount(*text, spaceLeft, excessWidth)-1;
+					TInt dotlen = tb->iFont->TextWidthInPixels(KHStrEClipsis);
+					while(excessWidth<dotlen && k>=0) 
+					{
+						excessWidth += tb->iFont->CharWidthInPixels((*text)[k]);
+						k--;
+					}
+					iClippedCharCount = k+1;
+				}
+			}
+			totalWidth += lineWidth;
+		}
+	}
+
+	if(iClippedRectIndex!=-1 
+			&& iParent->iState.IsSet(EElementStateInFocus)
+			&& !iOwner->Impl()->iState.IsSet(EHCSInTransition))
+		iOwner->Impl()->ScrollText(totalWidth, Rect());	
+}
+
+void CHtmlElementText::RefreshMultiLine()
+{
+	iClippedRectIndex = -1;
+	TInt lineNumber = iLineNumber;
+	for(TInt i=0;i<iBlockArray.Count();i++)
+	{
+		CTextBlock* tb = iBlockArray[i];
+		if(!tb->iLines)
+			break;
+		
+		const THcLineInfo& lineInfo = iOwner->Impl()->LineInfo(lineNumber);
+		lineNumber = tb->iLineNumber;
+		TPoint pos(tb->iLeftToParent + iParent->iDisplayRect.iTl.iX, tb->iTopToBeginning + iPosition.iY);
+		TInt h = iParent->iClippingRect.iTl.iY - pos.iY;
+		TInt firstLineHeight = lineInfo.iHeight;
+		TInt startLine, endLine;
+		if(h < firstLineHeight)
+			startLine = 0;
+		else
+		{
+			h -= firstLineHeight;
+			startLine = 1 + h / tb->iLineHeight;
+		}
+		
+		h = iParent->iClippingRect.iBr.iY - pos.iY;
+		if(h<=0)
+			endLine = 0;
+		else if(h<firstLineHeight)
+			endLine = 1;
+		else
+		{
+			h -= firstLineHeight;
+			endLine = 1 + h / tb->iLineHeight;
+
+			//Plus 1 is to determin whether to display partial line
+			if(iParent->LineWrapMode()!=ELWClip)
+				endLine += 1; 
+		}
+
+		if(endLine > tb->iLines->Count())
+			endLine = tb->iLines->Count();
+
+		if(startLine>0)
+		{
+			pos.iX = iParent->iClippingRect.iTl.iX;
+			pos.iY += firstLineHeight + (startLine-1)*tb->iLineHeight;
+		}
+
+		if(endLine-startLine>0) 
+		{
+			//RDebug::Print(_L("max-height=%i,height=%i,ascent=%i,descent=%i,max-ascent=%i,max-descent=%i"), tb->iFont->FontMaxHeight(), tb->iFont->HeightInPixels(), tb->iFont->AscentInPixels(), tb->iFont->DescentInPixels(), tb->iFont->FontMaxAscent(), tb->iFont->FontMaxDescent());
+#ifdef __SYMBIAN_9_ONWARDS__
+			tb->iBaseLine = (tb->iFont->FontMaxHeight() - tb->iFont->HeightInPixels())/2 + Max(tb->iFont->AscentInPixels(), tb->iFont->FontMaxAscent());
+#else
+			tb->iBaseLine = 1 + tb->iFont->AscentInPixels();
+#endif
+			if(iParent->LineWrapMode()==ELWClip && iClippedRectIndex==-1 && endLine<tb->iLines->Count())
+			{
+				if((*tb->iLines)[startLine].Length()==0)
+					iClippedRectIndex = iRects.Count() - 1;
+				else
+					iClippedRectIndex = iRects.Count();
+			}
+			
+			for(TInt i=startLine;i<endLine;i++) 
+			{
+				TPtrC line = (*tb->iLines)[i];
+				TRect rect;
+				if(line.Length()>0)
+				{
+					TInt lineWidth = tb->iFont->TextWidthInPixels(line);
+					if(i==0)
+					{
+						rect.iTl.iX = pos.iX + 1 + lineInfo.iXOffset;
+						rect.iTl.iY = pos.iY + (lineInfo.iHeight - tb->iLineHeight)/2;
+					}
+					else if(i==tb->iLines->Count()-1 &&!tb->iNewLineAtTheEnd)
+					{
+						const THcLineInfo& lineInfo2 = iOwner->Impl()->LineInfo(tb->iLineNumber);
+						rect.iTl.iX = pos.iX + 1 + lineInfo2.iXOffset;
+						rect.iTl.iY = pos.iY + (lineInfo2.iHeight - tb->iLineHeight)/2;
+					}
+					else
+					{
+						if(iStyle.iAlign==ELeft)
+							rect.iTl.iX = pos.iX + 1;
+						else if(iStyle.iAlign==ECenter)
+							rect.iTl.iX = pos.iX + (iParent->iDisplayRect.Width() - lineWidth)/2;
+						else if(iStyle.iAlign==ERight)
+							rect.iTl.iX = pos.iX + iParent->iDisplayRect.Width() - lineWidth;
+						rect.iTl.iY = pos.iY;
+					}
+					
+					TTextRect tr;
+					tr.iBlock = tb;
+#ifdef __SYMBIAN_9_ONWARDS__
+					rect.iTl.iY +=  (tb->iLineHeight - tb->iFont->FontMaxHeight())/2 - 1;
+					rect.iBr.iY = rect.iTl.iY + tb->iFont->FontMaxHeight() + 2;
+#else
+					rect.iTl.iY +=  (tb->iLineHeight - (tb->iFont->HeightInPixels()+2))/2 - 1;
+					rect.iBr.iY = rect.iTl.iY + (tb->iFont->HeightInPixels()+2) + 2;
+#endif
+					rect.iBr.iX = rect.iTl.iX + lineWidth;
+					tr.iRect = rect;
+					tr.iLineIndex = i;
+					iRects.Append(tr);
+				}
+				pos.iX = iParent->iDisplayRect.iTl.iX;
+				if(i==0)
+					pos.iY += firstLineHeight;
+				else
+					pos.iY += tb->iLineHeight;
+			}
+		}
+		else
+		{
+			if(iParent->LineWrapMode()==ELWClip && iClippedRectIndex==-1 && endLine<tb->iLines->Count())
+				iClippedRectIndex = iRects.Count() - 1;
+		}
+		
+		if(iClippedRectIndex!=-1)
+			break;
+	}
+
+	if(iClippedRectIndex!=-1)
+	{
+		TTextRect& tr = iRects[iClippedRectIndex];
+		TPtrC line = (*tr.iBlock->iLines)[tr.iLineIndex];
+		TInt k = line.Length()-1;
+		TInt dotlen = tr.iBlock->iFont->TextWidthInPixels(KHStrEClipsis);
+		TInt excessWidth = iParent->iDisplayRect.iBr.iX - tr.iRect.iBr.iX;
+		while(excessWidth<dotlen && k>=0)
+		{
+			excessWidth += tr.iBlock->iFont->CharWidthInPixels(line[k]);
+			k--;
+		}
+		iClippedCharCount = k+1;
+	}
 }
 
 void CHtmlElementText::Draw(CFbsBitGc& aGc) const
 {
-	if(iParent->LineWrapMode()==ELWAuto)
-		DrawMultiLine(aGc);
-	else
+	if(iParent->LineWrapMode()==ELWScroll)
 		DrawSingleLine(aGc);
+	else
+		DrawMultiLine(aGc);
 	
 	if(iStyle.IsSet(THcTextStyle::EBorder) && iRects.Count()>0 && iStyle.iBorder.iWidth>0)
 		DrawBorder(aGc);
+}
+
+void CHtmlElementText::DrawSingleLine(CFbsBitGc& aGc) const
+{
+	for(TInt i=0;i<iRects.Count();i++) 
+	{
+		const TTextRect& tr = iRects[i];
+		
+		THcTextStyle style = iStyle;
+		style.Add(tr.iBlock->iStyle);
+		
+		aGc.UseFontNoDuplicate(static_cast<CFbsBitGcFont*>(tr.iBlock->iFont));
+		HcUtils::PrepareGcForTextDrawing(aGc, style);
+
+		if(!iParent->iState.IsSet(EElementStateInFocus)
+				|| iOwner->Impl()->iState.IsSet(EHCSInTransition) 
+				|| iOwner->Impl()->TextScrollPos()==-1)
+		{
+			if(i!=iClippedRectIndex)
+				aGc.DrawText(*tr.iBlock->iTextArray[tr.iLineIndex], tr.iRect,  tr.iBlock->iBaseLine,  CBitmapContext::ELeft, 0);
+			else
+			{
+				aGc.DrawText(tr.iBlock->iTextArray[tr.iLineIndex]->Left(iClippedCharCount), tr.iRect,  tr.iBlock->iBaseLine, CBitmapContext::ELeft, 0);
+				aGc.DrawText(KHStrEClipsis);
+			}
+		}
+		else
+		{
+			TRect rect = tr.iRect;
+			rect.iTl.iX -= iOwner->Impl()->TextScrollPos();
+			aGc.DrawText(*tr.iBlock->iTextArray[tr.iLineIndex], rect,  tr.iBlock->iBaseLine, CBitmapContext::ELeft, 0);
+		}
+	}
+}
+
+void CHtmlElementText::DrawMultiLine(CFbsBitGc& aGc) const
+{
+	for(TInt i=0;i<iRects.Count();i++) 
+	{
+		const TTextRect& tr = iRects[i];
+		
+		THcTextStyle style = iStyle;
+		style.Add(tr.iBlock->iStyle);
+
+		aGc.UseFontNoDuplicate(static_cast<CFbsBitGcFont*>(tr.iBlock->iFont));
+		HcUtils::PrepareGcForTextDrawing(aGc, style);
+		
+		if(i==iClippedRectIndex)
+		{
+			aGc.DrawText((*tr.iBlock->iLines)[tr.iLineIndex].Left(iClippedCharCount), tr.iRect,  tr.iBlock->iBaseLine, CBitmapContext::ELeft, 0);
+			aGc.DrawText(KHStrEClipsis);
+		}
+		else
+			aGc.DrawText((*tr.iBlock->iLines)[tr.iLineIndex], tr.iRect,  tr.iBlock->iBaseLine, CBitmapContext::ELeft, 0);
+	}
 }
 
 void CHtmlElementText::DrawBorder(CFbsBitGc& aGc) const
@@ -391,335 +730,6 @@ void CHtmlElementText::DrawBorder(CFbsBitGc& aGc) const
 	}
 }
 
-void CHtmlElementText::MeasureSingleLine(CHcMeasureStatus& aStatus)
-{
-	TBool clipped = EFalse;
-	for(TInt i=0;i<iBlockArray.Count();i++) 
-	{
-		CTextBlock* tb = iBlockArray[i];
-		if(tb->iTextArray.Count()==0)
-			break;
-		
-		HBufC* text = tb->iTextArray[0];
-		if(!text)
-			break;
-		
-		THcTextStyle style = iStyle;
-		style.Add(tb->iStyle);
-		TInt leftToParent = aStatus.iPosition.iX - iParent->iDisplayRect.iTl.iX;
-		if(leftToParent!=tb->iLeftToParent)
-		{
-			tb->ClearCache();
-			tb->iLeftToParent = leftToParent;
-		}
-		tb->iTopToBeginning = aStatus.iPosition.iY - iPosition.iY;
-		tb->iFont = iOwner->Impl()->GetFont(style);
-		tb->iLineHeight = style.GetLineHeight(tb->iFont->HeightInPixels());
-		aStatus.CurrenTHcLineInfo().SetHeightIfGreater(tb->iLineHeight);
-		TInt lineWidth = tb->iFont->TextWidthInPixels(*text);
-		if(!clipped && aStatus.iPosition.iX + lineWidth> iParent->iDisplayRect.iBr.iX)
-		{
-			//calculate clip pos
-			if(tb->iWrappingIndex==0)
-			{
-				TInt spaceLeft = iParent->iDisplayRect.iBr.iX - aStatus.iPosition.iX;
-				TInt excessWidth;
-				TInt cnt = tb->iFont->TextCount(*text, spaceLeft, excessWidth);
-				if(cnt < text->Length())
-				{
-					TInt dotlen = tb->iFont->TextWidthInPixels(KHStrEClipsis);
-					while(cnt>0 && excessWidth<dotlen) 
-					{
-						excessWidth += tb->iFont->CharWidthInPixels((*text)[cnt]);
-						cnt--;
-					}
-				}
-				tb->iWrappingIndex = cnt;
-			}
-			clipped = ETrue;
-		}
-		aStatus.iPosition.iX += lineWidth;
-		
-		if(tb->iTextArray.Count()>1 || tb->iNewLineAtTheEnd)
-			break;
-	}
-	aStatus.NewLine(EFalse);
-
-	TBool scrollable = clipped
-		&& iParent->LineWrapMode()==ELWScroll
-		&& iParent->iState.IsSet(EElementStateInFocus)
-		&& !iOwner->Impl()->iState.IsSet(EHCSDisplayOnly);
-		iState.Assign(EElementStateStatic, !scrollable);
-}
-
-void CHtmlElementText::RefreshSingleLine()
-{
-	TInt totalWidth = 0;
-	const THcLineInfo& aLineInfo = iOwner->Impl()->LineInfo(iLineNumber);
-	for(TInt i=0;i<iBlockArray.Count();i++) 
-	{
-		CTextBlock* tb = iBlockArray[i];
-		if(tb->iTextArray.Count()==0)
-			break;
-		
-		HBufC* text = tb->iTextArray[0];
-		if(!text)
-			break;
-
-		TInt lineWidth = tb->iFont->TextWidthInPixels(*text);
-		TPoint pos(tb->iLeftToParent + iParent->iDisplayRect.iTl.iX, tb->iTopToBeginning + iPosition.iY);
-
-		TRect rect;
-		rect.iTl.iX = pos.iX + aLineInfo.iXOffset;
-		rect.iTl.iY = pos.iY + (aLineInfo.iHeight - tb->iLineHeight)/2;
-		rect.iBr.iX = rect.iTl.iX + lineWidth;
-		
-#ifdef __SYMBIAN_9_ONWARDS__
-		rect.iTl.iY +=  (tb->iLineHeight - tb->iFont->FontMaxHeight())/2 - 1;
-		rect.iBr.iY = rect.iTl.iY + tb->iFont->FontMaxHeight() + 2;
-#else
-		rect.iTl.iY +=  (tb->iLineHeight - (tb->iFont->HeightInPixels()+2))/2 - 1;
-		rect.iBr.iY = rect.iTl.iY + (tb->iFont->HeightInPixels()+2) + 2;
-#endif
-		
-		if(rect.iTl.iY>=iParent->iClippingRect.iTl.iY-rect.Height() 
-				&& rect.iBr.iY<=iParent->iClippingRect.iBr.iY+rect.Height())
-		{
-#ifdef __SYMBIAN_9_ONWARDS__
-			tb->iBaseLine = (tb->iFont->FontMaxHeight() - tb->iFont->HeightInPixels())/2 + Max(tb->iFont->AscentInPixels(), tb->iFont->FontMaxAscent());
-#else
-			tb->iBaseLine = 1 + tb->iFont->AscentInPixels();
-#endif			
-			TTextRect tr;
-			tr.iBlock = tb;
-			tr.iRect = rect;
-			iRects.Append(tr);
-		}
-
-		totalWidth += lineWidth;
-		if(tb->iTextArray.Count()>1 || tb->iNewLineAtTheEnd)
-			break;
-	}
-
-	if(!iState.IsSet(EElementStateStatic))
-		iOwner->Impl()->ScrollText(totalWidth, Rect());
-}
-
-void CHtmlElementText::DrawSingleLine(CFbsBitGc& aGc) const
-{
-	for(TInt i=0;i<iRects.Count();i++) 
-	{
-		const TTextRect& tr = iRects[i];
-		
-		THcTextStyle style = iStyle;
-		style.Add(tr.iBlock->iStyle);
-		
-		aGc.UseFontNoDuplicate(static_cast<CFbsBitGcFont*>(tr.iBlock->iFont));
-		HcUtils::PrepareGcForTextDrawing(aGc, style);
-
-		if(iState.IsSet(EElementStateStatic) || iOwner->Impl()->TextScrollPos()==-1)
-		{
-			if(tr.iBlock->iWrappingIndex==0)
-				aGc.DrawText(*tr.iBlock->iTextArray[0], tr.iRect,  tr.iBlock->iBaseLine,  CBitmapContext::ELeft, 0);
-			else
-			{
-				aGc.DrawText(tr.iBlock->iTextArray[0]->Left(tr.iBlock->iWrappingIndex), tr.iRect,  tr.iBlock->iBaseLine, CBitmapContext::ELeft, 0);
-				aGc.DrawText(KHStrEClipsis);
-			}
-		}
-		else
-		{
-			TRect rect = tr.iRect;
-			rect.iTl.iX -= iOwner->Impl()->TextScrollPos();
-			aGc.DrawText(*tr.iBlock->iTextArray[0], rect,  tr.iBlock->iBaseLine, CBitmapContext::ELeft, 0);
-		}
-	}
-}
-
-void CHtmlElementText::MeasureMultiLine(CHcMeasureStatus& aStatus)
-{
-	for(TInt i=0;i<iBlockArray.Count();i++) 
-	{
-		CTextBlock* tb = iBlockArray[i];
-		THcTextStyle style = iStyle;
-		style.Add(tb->iStyle);
-		tb->iFont = iOwner->Impl()->GetFont(style);
-		TInt leftToParent = aStatus.iPosition.iX - iParent->iDisplayRect.iTl.iX;
-		if(leftToParent!=tb->iLeftToParent)
-		{
-			tb->ClearCache();
-			tb->iLeftToParent = leftToParent;
-		}
-		tb->iTopToBeginning = aStatus.iPosition.iY - iPosition.iY;
-		tb->iLineHeight = style.GetLineHeight(tb->iFont->HeightInPixels());
-		tb->WrapTextL(aStatus);		
-		if(tb->iLines->Count()>1)
-		{
-			TPtrC line = (*tb->iLines)[0];
-			aStatus.CurrenTHcLineInfo().SetHeightIfGreater(tb->iLineHeight);
-			aStatus.iPosition.iX += tb->iFont->TextWidthInPixels(line);
-
-			aStatus.NewLine(ETrue);
-			
-			iParent->iContentSize.iWidth = iParent->iDisplayRect.Width();
-			
-			line.Set((*tb->iLines)[tb->iLines->Count()-1]);
-			aStatus.CurrenTHcLineInfo().iHeight = tb->iLineHeight;
-			if(line.Length()>0)
-				aStatus.iPosition.iX += tb->iFont->TextWidthInPixels(line) + 1;
-			else
-				aStatus.NewLine(ETrue);
-			aStatus.iPosition.iY += (tb->iLines->Count()-2)*tb->iLineHeight;
-		}
-		else if(tb->iLines->Count()==1)
-		{
-			TPtrC line = (*tb->iLines)[0];
-			aStatus.CurrenTHcLineInfo().SetHeightIfGreater(tb->iLineHeight);
-			
-			if(line.Length()>0)
-				aStatus.iPosition.iX +=  tb->iFont->TextWidthInPixels(line) + 1;
-			else
-				aStatus.NewLine(ETrue);
-		}
-		
-		if(tb->iNewLineAtTheEnd)
-		{
-			aStatus.CurrenTHcLineInfo().SetHeightIfGreater(tb->iLineHeight);
-			aStatus.NewLine(ETrue);
-		}
-		
-		tb->iLineNumber = aStatus.LineNumber();
-		if(!tb->FullWrapped())
-		{
-			if(!iOwner->Impl()->iState.IsSet(EHCSDisplayOnly))
-				iOwner->Impl()->MeasureTextContinued();
-			break;
-		}
-	}
-	
-	if(iStyle.IsSet(THcTextStyle::EAlign))
-		aStatus.NewLine(EFalse);
-}
-
-void CHtmlElementText::RefreshMultiLine()
-{
-	TInt lineNumber = iLineNumber;
-	for(TInt i=0;i<iBlockArray.Count();i++)
-	{
-		CTextBlock* tb = iBlockArray[i];
-		if(!tb->iLines)
-			break;
-		
-		const THcLineInfo& lineInfo = iOwner->Impl()->LineInfo(lineNumber);
-		lineNumber = tb->iLineNumber;
-		TPoint pos(tb->iLeftToParent + iParent->iDisplayRect.iTl.iX, tb->iTopToBeginning + iPosition.iY);
-		TInt h = iParent->iClippingRect.iTl.iY - pos.iY;
-		TInt firstLineHeight = lineInfo.iHeight;
-		TInt startLine, endLine;
-		if(h < firstLineHeight)
-			startLine = 0;
-		else
-		{
-			h -= firstLineHeight;
-			startLine = 1 + h / tb->iLineHeight;
-		}
-		
-		h = iParent->iClippingRect.iBr.iY - pos.iY;
-		if(h<=0)
-			endLine = 0;
-		else if(h<firstLineHeight)
-			endLine = 1;
-		else
-		{
-			h -= firstLineHeight;
-			endLine = 1 + h / tb->iLineHeight + 1; //This plus 1 is to determin whether to display partial text
-		}
-		
-		if(endLine > tb->iLines->Count())
-			endLine = tb->iLines->Count();
-		
-		if(startLine>0)
-		{
-			pos.iX = iParent->iClippingRect.iTl.iX;
-			pos.iY += firstLineHeight + (startLine-1)*tb->iLineHeight;
-		}
-
-		if(endLine-startLine>0) 
-		{
-			//RDebug::Print(_L("max-height=%i,height=%i,ascent=%i,descent=%i,max-ascent=%i,max-descent=%i"), tb->iFont->FontMaxHeight(), tb->iFont->HeightInPixels(), tb->iFont->AscentInPixels(), tb->iFont->DescentInPixels(), tb->iFont->FontMaxAscent(), tb->iFont->FontMaxDescent());
-#ifdef __SYMBIAN_9_ONWARDS__
-			tb->iBaseLine = (tb->iFont->FontMaxHeight() - tb->iFont->HeightInPixels())/2 + Max(tb->iFont->AscentInPixels(), tb->iFont->FontMaxAscent());
-#else
-			tb->iBaseLine = 1 + tb->iFont->AscentInPixels();
-#endif
-			for(TInt i=startLine;i<endLine;i++) 
-			{
-				TPtrC line = (*tb->iLines)[i];
-				TRect rect;
-				if(line.Length()>0)
-				{
-					TInt lineWidth = tb->iFont->TextWidthInPixels(line);
-					if(i==0)
-					{
-						rect.iTl.iX = pos.iX + 1 + lineInfo.iXOffset;
-						rect.iTl.iY = pos.iY + (lineInfo.iHeight - tb->iLineHeight)/2;
-					}
-					else if(i==tb->iLines->Count()-1 &&!tb->iNewLineAtTheEnd)
-					{
-						const THcLineInfo& lineInfo2 = iOwner->Impl()->LineInfo(tb->iLineNumber);
-						rect.iTl.iX = pos.iX + 1 + lineInfo2.iXOffset;
-						rect.iTl.iY = pos.iY + (lineInfo2.iHeight - tb->iLineHeight)/2;
-					}
-					else
-					{
-						if(iStyle.iAlign==ELeft)
-							rect.iTl.iX = pos.iX + 1;
-						else if(iStyle.iAlign==ECenter)
-							rect.iTl.iX = pos.iX + (iParent->iDisplayRect.Width() - lineWidth)/2;
-						else if(iStyle.iAlign==ERight)
-							rect.iTl.iX = pos.iX + iParent->iDisplayRect.Width() - lineWidth;
-						rect.iTl.iY = pos.iY;
-					}
-					
-					TTextRect tr;
-					tr.iBlock = tb;
-#ifdef __SYMBIAN_9_ONWARDS__
-					rect.iTl.iY +=  (tb->iLineHeight - tb->iFont->FontMaxHeight())/2 - 1;
-					rect.iBr.iY = rect.iTl.iY + tb->iFont->FontMaxHeight() + 2;
-#else
-					rect.iTl.iY +=  (tb->iLineHeight - (tb->iFont->HeightInPixels()+2))/2 - 1;
-					rect.iBr.iY = rect.iTl.iY + (tb->iFont->HeightInPixels()+2) + 2;
-#endif
-					rect.iBr.iX = rect.iTl.iX + lineWidth;
-					tr.iRect = rect;
-					tr.iLineIndex = i;
-					iRects.Append(tr);
-				}
-				pos.iX = iParent->iDisplayRect.iTl.iX;
-				if(i==0)
-					pos.iY += firstLineHeight;
-				else
-					pos.iY += tb->iLineHeight;
-			}
-		}
-	}
-}
-
-void CHtmlElementText::DrawMultiLine(CFbsBitGc& aGc) const
-{
-	for(TInt i=0;i<iRects.Count();i++) 
-	{
-		const TTextRect& tr = iRects[i];
-		
-		THcTextStyle style = iStyle;
-		style.Add(tr.iBlock->iStyle);
-
-		aGc.UseFontNoDuplicate(static_cast<CFbsBitGcFont*>(tr.iBlock->iFont));
-		HcUtils::PrepareGcForTextDrawing(aGc, style);
-		aGc.DrawText((*tr.iBlock->iLines)[tr.iLineIndex], tr.iRect,  tr.iBlock->iBaseLine, CBitmapContext::ELeft, 0);
-	}
-}
-
 CTextBlock::~CTextBlock()
 {
 	for(TInt i=0;i<iTextArray.Count();i++)
@@ -791,14 +801,14 @@ void CTextBlock::ClearCache()
 	iNewLineAtTheEnd = EFalse;
 }
 
-void CTextBlock::WrapTextL(CHcMeasureStatus& aStatus)
+void CTextBlock::WrapTextL(CHcMeasureStatus& aStatus, TBool aForceFullWrap)
 {
 	if(!iLines)
 		iLines = new (ELeave)CArrayFixFlat<TPtrC>(2);
 	
-	if(!aStatus.CanWrapText())
+	if(!aStatus.CanWrapText() && !aForceFullWrap)
 		return;
-
+	
 	const TRect& parentRect = aStatus.Current()->iParent->iDisplayRect;
 	while(iWrappingIndex<iTextArray.Count()) 
 	{
@@ -823,10 +833,10 @@ void CTextBlock::WrapTextL(CHcMeasureStatus& aStatus)
 		if(iWrappingIndex==0) 
 		{
 			TInt firstLineWidth = parentRect.iBr.iX - aStatus.iPosition.iX - 1;
-			 aStatus.WrapTextL(*text, firstLineWidth, parentRect.Width() - 1,*iFont, *array);	
+			aStatus.WrapTextL(*text, firstLineWidth, parentRect.Width() - 1,*iFont, *array);	
 		}
 		else
-			 aStatus.WrapTextL(*text, parentRect.Width() - 1, parentRect.Width() - 1,*iFont, *array);
+			aStatus.WrapTextL(*text, parentRect.Width() - 1, parentRect.Width() - 1,*iFont, *array);
 		for(TInt i=0;i<array->Count();i++) 
 		{
 			TPtrC p = (*array)[i];
@@ -834,8 +844,8 @@ void CTextBlock::WrapTextL(CHcMeasureStatus& aStatus)
 		}
 		CleanupStack::PopAndDestroy();
 		iWrappingIndex++;
-
-		if(!aStatus.CanWrapText())
+		
+		if(!aStatus.CanWrapText() && !aForceFullWrap)
 			break;
 	}
 }

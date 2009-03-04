@@ -13,7 +13,7 @@
 #include "scrollbar.h"
 #include "style.h"
 #include "imagepool.h"
-
+#include "transimpl.h"
 #include "element_body.h"
 
 CHtmlControl* CHtmlControl::NewL(CCoeControl* aParent) 
@@ -142,14 +142,9 @@ void CHtmlControl::ClearStyleSheet()
 	iImpl->ClearStyleSheet();
 }
 
-void CHtmlControl::Refresh(TInt aOption)
+void CHtmlControl::Refresh()
 {
-	iImpl->Refresh(aOption);
-}
-
-void CHtmlControl::DrawOffscreen() const
-{
-	iImpl->DrawOffscreen();
+	iImpl->Refresh();
 }
 
 void CHtmlControl::Draw(const TRect& aRect) const
@@ -164,9 +159,9 @@ TKeyResponse CHtmlControl::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCod
 
 void CHtmlControl::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 {
-	iImpl->HandlePointerEventL(aPointerEvent);
-	
 	CCoeControl::HandlePointerEventL(aPointerEvent);
+	
+	iImpl->HandlePointerEventL(aPointerEvent);
 }
 
 void CHtmlControl::HandleResourceChange(TInt aType)
@@ -184,14 +179,14 @@ void CHtmlControl::HandleResourceChange(TInt aType)
 	}
 }
 
-const CFbsBitmap* CHtmlControl::OffScreenBitmap() const
+MTransition* CHtmlControl::Transition() const
 {
-	return iImpl->OffScreenBitmap();
+	return static_cast<MTransition*>(iImpl->Transition());
 }
 
-TInt CHtmlControl::ContentVersion() const
+const CFbsBitmap* CHtmlControl::OffScreenBitmap() const
 {
-	return iImpl->ContentVersion();
+	return (const CFbsBitmap*)iImpl->OffScreenBitmap();
 }
 
 void HtmlCtlLib::AddSearchPathL(const TDesC& aPath)

@@ -45,8 +45,7 @@ public:
 
 inline TBool CHtmlElementA::CanFocus() const
 {
-	return iNext->TypeId()!=EElementTypeAEnd && iHref 
-		&& iHref->Length()>0 && !iState.IsSet(EElementStateHidden);
+	return iNext->TypeId()!=EElementTypeAEnd && iHref && iHref->Length()>0;
 }
 
 #endif

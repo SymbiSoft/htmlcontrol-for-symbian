@@ -62,7 +62,7 @@ private:
 
 inline TBool CHtmlElementSelect::CanFocus() const
 {
-	return !iFlags.IsSet(EDisabled) && !iState.IsSet(EElementStateHidden);
+	return !iFlags.IsSet(EDisabled);
 }
 
 inline CDesCArray* CHtmlElementSelect::TextArray() const

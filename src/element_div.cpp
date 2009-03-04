@@ -450,7 +450,7 @@ void CHtmlElementDiv::EndMeasure(CHcMeasureStatus& aStatus)
 	if(!style.IsSet(CHcStyle::ELeft))
 		aStatus.iPosition.iX = iPosition.iX + iSize.iWidth + iMargins.iRight;
 	if(!style.IsSet(CHcStyle::ETop))
-		aStatus.CurrenTHcLineInfo().SetHeightIfGreater(iLineHeight);
+		aStatus.CurrentLineInfo().SetHeightIfGreater(iLineHeight);
 	
 	if(style.IsSet(CHcStyle::EClearRight))
 	{
@@ -654,7 +654,7 @@ void CHtmlElementDiv::SetFirstFocus()
 	CHtmlElementImpl* e = this->iNext;
 	while(e!=iEnd)
 	{
-		if(e->CanFocus())
+		if(e->CanFocus() && !e->iState.IsSet(EElementStateHidden))
 		{
 			FocusChangingTo(e);
 			break;
@@ -677,7 +677,7 @@ void CHtmlElementDiv::SetLastFocus()
 			testing = e->iParent;
 		else
 			testing = e;
-		if(testing->CanFocus())
+		if(testing->CanFocus() && !testing->iState.IsSet(EElementStateHidden))
 		{
 			FocusChangingTo(testing);
 			break;
@@ -720,7 +720,7 @@ TKeyResponse CHtmlElementDiv::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEvent
 
 void CHtmlElementDiv::HandleButtonEventL(TInt aButtonEvent)
 {
-	if(iScrollbar)
+	if(!iFlags.IsSet(EFocusing))
 		return;
 	
 	if(aButtonEvent==EButtonEventClick)

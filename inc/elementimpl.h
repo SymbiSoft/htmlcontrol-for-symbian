@@ -94,7 +94,7 @@ protected:
 	void DoMeasure(CHcMeasureStatus& aStatus, const CHcStyle& aStyle, const TSize& aDefaultSize, TBool aForceSize=EFalse);
 
 	//properties
-	TInt iTypeId;
+	THtmlElementTypeId iTypeId;
 	TVAlign iLineVAlign;
 };
 

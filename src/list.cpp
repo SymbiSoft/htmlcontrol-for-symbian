@@ -145,7 +145,7 @@ void CHcList::NotifyChildSetImage(CHcImage* aImage)
 {
 	if(iCachedImages.Find(aImage)==KErrNotFound)
 	{
-		if(iCachedImages.Count()>iItems.Count()*2)
+		if(iCachedImages.Count()>iItems.Count()*3)
 		{
 			iDiv->Owner()->Impl()->Env()->ImagePool().Remove(iCachedImages[0]);
 			iCachedImages.Remove(0);

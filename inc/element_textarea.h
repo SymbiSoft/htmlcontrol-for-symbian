@@ -49,7 +49,7 @@ public:
 
 inline TBool CHtmlElementTextArea::CanFocus() const
 {
-	return !iFlags.IsSet(EDisabled) && !iState.IsSet(EElementStateHidden);
+	return !iFlags.IsSet(EDisabled);
 }
 
 #endif

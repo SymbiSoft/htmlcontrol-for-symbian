@@ -186,7 +186,7 @@ void CHtmlElementForm::EndMeasure(CHcMeasureStatus& aStatus)
 	iSize.iWidth = iParent->iDisplayRect.Width();
 	iSize.iHeight = iEnd->iPosition.iY - iPosition.iY;
 	if(iEnd->iPosition.iX!=iParent->iDisplayRect.iTl.iX)
-		iSize.iHeight += aStatus.CurrenTHcLineInfo().iHeight;
+		iSize.iHeight += aStatus.CurrentLineInfo().iHeight;
 	
 	if(iState.IsSet(EElementStateHidden))
 		aStatus.iHidden--;
