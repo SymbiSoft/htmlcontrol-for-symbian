@@ -34,6 +34,7 @@ SOURCE	list.cpp
 SOURCE	scrollbar.cpp
 SOURCE	inputeditor.cpp
 SOURCE	utils.cpp
+SOURCE  transimpl.cpp
 SOURCE	element_a.cpp
 SOURCE	element_body.cpp
 SOURCE	element_div.cpp
@@ -46,8 +47,6 @@ SOURCE	element_p.cpp
 SOURCE	element_select.cpp
 SOURCE	element_text.cpp
 SOURCE	element_textarea.cpp
-SOURCE	fadetrans.cpp
-SOURCE	slidetrans.cpp
 
 USERINCLUDE   ..\inc
 SYSTEMINCLUDE \Epoc32\include
