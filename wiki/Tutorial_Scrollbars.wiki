@@ -11,6 +11,7 @@ After added some content
 
 http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-02-24_175613.jpg
 
+==Scrollbar properties==
 Following are the additional properties of scrollbar.
  * KHStrScrollLoop
 Indicates whether the scrollbar will back to top if it reaches the end.
@@ -19,8 +20,6 @@ e.g.
 eDiv->SetProperty(KHStrScrollLoop, ETrue);
 iControl->RefreshAndDraw();
 }}}
-
-==Scrollbar properties==
  * KHStrScrollStep
 Delta scroll pos in pixels when one press on up key or down key.
  * KHStrScrollPos
