@@ -441,6 +441,7 @@ void CHtmlElementText::RefreshMultiLine()
 {
 	iClippedRectIndex = -1;
 	TInt lineNumber = iLineNumber;
+	TBool clipping = EFalse;
 	for(TInt i=0;i<iBlockArray.Count();i++)
 	{
 		CTextBlock* tb = iBlockArray[i];
@@ -495,10 +496,8 @@ void CHtmlElementText::RefreshMultiLine()
 #endif
 			if(iParent->LineWrapMode()==ELWClip && iClippedRectIndex==-1 && endLine<tb->iLines->Count())
 			{
-				if((*tb->iLines)[startLine].Length()==0)
-					iClippedRectIndex = iRects.Count() - 1;
-				else
-					iClippedRectIndex = iRects.Count();
+				clipping = ETrue;
+				iClippedRectIndex = iRects.Count() - 1;
 			}
 			
 			for(TInt i=startLine;i<endLine;i++) 
@@ -543,6 +542,9 @@ void CHtmlElementText::RefreshMultiLine()
 					tr.iRect = rect;
 					tr.iLineIndex = i;
 					iRects.Append(tr);
+					
+					if(clipping)
+						iClippedRectIndex = iRects.Count()-1;
 				}
 				pos.iX = iParent->iDisplayRect.iTl.iX;
 				if(i==0)

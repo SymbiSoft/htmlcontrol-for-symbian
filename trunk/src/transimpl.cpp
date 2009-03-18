@@ -84,7 +84,7 @@ void CTransition::Perform(CHtmlElement* aElement,
 			next->iPrev = ((CHtmlElementDiv*)iElement)->iEnd;
 		else
 			next->iPrev = iElement;
-		
+		iHelperBitmap->Gc().CancelClippingRect();
 		iHelperBitmap->Gc().BitBlt(TPoint(0,0), control->OffScreenBitmap());
 	}
 	else
