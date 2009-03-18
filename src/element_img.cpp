@@ -222,8 +222,11 @@ void CHtmlElementImg::Measure(CHcMeasureStatus& aStatus)
 	}
 	else
 	{
-		CHcImage*  errorImage = iOwner->Impl()->GetStyle(TagName(), KNullDesC, THcSelector::EFCError, 0).BackgroundImage();
-		SetCurrentImage(errorImage);
+		if(iSrcStr && iSrcStr->Length()>0)
+		{
+			CHcImage*  errorImage = iOwner->Impl()->GetStyle(TagName(), iStyle.Class(), THcSelector::EFCError, 0).BackgroundImage();
+			SetCurrentImage(errorImage);
+		}
 		iState.Set(EElementStateError);
 		iState.Set(EElementStateStatic);
 	}

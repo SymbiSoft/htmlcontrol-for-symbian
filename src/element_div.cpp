@@ -476,7 +476,7 @@ void CHtmlElementDiv::Layout()
 			if(align==ECenter)
 				offset.iX = NO_BELOW_ZERO_MINUS(iParent->iDisplayRect.Width() , iSize.iWidth)/2;
 			else if(align==ERight)
-				offset.iX = NO_BELOW_ZERO_MINUS(iParent->iDisplayRect.Width() , iSize.iWidth);
+				offset.iX = NO_BELOW_ZERO_MINUS(iParent->iDisplayRect.Width() , iSize.iWidth + iMargins.iRight);
 		}
 		
 		if(style.iMargins.GetVAlign(valign))
@@ -484,7 +484,7 @@ void CHtmlElementDiv::Layout()
 			if(valign==EVCenter)
 				offset.iY = NO_BELOW_ZERO_MINUS(iParent->iDisplayRect.Height() , iSize.iHeight)/2;
 			else if(valign==EVBottom)
-				offset.iY = NO_BELOW_ZERO_MINUS(iParent->iDisplayRect.Height() , iSize.iHeight);
+				offset.iY = NO_BELOW_ZERO_MINUS(iParent->iDisplayRect.Height() , iSize.iHeight + iMargins.iBottom);
 		}
 	}
 	

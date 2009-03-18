@@ -238,7 +238,8 @@ void CHtmlControlImpl::Refresh(TBool aInTransition)
 		iOffScreenBitmap = CWritableBitmap::NewL(iControl->Size(), 
 				CEikonEnv::Static()->ScreenDevice()->DisplayMode());
 	}
-	else if(iOffScreenBitmap->SizeInPixels()!=iControl->Size())
+	else if(iOffScreenBitmap->SizeInPixels().iWidth<iControl->Size().iWidth
+			|| iOffScreenBitmap->SizeInPixels().iHeight<iControl->Size().iHeight)
 		iOffScreenBitmap->ResizeWithGcL(iControl->Size());
 	
 	if(iDelayRefreshTimer->IsActive())
