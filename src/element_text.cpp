@@ -622,7 +622,8 @@ void CHtmlElementText::DrawSingleLine(CFbsBitGc& aGc) const
 
 		if(!iParent->iState.IsSet(EElementStateInFocus)
 				|| iOwner->Impl()->iState.IsSet(EHCSInTransition) 
-				|| iOwner->Impl()->TextScrollPos()==-1)
+				|| iOwner->Impl()->TextScrollPos()==-1
+				|| iClippedRectIndex==-1)
 		{
 			if(i!=iClippedRectIndex)
 				aGc.DrawText(*tr.iBlock->iTextArray[tr.iLineIndex], tr.iRect,  tr.iBlock->iBaseLine,  CBitmapContext::ELeft, 0);
