@@ -1,5 +1,13 @@
 #summary Change Logs
 
+-------------htmlcontrol 1.1.1-------------------
+1.improved: performance of control size changing frequently
+2.fixed: fly transition effect display distorted after control size changed
+3.fixed: for div element, margin-right and margin-bottom have no effect in case margin-left and margin-top is 'auto'.
+4.fixed: line-wrap='clip' not clip multiline text correctly.
+5.improved: img with empty src will not use error image style.
+6.fixed: CFont::FontMaxHeight works fine in 3rd FP1 and later, but return 0 in 3rd_MR. Added macro to differentiate.
+
 -------------htmlcontrol 1.1-------------------
 
 Fixed the scrollbar display problem in some theme.
