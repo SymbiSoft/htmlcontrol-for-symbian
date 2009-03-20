@@ -197,7 +197,7 @@ void CHtmlElementTextArea::PrepareL()
 	iOwner->Impl()->RegisterControl(((CHcInputEditor*)iEmbedObject));
 	
 	#ifdef __SERIES60_3_ONWARDS__
-	#ifdef __SERIES60_32__
+	#ifndef __SERIES60_30__
 	editor->ScrollBarFrame()->DrawBackground(EFalse, EFalse);
 	#endif
 	editor->ScrollBarFrame()->VerticalScrollBar()->SetBackground(this);
