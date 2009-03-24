@@ -15,6 +15,11 @@ CHtmlElement::~CHtmlElement()
 	delete iRemark;
 }
 
+CHtmlElement* CHtmlElement::Parent() const
+{
+	return (CHtmlElement*)((CHtmlElementImpl*)this)->iParent;
+}
+
 TRect CHtmlElement::Rect() const
 {
 	return ((CHtmlElementImpl*)this)->Rect();

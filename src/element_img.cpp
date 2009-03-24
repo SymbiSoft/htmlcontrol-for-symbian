@@ -269,7 +269,10 @@ void CHtmlElementImg::Draw(CFbsBitGc& aGc) const
 	if(iState.IsSet(EElementStateError))
 		iImage->Draw(aGc, Rect(), THcDrawImageParams());
 	else if(iState.IsSet(EElementStateStatic))
+	{
+		((CHtmlElementImg*)this)->iDrawParams.iFrameIndex = 0;
 		iImage->Draw(aGc, Rect(), iDrawParams);
+	}
 	else
 	{
 		if(iBackground)

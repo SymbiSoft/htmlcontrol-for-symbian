@@ -35,6 +35,7 @@ public:
 	inline const TDesC& TagName() const;
 	inline CCoeControl* EmbedObject() const;
 	
+	CHtmlElement* Parent() const;	
 	TRect Rect() const;
 	TInt Index(const CHtmlElement* aContainer) const;
 	CHtmlElement* Element(const TDesC& aId, TInt aIndex = 0) const;
