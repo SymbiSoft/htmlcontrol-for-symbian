@@ -396,7 +396,7 @@ void CHtmlElementText::RefreshSingleLine()
 			rect.iBr.iY = rect.iTl.iY + (tb->iFont->HeightInPixels()+2) + 2;
 #else
 			rect.iTl.iY +=  (tb->iLineHeight - tb->iFont->FontMaxHeight())/2 - 1;
-			rect.iBr.iY = rect.iTl.iY + tb->iFont->FontMaxHeight() + 2;
+			rect.iBr.iY = rect.iTl.iY + tb->iFont->FontMaxHeight() + 3;
 #endif
 #else
 			rect.iTl.iY +=  (tb->iLineHeight - (tb->iFont->HeightInPixels()+2))/2 - 1;
@@ -550,7 +550,7 @@ void CHtmlElementText::RefreshMultiLine()
 					rect.iBr.iY = rect.iTl.iY + (tb->iFont->HeightInPixels()+2) + 2;
 #else
 					rect.iTl.iY +=  (tb->iLineHeight - tb->iFont->FontMaxHeight())/2 - 1;
-					rect.iBr.iY = rect.iTl.iY + tb->iFont->FontMaxHeight() + 2;
+					rect.iBr.iY = rect.iTl.iY + tb->iFont->FontMaxHeight() + 3;
 #endif
 #else
 					rect.iTl.iY +=  (tb->iLineHeight - (tb->iFont->HeightInPixels()+2))/2 - 1;

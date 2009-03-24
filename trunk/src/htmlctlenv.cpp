@@ -142,7 +142,7 @@ void CHtmlCtlEnv::ConstructL()
 			"input[type=radio]:focus { margin:-2; border:1 dashed #000000}"
 			"input[type=button]:down { border:1 inset #eeeeee }"
 			"textarea { background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; clear:both}"
-			"select {  background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; }"
+			"select {  background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; font-size:medium; }"
 			"select:focus { margin:-2; border:1 dashed #000000 }"
 			".selectbutton {background-color:#C5D3FC; color:#4D6185; border:1 solid #7AC4EA; filter:corner(2,2); background-pattern:diamond-cross-hatch #7AC4EA} "
 			"a:link { color: #0000FF; text-decoration: underline}"

@@ -254,7 +254,7 @@ CFont* THcTextStyle::CreateFont() const
 	else
 		fontSpec.iFontStyle.SetPosture(EPostureUpright);
 	if(IsSet(THcTextStyle::ESize) && iSize>0) 
-		fontSpec.iHeight = CEikonEnv::Static()->ScreenDevice()->HorizontalPixelsToTwips(iSize);
+		fontSpec.iHeight = CEikonEnv::Static()->ScreenDevice()->VerticalPixelsToTwips(iSize);
 	
 	CFont* font;
 	CEikonEnv::Static()->ScreenDevice()->GetNearestFontInTwips( font, fontSpec );
