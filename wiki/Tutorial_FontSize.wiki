@@ -10,7 +10,7 @@ font-size:10
 font-size:medium
 }}}
 Following table shows the supported font size name and their real size in different screen dimension.
-|| Name || 178x208 || 240x320 || 320x640 ||
+|| Name || 178x208 || 240x320 || 360x640 ||
 || xx-small || 9 || 10 || 16 ||
 || x-small || 11 || 12 || 20 ||
 || small || 13 || 14 || 22 ||
