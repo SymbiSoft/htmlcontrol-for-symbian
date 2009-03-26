@@ -560,7 +560,12 @@ void CHtmlElementDiv::Draw(CFbsBitGc& aGc) const
 {
 	aGc.SetFaded(iState.IsSet(EElementStateFaded));
 
-	aGc.SetClippingRect(Rect());
+	if(!iFlags.IsSet(EBody))
+	{
+		TRect rect = Rect();
+		HcUtils::Intersection(rect , iParent->iClippingRect);
+		aGc.SetClippingRect(rect);
+	}
 	
 	HcUtils::DrawBackgroundAndBorders(*iOwner, aGc, Rect(), iStyle.Style());
 
