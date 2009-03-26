@@ -96,6 +96,9 @@ TBool CHtmlElementImg::SetProperty(const TDesC& aName, const TDesC& aValue)
 
 		if(iSrcImage)
 		{
+			if(iImage==iSrcImage)
+				SetCurrentImage(NULL);
+			
 			iOwner->Impl()->Env()->ImagePool().Remove(iSrcImage);
 			iSrcImage = NULL;
 		}
@@ -110,6 +113,9 @@ TBool CHtmlElementImg::SetProperty(const TDesC& aName, const TDesC& aValue)
 
 		if(iFocusImage)
 		{
+			if(iImage==iFocusImage)
+				SetCurrentImage(NULL);
+			
 			iOwner->Impl()->Env()->ImagePool().Remove(iFocusImage);
 			iFocusImage = NULL;
 		}
