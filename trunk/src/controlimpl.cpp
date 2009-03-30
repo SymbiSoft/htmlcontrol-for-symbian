@@ -1,4 +1,5 @@
 #include <eikenv.h>
+#include <eikedwin.h>
 
 #include "controlimpl.h"
 #include "htmlcontrol.h"
@@ -1148,8 +1149,13 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 				return EKeyWasConsumed;
 		}
 		 
-		if(VisibilityTest(aContainer->iFocusedElement, aContainer->iDisplayRect)
-				&& aContainer->iFocusedElement->OfferKeyEventL(aKeyEvent, aType)==EKeyWasConsumed)
+		if((VisibilityTest(aContainer->iFocusedElement, aContainer->iDisplayRect)
+#ifdef __S60_50__
+			||	((aContainer->iFocusedElement->TypeId()==EElementTypeInput || aContainer->iFocusedElement->TypeId()==EElementTypeTextArea)
+				&& (((CEikEdwin*)aContainer->iFocusedElement->EmbedObject())->AknEdwinFlags() & EAknEditorFlagTouchInputModeOpened))
+#endif
+			)
+			&& aContainer->iFocusedElement->OfferKeyEventL(aKeyEvent, aType)==EKeyWasConsumed)
 			return EKeyWasConsumed;
 	}
 	
