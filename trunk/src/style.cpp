@@ -34,7 +34,8 @@ TRgb THcColor::Rgb() const
 	if(iIndex1>0 || iIndex2>0)
 	{
 		TRgb rgb;
-		if(AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), rgb, (TAknsItemID) { iIndex1, iIndex2 }, iRgb.Value())==KErrNone)
+		TAknsItemID itemId = {iIndex1, iIndex2};
+		if(AknsUtils::GetCachedColor(AknsUtils::SkinInstance(), rgb, itemId, iRgb.Value())==KErrNone)
 			return rgb;
 		else
 			return KRgbBlack;

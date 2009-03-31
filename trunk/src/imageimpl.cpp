@@ -481,7 +481,10 @@ void CHcImageAknsBackground::ConstructL()
 	rect = TRect(TPoint(0,0), TSize(176,208));
 #endif
 	if(iLocation.iIndex1>0) 
-		iAknsBackground = CAknsBasicBackgroundControlContext::NewL((TAknsItemID) { iLocation.iIndex1, iLocation.iIndex2 }, rect, EFalse );
+	{
+		TAknsItemID itemId = { iLocation.iIndex1, iLocation.iIndex2 };
+		iAknsBackground = CAknsBasicBackgroundControlContext::NewL(itemId, rect, EFalse );
+	}
 	iLoaded = ETrue;
 	iSize = rect.Size();
 }
@@ -550,8 +553,8 @@ TBool CHcImageAknsFrame::DoDraw(CBitmapContext& aGc, const TRect& aDestRect, con
 		iGcProxy = new CGcProxy(&aGc);
 	}
 	
-	AknsDrawUtils::DrawFrame(AknsUtils::SkinInstance(), *iGcProxy, aDestRect, innerRect,  
-			(TAknsItemID) { iLocation.iIndex1, iLocation.iIndex2 }, aCenterId);
+	TAknsItemID itemId = { iLocation.iIndex1, iLocation.iIndex2 };
+	AknsDrawUtils::DrawFrame(AknsUtils::SkinInstance(), *iGcProxy, aDestRect, innerRect, itemId, aCenterId);
 	
 	return ETrue;
 }
