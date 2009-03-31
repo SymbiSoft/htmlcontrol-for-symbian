@@ -1278,34 +1278,22 @@ void HtmlParser::ParseImageSrc(const TDesC& aURL, THcImageLocation& aLocation)
 	const TDesC& scheme = parser.Extract(EUriScheme);
 	if(scheme.CompareF(_L("file"))==0) 
 	{
-	#ifdef __SYMBIAN_9_ONWARDS__
-		HBufC* buf = NULL;
-		TRAPD(error,
-			buf = parser.GetFileNameL();
-		);
-		if(error==KErrNone)
+		const TDesC& path = parser.Extract( EUriPath );
+		if(path.Length()>0)
 		{
-			aLocation.iFileName.Copy(*buf);
-			aLocation.iFileName.SetLength(buf->Length());
-			delete buf;
+			aLocation.iFileName.Copy(path.Mid(1));
+			if(aLocation.iFileName.Length()>0)
+			{
+				HcUtils::StringReplace(aLocation.iFileName, '/', '\\');
+				if(aLocation.iFileName[1]!=':')
+					aLocation.iFileName.Insert(1, _L(":"));
+			}
 		}
 		else
-		{
-			aLocation.iFileName.Copy(aURL);
-		}
-	#else
-		aLocation.iFileName.Copy(parser.Extract( EUriPath ));
-		HcUtils::StringReplace(aLocation.iFileName, '/', '\\');
-		aLocation.iFileName[0] = aLocation.iFileName[1];
-		aLocation.iFileName[1] = ':';
-	#endif
-		aLocation.iFileName.Trim();
+			aLocation.iFileName.Zero();
 	}
 	else
-	{
 		aLocation.iFileName.Copy(parser.Extract( EUriPath ));
-		aLocation.iFileName.Trim();
-	}
 
 	TPtrC param1, param2, param3, param4;
 	const TDesC& frag = parser.Extract(EUriFragment);
@@ -1918,7 +1906,11 @@ TBool HtmlParser::ParseSingleStyleL(const TDesC& aName, const TDesC& aValue, CHc
 				{
 					TInt pos2 = aValue.LocateReverse(')');
 					if(pos2!=KErrNotFound)
-						ParseImageSrc(aValue.Mid(pos+1, pos2-pos-1), location);
+					{
+						TPtrC tmp = aValue.Mid(pos+1, pos2-pos-1);
+						HcUtils::Trim(tmp);
+						ParseImageSrc(tmp, location);
+					}
 					else
 						ParseImageSrc(aValue, location);
 				}
