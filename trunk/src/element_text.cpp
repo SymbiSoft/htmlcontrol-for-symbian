@@ -579,6 +579,9 @@ void CHtmlElementText::RefreshMultiLine()
 		
 		if(iClippedRectIndex!=-1)
 			break;
+		
+		if(!tb->FullWrapped())
+			break;
 	}
 
 	if(iClippedRectIndex!=-1)
