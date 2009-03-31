@@ -92,7 +92,10 @@ TBool CHtmlElementImg::SetProperty(const TDesC& aName, const TDesC& aValue)
 		iSrcStr = NULL;
 		
 		if(aValue.Length()>0)
+		{
 			iSrcStr = aValue.AllocL();
+			iSrcStr->Des().Trim();
+		}
 
 		if(iSrcImage)
 		{
@@ -109,7 +112,10 @@ TBool CHtmlElementImg::SetProperty(const TDesC& aName, const TDesC& aValue)
 		iFocusSrcStr = NULL;
 		
 		if(aValue.Length()>0)
+		{
 			iFocusSrcStr = aValue.AllocL();
+			iFocusSrcStr->Des().Trim();
+		}
 
 		if(iFocusImage)
 		{
