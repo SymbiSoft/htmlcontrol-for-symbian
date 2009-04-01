@@ -1,27 +1,60 @@
 #summary Change Logs
 
+
+-------------htmlcontrol 1.1.3-------------------
+
+1.Fixed: error when img element change its src from none empty to empty
+
+2.Fixed: display error for div with borders in scrollable container(border drawn outside)
+
+3.Fixed: in some special cases, text input/textarea failed to input text when using fullscreen qwerty.
+
+4.Fixed: some compile error in using RVCT complier. (by tanjinkun@163.com)
+
+5.Fixed: application quite after switch variant layout during loading large text
+
+6.Fixed: ParseImageSrc failed to parse the path contains chinese chars.
+
+
+
+-------------htmlcontrol 1.1.2-------------------
+
+1.Improved: add Parent() to CHtmlElement.
+
+2.Fixed: error when img element change its src from animated gif to none animated images.
+
+3.Fixed: underline not visible in 5th1.0 emulator. fixed by adding one more pixel to the bottom of draw text rect.
+
+4.Fixed: use VerticalPixelsToTwips instead of HorizontalPixelsToTwips to get font height.
+
+5.Improved: add font-size to SELECT default style.
+
+
+
 -------------htmlcontrol 1.1.1-------------------
 
-1.improved: performance of control size changing frequently
+1.Improved: performance of control size changing frequently
 
-2.fixed: fly transition effect display distorted after control size changed
+2.Fixed: fly transition effect display distorted after control size changed
 
-3.fixed: for div element, margin-right and margin-bottom have no effect in case margin-left and margin-top is 'auto'.
+3.Fixed: for div element, margin-right and margin-bottom have no effect in case margin-left and margin-top is 'auto'.
 
-4.fixed: line-wrap='clip' not clip multiline text correctly.
+4.Fixed: line-wrap='clip' not clip multiline text correctly.
 
-5.improved: img with empty src will not use error image style.
+5.Improved: img with empty src will not use error image style.
 
-6.fixed: CFont::FontMaxHeight works fine in 3rd FP1 and later, but return 0 in 3rd_MR. Added macro to differentiate.
+6.Fixed: CFont::FontMaxHeight works fine in 3rd FP1 and later, but return 0 in 3rd_MR. Added macro to differentiate.
+
 
 
 -------------htmlcontrol 1.1-------------------
 
-Fixed the scrollbar display problem in some theme.
+1.Fixed: the scrollbar display problem in some theme.
 
-Removed the old transition class and add new transition+easing support.
+2.Removed: the old transition class and add new transition+easing support.
 
-Improved the line-wrap='clip' behavior.
+3.Improved: the line-wrap='clip' behavior.
+
 
 
 -------------htmlcontrol 1.0-------------------
