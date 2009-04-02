@@ -1152,6 +1152,7 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 		if((VisibilityTest(aContainer->iFocusedElement, aContainer->iDisplayRect)
 #ifdef __S60_50__
 			||	((aContainer->iFocusedElement->TypeId()==EElementTypeInput || aContainer->iFocusedElement->TypeId()==EElementTypeTextArea)
+				&&  aContainer->iFocusedElement->EmbedObject() 
 				&& (((CEikEdwin*)aContainer->iFocusedElement->EmbedObject())->AknEdwinFlags() & EAknEditorFlagTouchInputModeOpened))
 #endif
 			)
