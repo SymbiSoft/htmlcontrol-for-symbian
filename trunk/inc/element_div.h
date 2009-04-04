@@ -13,7 +13,7 @@ class CHtmlElementDiv : public CHtmlElementImpl
 public:
 	enum TFlags
 	{
-		EFocusing,
+		EFocusing = 10,
 		EDisabled,
 		EBody
 	};
@@ -34,7 +34,7 @@ public:
 	virtual CHtmlElementImpl* CloneL() const;
 	virtual TKeyResponse OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode aType);
 	virtual void HandleButtonEventL(TInt aButtonEvent);
-
+	
 	inline TBool IsContainer() const;
 	inline THcLineWrap LineWrapMode() const;
 	
@@ -52,7 +52,6 @@ public:
 	RHcStyle iStyle;
 	RHcLightStyle iFocusStyle;
 	RHcLightStyle iDownStyle;
-	TBitFlags8 iFlags;
 	THcLineWrap iLineWrapMode;
 	
 	CHtmlElementImpl* iFocusedElement;

@@ -135,7 +135,6 @@ CHtmlElementImpl* CHtmlElementTextArea::CloneL()  const
 	if(iTitle)
 		e->iTitle = (*iTitle).AllocL();
 	e->iRows = iRows;
-	e->iFlags = iFlags;
 	e->iLineColor = iLineColor;
 	
 	return e;

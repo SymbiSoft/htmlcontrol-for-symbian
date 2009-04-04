@@ -50,6 +50,7 @@ enum THtmlElementState
 enum THtmlButtonEvent
 {
 	EButtonEventDown,
+	EButtonEventSelect,
 	EButtonEventClick,
 	EButtonEventUp
 };
@@ -70,8 +71,7 @@ public:
 	virtual TKeyResponse OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode aType);
 	virtual void HandleButtonEventL(TInt aButtonEvent);
 	virtual CHtmlElementImpl* CloneL() const = 0;
-
-	virtual TRect ViewRect() const;
+	
 	inline TRect Rect() const;
 	inline TBool IsFocused() const;
 
@@ -87,6 +87,10 @@ public:
 	CHtmlElementImpl* iPrev;
 	CHtmlElementDiv* iParent;
 
+	//0~9 is reserved for this class, derived class should use the value start from 10
+	TBitFlags32 iFlags;
+	TVAlign iLineVAlign;
+
 protected:
 	CHtmlElementImpl(CHtmlControl* aOwner);
 	void BaseClone(CHtmlElementImpl& aTarget) const;
@@ -95,7 +99,6 @@ protected:
 
 	//properties
 	THtmlElementTypeId iTypeId;
-	TVAlign iLineVAlign;
 };
 
 //--inline functions---

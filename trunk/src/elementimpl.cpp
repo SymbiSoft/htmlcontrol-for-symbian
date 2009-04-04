@@ -19,11 +19,6 @@ TBool CHtmlElementImpl::CanFocus() const
 	return EFalse;
 }
 
-TRect CHtmlElementImpl::ViewRect() const
-{
-	return Rect();
-}
-
 void CHtmlElementImpl::SetFocus(TBool aFocus) 
 {	
 	if(aFocus)
@@ -73,6 +68,7 @@ void CHtmlElementImpl::BaseClone(CHtmlElementImpl& aTarget) const
 {
 	aTarget.iId.Copy(iId);
 	aTarget.iLineVAlign = iLineVAlign;
+	aTarget.iFlags = iFlags;
 }
 
 TBool CHtmlElementImpl::GetProperty(const TDesC& aName , TDes& aBuffer)  const

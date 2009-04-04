@@ -127,7 +127,7 @@ TBool CHtmlElementInput::SetProperty(const TDesC& aName, const TDesC& aValue)
 			{
 				if(it()!=this && ((CHtmlElementInput*)it())->iInputType==ERadio)
 				{
-					((CHtmlElementInput*)it())->iFlags.Clear(EChecked);
+					((CHtmlElementImpl*)it())->iFlags.Clear(EChecked);
 				}
 			}
 		}	
@@ -214,7 +214,6 @@ CHtmlElementImpl* CHtmlElementInput::CloneL()  const
 	e->iInputType = iInputType;
 	e->iInputMode = iInputMode;
 	e->iMaxLength = iMaxLength;
-	e->iFlags = iFlags;
 	
 	return e;
 }
@@ -593,7 +592,7 @@ void CHtmlElementInput::HandleButtonEventL(TInt aButtonEvent)
 {
 	if(iInputType==ECheckBox) 
 	{
-		if(aButtonEvent==EButtonEventClick)
+		if(aButtonEvent==EButtonEventClick || aButtonEvent==EButtonEventSelect)
 		{
 			iFlags.Toggle(EChecked);
 			iOwner->Impl()->iState.Set(EHCSNeedRefresh);
@@ -602,39 +601,54 @@ void CHtmlElementInput::HandleButtonEventL(TInt aButtonEvent)
 			event.iType = THtmlCtlEvent::EOnChanged;
 			event.iControl = iOwner;
 			event.iElement = this;
+			if(aButtonEvent==EButtonEventClick)
+				event.iData = 1;
+			else
+				event.iData = 0;
 			iOwner->Impl()->FireEventL(event);
 		}
 	}
 	else if(iInputType==ERadio) 
 	{
-		if(aButtonEvent==EButtonEventClick && !iFlags.IsSet(EChecked)) 
+		if(!iFlags.IsSet(EChecked))
 		{
-			THtmlElementIter it(iOwner->Body(), Id(), KHStrInput);
-			while(it.Next())
+			if(aButtonEvent==EButtonEventClick || aButtonEvent==EButtonEventSelect) 
 			{
-				if(it()!=this && ((CHtmlElementInput*)it())->iInputType==ERadio)
+				THtmlElementIter it(iOwner->Body(), Id(), KHStrInput);
+				while(it.Next())
 				{
-					((CHtmlElementInput*)it())->iFlags.Clear(EChecked);
-				}
-			}					
-			iFlags.Set(EChecked);
-			iOwner->Impl()->iState.Set(EHCSNeedRefresh);
-			
-			THtmlCtlEvent event;
-			event.iType = THtmlCtlEvent::EOnChanged;
-			event.iControl = iOwner;
-			event.iElement = this;
-			iOwner->Impl()->FireEventL(event);
+					if(it()!=this && ((CHtmlElementInput*)it())->iInputType==ERadio)
+					{
+						((CHtmlElementImpl*)it())->iFlags.Clear(EChecked);
+					}
+				}					
+				iFlags.Set(EChecked);
+				iOwner->Impl()->iState.Set(EHCSNeedRefresh);
+				
+				THtmlCtlEvent event;
+				event.iType = THtmlCtlEvent::EOnChanged;
+				event.iControl = iOwner;
+				event.iElement = this;
+				if(aButtonEvent==EButtonEventClick)
+					event.iData = 1;
+				else
+					event.iData = 0;
+				iOwner->Impl()->FireEventL(event);
+			}
 		}
 	}
 	else if(iInputType==EButton || iInputType==ESubmit)
 	{
-		if(aButtonEvent==EButtonEventClick)
+		if(aButtonEvent==EButtonEventClick || aButtonEvent==EButtonEventSelect)
 		{
 			THtmlCtlEvent event;
 			event.iType = THtmlCtlEvent::EOnClick;
 			event.iControl = iOwner;
 			event.iElement = this;
+			if(aButtonEvent==EButtonEventClick)
+				event.iData = 1;
+			else
+				event.iData = 0;
 			iOwner->Impl()->FireEventL(event);
 			
 			if(iInputType==ESubmit)
@@ -647,6 +661,7 @@ void CHtmlElementInput::HandleButtonEventL(TInt aButtonEvent)
 						event.iType = THtmlCtlEvent::EOnSubmit;
 						event.iControl = iOwner;
 						event.iElement = e;
+						event.iData = 0;
 						TRAPD(error,
 							iOwner->Impl()->FireEventL(event);
 						)

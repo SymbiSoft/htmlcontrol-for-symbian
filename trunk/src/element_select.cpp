@@ -242,7 +242,6 @@ CHtmlElementImpl* CHtmlElementSelect::CloneL()  const
 	e->iSelected = iSelected;
 	if(iTitle)
 		e->iTitle = (*iTitle).AllocL();
-	e->iFlags = iFlags;
 	
 	for(TInt i=0;i<iTextArray->Count();i++)
 		e->iTextArray->AppendL((*iTextArray)[i]);
@@ -345,7 +344,7 @@ TKeyResponse CHtmlElementSelect::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEv
 
 void CHtmlElementSelect::HandleButtonEventL(TInt aButtonEvent)
 {
-	if(aButtonEvent==EButtonEventClick)
+	if(aButtonEvent==EButtonEventClick || aButtonEvent==EButtonEventSelect)
 		PopupListBox();
 }
 
@@ -429,6 +428,7 @@ void CHtmlElementSelect::PopupListBox()
 			event.iType = THtmlCtlEvent::EOnChanged;
 			event.iControl = iOwner;
 			event.iElement = this;
+			event.iData = 0;
 			iOwner->Impl()->FireEventL(event);
 		}
     }

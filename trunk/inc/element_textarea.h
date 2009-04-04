@@ -15,7 +15,7 @@ class CHtmlElementTextArea : public CHtmlElementImpl
 public:
 	enum TFlags
 	{
-		EDisabled,
+		EDisabled = 10,
 		EDrawLines,
 		EReadOnly
 	};
