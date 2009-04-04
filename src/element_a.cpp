@@ -179,7 +179,7 @@ TKeyResponse CHtmlElementA::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCo
 
 void CHtmlElementA::HandleButtonEventL(TInt aButtonEvent)
 {
-	if(aButtonEvent==EButtonEventClick)
+	if(aButtonEvent==EButtonEventClick || aButtonEvent==EButtonEventSelect)
 	{
 		if(iHref && iHref->Length()>1 && (*iHref)[0]=='#')
 		{
@@ -198,6 +198,10 @@ void CHtmlElementA::HandleButtonEventL(TInt aButtonEvent)
 		event.iType = THtmlCtlEvent::EOnClick;
 		event.iControl = iOwner;
 		event.iElement = this;
+		if(aButtonEvent==EButtonEventClick)
+			event.iData = 1;
+		else
+			event.iData = 0;
 		iOwner->Impl()->FireEventL(event);
 	}
 }

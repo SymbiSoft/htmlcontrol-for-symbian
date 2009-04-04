@@ -17,7 +17,7 @@ class CHtmlElementSelect : public CHtmlElementImpl
 public:
 	enum TFlags
 	{
-		EDisabled
+		EDisabled = 10
 	};
 	
 	CHtmlElementSelect(CHtmlControl* aOwner);
@@ -49,7 +49,6 @@ public:
 	HBufC* iTitle;
 	RHcStyle iStyle;
 	RHcStyle iButtonStyle;
-	TBitFlags8 iFlags;
 	TInt iSelected;
 	
 private:

@@ -175,7 +175,6 @@ CHtmlElementImpl* CHtmlElementDiv::CloneL() const
 	
 	e->iStyle.CopyL(iStyle);
 	e->iFocusStyle.CopyL(iFocusStyle);
-	e->iFlags = iFlags;
 	e->iLineWrapMode = iLineWrapMode;
 
 	if(iScrollbar) 
@@ -734,6 +733,16 @@ void CHtmlElementDiv::HandleButtonEventL(TInt aButtonEvent)
 		event.iType = THtmlCtlEvent::EOnClick;
 		event.iControl = iOwner;
 		event.iElement = this;
+		event.iData = 1;
+		iOwner->Impl()->FireEventL(event);
+	}
+	else if(aButtonEvent==EButtonEventSelect)
+	{
+		THtmlCtlEvent event;
+		event.iType = THtmlCtlEvent::EOnClick;
+		event.iControl = iOwner;
+		event.iElement = this;
+		event.iData = 0;
 		iOwner->Impl()->FireEventL(event);
 	}
 	else

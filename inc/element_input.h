@@ -8,7 +8,7 @@ class CHtmlElementInput : public CHtmlElementImpl
 public:
 	enum TFlags
 	{
-		EChecked,
+		EChecked = 10,
 		EDisabled,
 		EReadOnly
 	};
@@ -63,7 +63,6 @@ public:
 	TInputType iInputType;
 	TInt iInputMode;
 	TInt iMaxLength;
-	TBitFlags8 iFlags;
 	RHcStyle iStyle;
 };
 

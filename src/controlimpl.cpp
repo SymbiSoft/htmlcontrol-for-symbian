@@ -1416,7 +1416,12 @@ void CHtmlControlImpl::HandlePointerEventL2(const TPointerEvent& aPointerEvent)
 		iState.Clear(EHCSSlideOccured);
 		GetElementByPosition(iBody, aPointerEvent.iPosition, iTapInfo.iStartElement, iTapInfo.iContainer, iTapInfo.iStartArea);
 		if(!iTapInfo.iStartElement->IsFocused())
+		{
+			iTapInfo.iNewlyGainFocus = ETrue;
 			SetFocusTo(iTapInfo.iStartElement);
+		}
+		else
+			iTapInfo.iNewlyGainFocus = EFalse;
 		iTapInfo.iStartElement->HandleButtonEventL(EButtonEventDown);
 		
 		if(iTapInfo.iStartArea==ETapAreaScrollbar)
@@ -1451,7 +1456,12 @@ void CHtmlControlImpl::HandlePointerEventL2(const TPointerEvent& aPointerEvent)
 				iTapInfo.iContainer->iList->HandlePointerEventL(aPointerEvent);
 
 			if(!iState.IsSet(EHCSSlideOccured))
-				iTapInfo.iStartElement->HandleButtonEventL(EButtonEventClick);
+			{
+				if(iTapInfo.iNewlyGainFocus)
+					iTapInfo.iStartElement->HandleButtonEventL(EButtonEventSelect);
+				else
+					iTapInfo.iStartElement->HandleButtonEventL(EButtonEventClick);
+			}
 			else
 			{
 				if(Abs(aPointerEvent.iPosition.iX - iTapInfo.iStartPoint.iX)>60

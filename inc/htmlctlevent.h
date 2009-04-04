@@ -32,6 +32,9 @@ public:
 	TEventType iType;
 	CHtmlControl* iControl;
 	CHtmlElement* iElement;
+	TInt iData;
+	
+	inline THtmlCtlEvent();
 };
 
 class MHtmlCtlEventObserver
@@ -39,6 +42,14 @@ class MHtmlCtlEventObserver
 public:
 	virtual void HandleHtmlCtlEventL(const THtmlCtlEvent& aEvent) = 0;
 };
+
+inline THtmlCtlEvent::THtmlCtlEvent()
+{
+	iType = EOnClick;
+	iControl = NULL;
+	iElement = NULL;
+	iData = 0;
+}
 
 #endif
 

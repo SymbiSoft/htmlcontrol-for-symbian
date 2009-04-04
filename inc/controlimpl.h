@@ -123,6 +123,7 @@ private:
 		TTapArea iStartArea;
 		TPoint iStartPoint;
 		TPoint iPoint;
+		TBool iNewlyGainFocus;
 	};
 	
 	struct THcFontCacheItem
