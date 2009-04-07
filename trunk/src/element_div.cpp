@@ -228,6 +228,8 @@ void CHtmlElementDiv::InvokeL(TRefByValue< const TDesC16 > aCommand, ...)
 
 void CHtmlElementDiv::PrepareL()
 {
+	CHtmlElementImpl::PrepareL();
+	
 	iStyle.SetTag(iTagName);
 	iStyle.Update(iOwner->Impl());
 	UpdateScrollbarsL();
