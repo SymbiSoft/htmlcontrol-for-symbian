@@ -1,5 +1,18 @@
 #summary Change Logs
 
+-------------htmlcontrol 1.1.4-------------------
+
+1.Improved: Remove not used function ViewRect in CHtmlElementImpl.
+
+2.Improved: Add iFlags member to CHtmlElementImpl.
+
+3.Improved: Add iData member to THtmlCtlEvent. Refer to Nokia Test criteria TPOT-02: "Touch interaction must follow the S60 UI Style Guide. The first tap selects the item and the second tap opens the item unless another item is selected." On responding to EOnClick, you can check the value of iData, if iData=0, it is the first tap; if iData=1, it is the second tap. It is due to you to determine the action on each cases. My suggestion is you must follow the criteria for list/grid, i.e. only open the item when iData=1; While for other elments, such as hyperlink, button, etc, you can just ignore iData. Please note that if EOnClick is triggered by selection key down event, iData is always 1.
+
+4.Fixed: Forgot calling PrepareL of base class in CHtmlElementDiv::PrepareL
+
+5.Improved: Add tabstop property. it is default to be true. If tabstop is false, the element wont have focus, however, it can be touched/clicked.
+
+
 
 -------------htmlcontrol 1.1.3-------------------
 
