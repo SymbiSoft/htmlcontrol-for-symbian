@@ -660,7 +660,7 @@ void CHtmlElementDiv::SetFirstFocus()
 	CHtmlElementImpl* e = this->iNext;
 	while(e!=iEnd)
 	{
-		if(e->CanFocus() && !e->iState.IsSet(EElementStateHidden))
+		if(e->CanFocus() && !e->iState.IsSet(EElementStateHidden) && e->iFlags.IsSet(CHtmlElementImpl::ETabStop) )
 		{
 			FocusChangingTo(e);
 			break;
@@ -683,7 +683,7 @@ void CHtmlElementDiv::SetLastFocus()
 			testing = e->iParent;
 		else
 			testing = e;
-		if(testing->CanFocus() && !testing->iState.IsSet(EElementStateHidden))
+		if(testing->CanFocus() && testing->iFlags.IsSet(CHtmlElementImpl::ETabStop) && !testing->iState.IsSet(EElementStateHidden))
 		{
 			FocusChangingTo(testing);
 			break;

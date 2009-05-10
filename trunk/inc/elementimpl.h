@@ -58,6 +58,11 @@ enum THtmlButtonEvent
 class CHtmlElementImpl : public CHtmlElement
 {
 public:
+	enum TBaseFlags 
+	{
+		ETabStop
+	};
+	
 	inline TInt TypeId() const;
 	virtual TBool CanFocus() const;
 	virtual void SetFocus(TBool aFocus);
