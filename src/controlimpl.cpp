@@ -737,7 +737,7 @@ void CHtmlControlImpl::ScrollToView(CHtmlElementImpl* aElement)
 	container->iScrollbar->SetPos(offset - 10);
 	if(container->IsFocused())
 	{
-		if(aElement->CanFocus())
+		if(aElement->CanFocus() && aElement->iFlags.IsSet(CHtmlElementImpl::ETabStop) )
 			SetFocusTo(aElement);
 		else
 			ResolveFocus(container);
@@ -776,7 +776,7 @@ void CHtmlControlImpl::UpdateVFEs(CHtmlElementDiv* aContainer)
 	{
 		if(e->TypeId()==EElementTypeA)
 		{
-			if(e->CanFocus() && !e->iState.IsSet(EElementStateHidden))
+			if(e->CanFocus() && e->iFlags.IsSet(CHtmlElementImpl::ETabStop) && !e->iState.IsSet(EElementStateHidden))
 			{
 				link = (CHtmlElementA*) e;
 				linkRect = TRect();
@@ -797,7 +797,7 @@ void CHtmlControlImpl::UpdateVFEs(CHtmlElementDiv* aContainer)
 			continue;
 		}
 		
-		if((e->CanFocus() && !e->iState.IsSet(EElementStateHidden) || link) && HcUtils::Intersects(e->Rect(), displayRect))
+		if((e->CanFocus() && e->iFlags.IsSet(CHtmlElementImpl::ETabStop) && !e->iState.IsSet(EElementStateHidden) || link) && HcUtils::Intersects(e->Rect(), displayRect))
 		{
 			if(link)
 			{
@@ -1384,12 +1384,14 @@ void CHtmlControlImpl::HandlePointerEventL2(const TPointerEvent& aPointerEvent)
 				GetElementByPosition(iTapInfo.iContainer, aPointerEvent.iPosition, e, notused, tapArea);
 				if(!e->IsFocused())
 				{
-					SetFocusTo(e);
+					if(e->iFlags.IsSet(CHtmlElementImpl::ETabStop)) {
+						SetFocusTo(e);
 					
 #ifdef TOUCH_FEEDBACK_SUPPORT
-					if(e!=iTapInfo.iContainer)
-						iEnv->TouchFeedback()->InstantFeedback(ETouchFeedbackSensitive);
+						if(e!=iTapInfo.iContainer)
+							iEnv->TouchFeedback()->InstantFeedback(ETouchFeedbackSensitive);
 #endif
+					}
 				}
 			}
 			
@@ -1418,7 +1420,9 @@ void CHtmlControlImpl::HandlePointerEventL2(const TPointerEvent& aPointerEvent)
 		if(!iTapInfo.iStartElement->IsFocused())
 		{
 			iTapInfo.iNewlyGainFocus = ETrue;
-			SetFocusTo(iTapInfo.iStartElement);
+			
+			if(iTapInfo.iStartElement->iFlags.IsSet(CHtmlElementImpl::ETabStop))
+				SetFocusTo(iTapInfo.iStartElement);
 		}
 		else
 			iTapInfo.iNewlyGainFocus = EFalse;

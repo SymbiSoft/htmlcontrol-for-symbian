@@ -207,6 +207,7 @@ ___LIT(KHStrLink, "link");
 ___LIT(KHStrHover, "hover");
 ___LIT(KHStrFocus, "focus");
 ___LIT(KHStrDown, "down");
+___LIT(KHStrTabStop, "tabstop");
 
 ___LIT(KHStrCreateSlides, "create-slides");
 ___LIT(KHStrCreateList, "create-list");

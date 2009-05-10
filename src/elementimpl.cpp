@@ -12,6 +12,7 @@
 CHtmlElementImpl::CHtmlElementImpl(CHtmlControl* aOwner):CHtmlElement(aOwner)
 {
 	iLineVAlign = EVCenter;
+	iFlags.Set(ETabStop);
 }
 
 TBool CHtmlElementImpl::CanFocus() const 
@@ -122,6 +123,10 @@ TBool CHtmlElementImpl::SetProperty(const TDesC& aName, const TDesC& aValue)
 	else if(aName.CompareF(KHStrLineVAlign)==0)
 	{
 		HtmlParser::ParseVAlign(aValue, iLineVAlign);
+	}
+	else if(aName.CompareF(KHStrTabStop)==0)
+	{
+		iFlags.Assign(ETabStop, HcUtils::StrToBool(aValue));
 	}
 	else
 		return EFalse;
