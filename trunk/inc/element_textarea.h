@@ -44,7 +44,6 @@ public:
 	RHcStyle iStyle;
 	TInt iRows;
 	THcColor iLineColor;
-	TBitFlags8 iFlags;
 };
 
 inline TBool CHtmlElementTextArea::CanFocus() const
