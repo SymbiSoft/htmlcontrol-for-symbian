@@ -1,10 +1,10 @@
 #summary Tutorial How to use scrollable/clipped text in list.
 
-ÔÚÁÐ±íÏîÖÐ£¬Èç¹ûÎÄ×Ö³¬³öÁËÆÁÄ»·¶Î§£¬¿ÉÒÔÎªÆäÌí¼Ó×Ô¶¯¹ö¶¯£¨ÀàËÆS60±ê×¼ListÖÐµÄMarquee£©»òÕß×Ô¶¯½Ø¶ÏºóÌí¼ÓÊ¡ÂÔºÅµÄ¹¦ÄÜ¡£ÀýÈç
+åœ¨åˆ—è¡¨é¡¹ä¸­ï¼Œå¦‚æžœæ–‡å­—è¶…å‡ºäº†å±å¹•èŒƒå›´ï¼Œå¯ä»¥ä¸ºå…¶æ·»åŠ è‡ªåŠ¨æ»šåŠ¨ï¼ˆç±»ä¼¼S60æ ‡å‡†Listä¸­çš„Marqueeï¼‰æˆ–è€…è‡ªåŠ¨æˆªæ–­åŽæ·»åŠ çœç•¥å·çš„åŠŸèƒ½ã€‚ä¾‹å¦‚
 {{{
 <div line-wrap='scroll'></div>
 }}}
-»òÕß
+æˆ–è€…
 {{{
 <div line-wrap='clip'></div>
 }}}
