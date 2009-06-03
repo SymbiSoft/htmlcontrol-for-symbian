@@ -78,7 +78,7 @@ _LIT(KHtml, "<img src='images/2.gif' width='200' height='200'>");
 http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-05-26_105940.jpg
 
 ==Button==
-可以使用<input type='button'>实现一个传统的button，不过这里不讨论这种简单的方式。我们看一种复杂的button。
+可以使用&lt;input type='button'&gt;实现一个传统的button，不过这里不讨论这种简单的方式。我们看一种复杂的button。
 {{{
 _LIT(KHtml, "<body style='padding:auto auto'><div focusing='true' style='width:100;height:30;border:1 inset #333333;background-color:#eeeeee;padding:auto auto'>Button</div></body>");
 }}}
