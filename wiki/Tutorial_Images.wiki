@@ -140,6 +140,11 @@ You can also add custom search path, e.g.
 HtmlCtlLib::AddSearchPathL(_L("c:\\data\\others\\"));
 Note: the path must end of backlash.
 }}}
+
+Full path is also supportted, e.g.
+{{{
+<img src='file:///c/data/images/11.gif'>
+}}}
   
 ==3. Image cache policy.==
 Images are cached in memory if their reference count is greate than zero. Once a image's reference count is zero, it will be unloaded immediatelly.
@@ -149,3 +154,11 @@ If you want a manually cache a image, try to do a trick by using global styleshe
 _LIT(KStyle, ".cached1 { background-image: pic.gif }");
 HtmlCtlLib::AddGlobalStyleSheet(KStyle);
 }}}
+
+==4. Failed-to-load images.==
+By default, images failed to load will display empty. You can change this behavior by setting img:error style. e.g.
+{{{
+_LIT(KStyle, "img:error { background-image: default/image_error.mbm}");
+iControl->AddStyleSheetL(KStyle);
+}}}
+Thus all images failed to load in iControl will display image_error.mbm.
