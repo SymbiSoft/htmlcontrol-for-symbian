@@ -9,10 +9,12 @@
 ==2.上下滑动==
 在带有滚动条的区域，默认情况下，我们需要拖动滚动条的滑块进行上下滑动。当页面较长，滑块较小时，长时间的拖动可能使用户感到疲劳。
 htmlcontrol支持直接拖动内容区，只需简单设置一个参数即可：
+
 在HTML中设置：
 {{{
 <div style='overflow:scroll' scroll-on-slide='true'></div>
 }}}
+
 或者动态设置：
 {{{
 //e是带有滚动条的DIV element指针
@@ -20,4 +22,5 @@ e->SetProperty(KHStrScrollOnSlide, ETrue);
 }}}
 
 滑动操作示意图
+
 http://htmlcontrol-for-symbian.googlecode.com/svn/wiki/images/2009-06-05_134526.jpg
