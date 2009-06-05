@@ -13,7 +13,7 @@ htmlcontrol支持直接拖动内容区，只需简单设置一个参数即可：
 {{{
 <div style='overflow:scroll' scroll-on-slide='true'></div>
 }}}
-动态设置：
+或者动态设置：
 {{{
 //e是带有滚动条的DIV element指针
 e->SetProperty(KHStrScrollOnSlide, ETrue);
