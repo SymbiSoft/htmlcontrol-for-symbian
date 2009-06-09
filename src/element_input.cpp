@@ -190,6 +190,10 @@ TBool CHtmlElementInput::SetProperty(const TDesC& aName, const TDesC& aValue)
 			((CEikEdwin*)iEmbedObject)->SetMaxLength(iMaxLength);
 #endif
 	}
+	else if(aName.Compare(KHStrDirectFocus)==0)
+	{
+		iFlags.Assign(EDirectFocus, HcUtils::StrToBool(aValue));
+	}
 	else if(aName.CompareF(KHStrClass)==0) 
 		iStyle.SetClass(aValue);
 	else if(aName.CompareF(KHStrStyle)==0) 
@@ -244,7 +248,13 @@ void CHtmlElementInput::SetFocus(TBool aFocus)
 	CHtmlElementImpl::SetFocus(aFocus);
 	
 	if(iEmbedObject) 
-		iEmbedObject->SetFocus(aFocus);
+	{
+		if(iFlags.IsSet(EDirectFocus) || !aFocus)
+			iEmbedObject->SetFocus(aFocus);
+
+		if(!aFocus && ((CEikEdwin*)iEmbedObject)->TextLength()>0)
+			((CEikEdwin*)iEmbedObject)->SetCursorPosL(0, EFalse);
+	}
 }
 
 void CHtmlElementInput::PrepareL() 
@@ -532,10 +542,33 @@ TKeyResponse CHtmlElementInput::OfferKeyEventL(const TKeyEvent &aKeyEvent, TEven
 	if(iInputType==EText || iInputType==EPassword)  
 	{
 		TInt keyCode = HcUtils::TranslateKey(aKeyEvent.iCode);
-		if(keyCode == EKeyUpArrow || keyCode==EKeyDownArrow)
-			return EKeyWasNotConsumed;
-		else
+		if(keyCode == EKeyEnter )
+		{
+			if(!iEmbedObject->IsFocused())
+			{
+				iEmbedObject->SetFocus(ETrue);
+				return EKeyWasConsumed;
+			}	
+		}
+		else if(keyCode == EKeyUpArrow || keyCode==EKeyDownArrow)
+		{
+			if(!iFlags.IsSet(EDirectFocus) && iEmbedObject->IsFocused())
+			{
+				iEmbedObject->SetFocus(EFalse);
+				if(((CEikEdwin*)iEmbedObject)->TextLength()>0)
+					((CEikEdwin*)iEmbedObject)->SetCursorPosL(0, EFalse);
+				return EKeyWasConsumed;
+			}
+			else
+			{
+				return EKeyWasNotConsumed;
+			}
+		}
+
+		if(iEmbedObject->IsFocused())		
 			return iEmbedObject->OfferKeyEventL(aKeyEvent, aType);
+		else
+			return EKeyWasNotConsumed;
 	}
 	else if(iInputType==ECheckBox) 
 	{
@@ -590,7 +623,12 @@ TKeyResponse CHtmlElementInput::OfferKeyEventL(const TKeyEvent &aKeyEvent, TEven
 
 void CHtmlElementInput::HandleButtonEventL(TInt aButtonEvent)
 {
-	if(iInputType==ECheckBox) 
+	if(iInputType==EText || iInputType==EPassword)
+	{
+		if(!iEmbedObject->IsFocused())
+			iEmbedObject->SetFocus(ETrue);
+	}
+	else if(iInputType==ECheckBox) 
 	{
 		if(aButtonEvent==EButtonEventClick || aButtonEvent==EButtonEventSelect)
 		{

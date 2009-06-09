@@ -10,7 +10,8 @@ public:
 	{
 		EChecked = 10,
 		EDisabled,
-		EReadOnly
+		EReadOnly,
+		EDirectFocus
 	};
 	
 	enum TInputType 

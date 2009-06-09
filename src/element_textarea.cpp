@@ -113,6 +113,10 @@ TBool CHtmlElementTextArea::SetProperty(const TDesC& aName, const TDesC& aValue)
 		if(iEmbedObject)
 			((CHcInputEditor*)iEmbedObject)->SetLineColor(iLineColor);
 	}
+	else if(aName.Compare(KHStrDirectFocus)==0)
+	{
+		iFlags.Assign(EDirectFocus, HcUtils::StrToBool(aValue));
+	}
 	else if(aName.CompareF(KHStrClass)==0) 
 		iStyle.SetClass(aValue);
 	else if(aName.CompareF(KHStrStyle)==0) 
@@ -164,7 +168,11 @@ void CHtmlElementTextArea::SetFocus(TBool aFocus)
 {
 	CHtmlElementImpl::SetFocus(aFocus);
 	
-	((CHcInputEditor*)iEmbedObject)->SetFocus(aFocus);
+	if(iFlags.IsSet(EDirectFocus) || !aFocus)
+		iEmbedObject->SetFocus(aFocus);
+
+	if(!aFocus && ((CEikEdwin*)iEmbedObject)->TextLength()>0)
+		((CEikEdwin*)iEmbedObject)->SetCursorPosL(0, EFalse);
 }
 
 void CHtmlElementTextArea::PrepareL() 
@@ -316,7 +324,42 @@ void CHtmlElementTextArea::DrawFocus(CFbsBitGc& aGc) const
 
 TKeyResponse CHtmlElementTextArea::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode aType) 
 {
-	return iEmbedObject->OfferKeyEventL(aKeyEvent, aType);
+	TInt keyCode = HcUtils::TranslateKey(aKeyEvent.iCode);
+	if(keyCode == EKeyEnter)
+	{
+		if(!iEmbedObject->IsFocused())
+		{
+			iEmbedObject->SetFocus(ETrue);
+			return EKeyWasConsumed;
+		}	
+	}
+	
+	if(iEmbedObject->IsFocused())
+	{
+		TKeyResponse ret = iEmbedObject->OfferKeyEventL(aKeyEvent, aType);
+		if(ret==EKeyWasNotConsumed)
+		{
+			if(!iFlags.IsSet(EDirectFocus) && (keyCode == EKeyUpArrow || keyCode==EKeyDownArrow))
+			{
+				iEmbedObject->SetFocus(EFalse);
+				if(((CEikEdwin*)iEmbedObject)->TextLength()>0)
+					((CEikEdwin*)iEmbedObject)->SetCursorPosL(0, EFalse);
+				return EKeyWasConsumed;
+			}
+		}
+		
+		return ret;
+	}
+	else
+		return EKeyWasNotConsumed;
+}
+
+void CHtmlElementTextArea::HandleButtonEventL(TInt aButtonEvent)
+{
+	if(aButtonEvent==EButtonEventClick || aButtonEvent==EButtonEventSelect)
+	{
+		iEmbedObject->SetFocus(ETrue);
+	}
 }
 
 
