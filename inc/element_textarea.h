@@ -17,8 +17,7 @@ public:
 	{
 		EDisabled = 10,
 		EDrawLines,
-		EReadOnly,
-		EDirectFocus
+		EReadOnly
 	};
 	
 	CHtmlElementTextArea(CHtmlControl* aOwner);
@@ -34,8 +33,7 @@ public:
 	inline virtual TBool CanFocus() const;
 	virtual void SetFocus(TBool aFocus);
 	virtual TKeyResponse OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode aType);
-	virtual void HandleButtonEventL(TInt aButtonEvent);
-	
+
 	void SetEditorTextL(const TDesC& aText);
 	void Draw(CWindowGc& aGc, const CCoeControl& aControl, const TRect& aRect) const;
 	void DrawFocus(CFbsBitGc& aGc) const;
