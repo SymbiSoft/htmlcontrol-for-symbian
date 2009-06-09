@@ -140,7 +140,7 @@ void CHtmlCtlEnv::ConstructL()
 			input[type=button]:focus { margin:-2; border:1 solid #B1995C} \
 			input[type=checkbox]:focus {margin:-2; border:1 solid #B1995C} \
 			input[type=radio]:focus { margin:-2; border:1 solid #B1995C} \
-			input[type=text]:focus { margin:-2; border:2 solid #B1995C} \
+			input[type=text]:focus { margin:-2; border:1 solid #B1995C} \
 			input[type=button]:down { border:1 inset #eeeeee } \
 			textarea { background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; clear:both} \
 			textarea:focus { margin:-2; border:1 solid #B1995C} \
