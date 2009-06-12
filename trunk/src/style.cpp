@@ -186,6 +186,12 @@ TInt THcTextStyle::FontMatchCode() const
 	if(IsSet(THcTextStyle::EItalics))
 		result |= 2;
 	
+	if(IsSet(THcTextStyle::ESub))
+		result |= 4;
+	
+	if(IsSet(THcTextStyle::ESup))
+		result |= 8;
+	
 	return result;
 }
 
@@ -254,6 +260,12 @@ CFont* THcTextStyle::CreateFont() const
 		fontSpec.iFontStyle.SetPosture(EPostureItalic);
 	else
 		fontSpec.iFontStyle.SetPosture(EPostureUpright);
+	if(IsSet(THcTextStyle::ESub))
+		fontSpec.iFontStyle.SetPrintPosition(EPrintPosSubscript);
+	else if(IsSet(THcTextStyle::ESup))
+		fontSpec.iFontStyle.SetPrintPosition(EPrintPosSuperscript);
+	else
+		fontSpec.iFontStyle.SetPrintPosition(EPrintPosNormal);
 	if(IsSet(THcTextStyle::ESize) && iSize>0) 
 		fontSpec.iHeight = CEikonEnv::Static()->ScreenDevice()->VerticalPixelsToTwips(iSize);
 	

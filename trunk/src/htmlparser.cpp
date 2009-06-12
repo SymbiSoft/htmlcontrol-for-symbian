@@ -226,6 +226,20 @@ void CHtmlParser::ParseL(const TDesC& aSource, CHtmlElementImpl* aHead, TInt aFl
 			else
 				iTextStyle.Clear(THcTextStyle::EUnderline);
 		}
+		else if(name.Compare(KHStrSub)==0)
+		{
+			if(tagType==0) 
+				iTextStyle.Set(THcTextStyle::ESub);	
+			else if(tagType==1)
+				iTextStyle.Clear(THcTextStyle::ESub);
+		}
+		else if(name.Compare(KHStrSup)==0)
+		{
+			if(tagType==0) 
+				iTextStyle.Set(THcTextStyle::ESup);	
+			else if(tagType==1)
+				iTextStyle.Clear(THcTextStyle::ESup);
+		}
 		else if(name.Compare(KHStrFont)==0)
 		{
 			if(tagType==0) 
