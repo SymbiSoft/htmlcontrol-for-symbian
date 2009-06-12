@@ -51,6 +51,8 @@ SOURCE	element_textarea.cpp
 USERINCLUDE   ..\inc
 SYSTEMINCLUDE \Epoc32\include
 
+//WARNING: Suggested tool to compile this project is Carbide C++.
+
 //NOTE: If you are compiling the library in Symbian7.0s, please add following line in EPOC32\include\variant\Symbian_OS_v7.0.hrh
 // #define __SERIES60_21__
 

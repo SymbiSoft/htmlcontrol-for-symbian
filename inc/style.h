@@ -267,7 +267,9 @@ public:
 		EBold,
 		EItalics,
 		EUnderline,
-		ELineThrough
+		ELineThrough,
+		ESub,
+		ESup
 	};
 	
 	inline void Set(TTextStyleId aStyleId)

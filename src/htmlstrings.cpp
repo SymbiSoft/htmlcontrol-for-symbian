@@ -209,6 +209,8 @@ ___LIT(KHStrFocus, "focus");
 ___LIT(KHStrDown, "down");
 ___LIT(KHStrTabStop, "tabstop");
 ___LIT(KHStrDirectFocus, "direct-focus");
+___LIT(KHStrSub, "sub");
+___LIT(KHStrSup, "sup");
 
 ___LIT(KHStrCreateSlides, "create-slides");
 ___LIT(KHStrCreateList, "create-list");
