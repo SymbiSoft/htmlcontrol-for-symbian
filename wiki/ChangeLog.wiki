@@ -1,7 +1,9 @@
 #summary Change Logs
 
 -------------htmlcontrol 1.1.5-------------------
+
 1.Improved: Change the input(type='text')/textarea element focusing behavior. The user should hit selection key to activate focus of edit control. However, you can set the 'direct-focus' property to be true to avoid it.
+
 2.Improved: Add <sup> and <sub> support.
 
 -------------htmlcontrol 1.1.4-------------------
