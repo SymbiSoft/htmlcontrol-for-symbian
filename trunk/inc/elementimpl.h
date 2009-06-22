@@ -95,7 +95,8 @@ public:
 	//0~9 is reserved for this class, derived class should use the value start from 10
 	TBitFlags32 iFlags;
 	TVAlign iLineVAlign;
-
+	TChar iAccessKey;
+	
 protected:
 	CHtmlElementImpl(CHtmlControl* aOwner);
 	void BaseClone(CHtmlElementImpl& aTarget) const;

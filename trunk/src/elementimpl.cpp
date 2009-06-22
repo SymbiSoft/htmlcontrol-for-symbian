@@ -70,6 +70,7 @@ void CHtmlElementImpl::BaseClone(CHtmlElementImpl& aTarget) const
 	aTarget.iId.Copy(iId);
 	aTarget.iLineVAlign = iLineVAlign;
 	aTarget.iFlags = iFlags;
+	aTarget.iAccessKey = iAccessKey;
 }
 
 TBool CHtmlElementImpl::GetProperty(const TDesC& aName , TDes& aBuffer)  const
@@ -127,6 +128,13 @@ TBool CHtmlElementImpl::SetProperty(const TDesC& aName, const TDesC& aValue)
 	else if(aName.CompareF(KHStrTabStop)==0)
 	{
 		iFlags.Assign(ETabStop, HcUtils::StrToBool(aValue));
+	}
+	else if(aName.CompareF(KHStrAccessKey)==0)
+	{
+		if(aValue.Length()>0)
+			iAccessKey = aValue[0];
+		else
+			iAccessKey = '\0'; 
 	}
 	else
 		return EFalse;

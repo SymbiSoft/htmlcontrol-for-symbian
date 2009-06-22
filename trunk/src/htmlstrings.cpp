@@ -211,6 +211,7 @@ ___LIT(KHStrTabStop, "tabstop");
 ___LIT(KHStrDirectFocus, "direct-focus");
 ___LIT(KHStrSub, "sub");
 ___LIT(KHStrSup, "sup");
+___LIT(KHStrAccessKey, "accesskey");
 
 ___LIT(KHStrCreateSlides, "create-slides");
 ___LIT(KHStrCreateList, "create-list");
