@@ -1185,7 +1185,7 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 		case EKeyDownArrow:
 			HandleKeyDown(aContainer); 
 			break;
-			
+/*			
 		case '*':
 			aContainer->iScrollbar->SetTopPos();
 			aContainer->SetFirstFocus();
@@ -1195,6 +1195,7 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 			aContainer->iScrollbar->SetBottomPos();
 			aContainer->SetLastFocus();
 			break;
+*/
 	}
 	
 	if(aContainer->iScrollbar->Pos()!=aContainer->iScrollbar->RealPos())
@@ -1215,14 +1216,33 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEven
 	if(iState.IsSet(EHCSInTransition))
 		return EKeyWasConsumed;
 	
+	TKeyResponse ret = EKeyWasNotConsumed;
 	TRAPD(error,
-		OfferKeyEventL2(iBody, aKeyEvent, aType);
+		ret = OfferKeyEventL2(iBody, aKeyEvent, aType);
 	);
 	
 	if(error==KErrAbort)
 		return EKeyWasConsumed;
 	else
 		User::LeaveIfError(error);
+	
+	if(ret==EKeyWasNotConsumed && aType==EEventKey && aKeyEvent.iCode>32 && aKeyEvent.iCode<128)
+	{
+		//access key support
+		CHtmlElementImpl* e = iBody;
+		do
+		{
+			if(!e->iState.IsSet(EElementStateHidden) && e->iAccessKey==aKeyEvent.iCode)
+			{
+				ScrollToView(e);
+				if(e->CanFocus())
+					e->HandleButtonEventL(EButtonEventClick);
+				break;
+			}
+			e = e->iNext;
+		}
+		while(e!=iBody);
+	}
 	
 	if(iState.IsSet(EHCSNeedRefresh))
 		Refresh();
