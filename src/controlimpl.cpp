@@ -1215,34 +1215,32 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEven
 {
 	if(iState.IsSet(EHCSInTransition))
 		return EKeyWasConsumed;
-	
-	TKeyResponse ret = EKeyWasNotConsumed;
+
 	TRAPD(error,
-		ret = OfferKeyEventL2(iBody, aKeyEvent, aType);
+		TKeyResponse ret = OfferKeyEventL2(iBody, aKeyEvent, aType);
+		if(ret==EKeyWasNotConsumed && aType==EEventKey && aKeyEvent.iCode>32 && aKeyEvent.iCode<128)
+		{
+			//access key support
+			CHtmlElementImpl* e = iBody;
+			do
+			{
+				if(!e->iState.IsSet(EElementStateHidden) && e->iAccessKey==aKeyEvent.iCode)
+				{
+					ScrollToView(e);
+					if(e->CanFocus())
+						e->HandleButtonEventL(EButtonEventClick);
+					break;
+				}
+				e = e->iNext;
+			}
+			while(e!=iBody);
+		}
 	);
 	
 	if(error==KErrAbort)
 		return EKeyWasConsumed;
 	else
 		User::LeaveIfError(error);
-	
-	if(ret==EKeyWasNotConsumed && aType==EEventKey && aKeyEvent.iCode>32 && aKeyEvent.iCode<128)
-	{
-		//access key support
-		CHtmlElementImpl* e = iBody;
-		do
-		{
-			if(!e->iState.IsSet(EElementStateHidden) && e->iAccessKey==aKeyEvent.iCode)
-			{
-				ScrollToView(e);
-				if(e->CanFocus())
-					e->HandleButtonEventL(EButtonEventClick);
-				break;
-			}
-			e = e->iNext;
-		}
-		while(e!=iBody);
-	}
 	
 	if(iState.IsSet(EHCSNeedRefresh))
 		Refresh();
