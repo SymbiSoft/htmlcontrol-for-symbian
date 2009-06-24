@@ -1214,10 +1214,11 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 TKeyResponse CHtmlControlImpl::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEventCode aType) 
 {
 	if(iState.IsSet(EHCSInTransition))
-		return EKeyWasConsumed;
+		return EKeyWasNotConsumed;
 
+	TKeyResponse ret = EKeyWasNotConsumed;
 	TRAPD(error,
-		TKeyResponse ret = OfferKeyEventL2(iBody, aKeyEvent, aType);
+		ret = OfferKeyEventL2(iBody, aKeyEvent, aType);
 		if(ret==EKeyWasNotConsumed && aType==EEventKey && aKeyEvent.iCode>32 && aKeyEvent.iCode<128)
 		{
 			//access key support
@@ -1229,6 +1230,7 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEven
 					ScrollToView(e);
 					if(e->CanFocus())
 						e->HandleButtonEventL(EButtonEventClick);
+					ret = EKeyWasConsumed;
 					break;
 				}
 				e = e->iNext;
@@ -1238,7 +1240,7 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEven
 	);
 	
 	if(error==KErrAbort)
-		return EKeyWasConsumed;
+		return ret;
 	else
 		User::LeaveIfError(error);
 	
@@ -1248,7 +1250,7 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEven
 	if(iState.IsSet(EHCSNeedRedraw))
 		iControl->DrawNow();
 
-	return EKeyWasConsumed;
+	return ret;
 }
 
 TBool CHtmlControlImpl::HitTest(CHtmlElementImpl* aElement, const TPoint& aPoint) const
