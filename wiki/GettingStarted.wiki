@@ -5,7 +5,7 @@ HtmlControl is provided as static library, so add the following statement to you
 {{{
 STATICLIBRARY htmlcontrol.lib
 }}}
-Some system libraries must be included at the same time, for S60, they are
+Some system libraries must be included at the same time, for S60 3rd, they are
 {{{
 LIBRARY	bafl.lib eikdlg.lib eikcoctl.lib eikctl.lib
 LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
@@ -13,9 +13,28 @@ LIBRARY form.lib etext.lib uiklaf.lib
 LIBRARY aknskins.lib aknskinsrv.lib aknswallpaperutils.lib aknicon.lib
 LIBRARY imageconversion.lib charconv.lib
 LIBRARY inetprotutil.lib
-//LIBRARY touchfeedback.lib
 }}}
-note: 'touchfeedback.lib' is only required in S60 5th Edition.
+
+And for S60 5th, they are
+{{{
+LIBRARY	bafl.lib eikdlg.lib eikcoctl.lib eikctl.lib
+LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
+LIBRARY form.lib etext.lib uiklaf.lib
+LIBRARY aknskins.lib aknskinsrv.lib aknswallpaperutils.lib aknicon.lib
+LIBRARY imageconversion.lib charconv.lib
+LIBRARY inetprotutil.lib
+LIBRARY touchfeedback.lib
+}}}
+
+And for S60 2nd, they are
+{{{
+LIBRARY	bafl.lib eikdlg.lib eikcoctl.lib eikctl.lib apgrfx.lib
+LIBRARY	gdi.lib fbscli.lib bitgdi.lib ws32.lib egul.lib 
+LIBRARY form.lib etext.lib uiklaf.lib
+LIBRARY aknskins.lib aknskinsrv.lib
+LIBRARY imageconversion.lib
+LIBRARY inetprotutil.lib
+}}}
 
 And for UIQ, they are
 {{{
