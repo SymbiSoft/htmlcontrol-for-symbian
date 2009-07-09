@@ -733,7 +733,7 @@ void CHtmlControlImpl::ScrollToView(CHtmlElementImpl* aElement)
 		return;
 
 	CHtmlElementDiv* container = FindContainer(aElement);
-	TInt offset = aElement->iPosition.iY + container->iScrollbar->RealPos();
+	TInt offset = aElement->iPosition.iY + container->iScrollbar->RealPos()- container->iPosition.iY;
 	container->iScrollbar->SetPos(offset - 10);
 	if(container->IsFocused())
 	{
