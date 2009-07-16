@@ -607,14 +607,21 @@ void CHtmlElementDiv::SetFocus(TBool aFocus)
 		if(aFocus)
 		{
 			if(!iFocusedElement)
-				SetFirstFocus();
+			{
+				if(!iOwner->Impl()->iState.IsSet(EHCSNavReverseDirection))
+					SetFirstFocus();
+				else
+					SetLastFocus();
+			}
 			else
 				iFocusedElement->SetFocus(ETrue);
 		}
 		else
 		{
-			if(iFocusedElement && iFocusedElement->IsFocused()) 
+			if(iFocusedElement && iFocusedElement->IsFocused()) { 
 				iFocusedElement->SetFocus(EFalse);
+				iFocusedElement = NULL;
+			}
 		}
 	}
 }
@@ -657,6 +664,8 @@ void CHtmlElementDiv::FocusChangingTo(CHtmlElementImpl* aElement)
 
 void CHtmlElementDiv::SetFirstFocus()
 {
+	iScrollbar->SetTopPos();
+	
 	CHtmlElementImpl* e = this->iNext;
 	while(e!=iEnd)
 	{
@@ -675,6 +684,8 @@ void CHtmlElementDiv::SetFirstFocus()
 
 void CHtmlElementDiv::SetLastFocus()
 {
+	iScrollbar->SetBottomPos();
+	
 	CHtmlElementImpl* e = this->iEnd->iPrev;
 	CHtmlElementImpl* testing;
 	while(e!=this)
