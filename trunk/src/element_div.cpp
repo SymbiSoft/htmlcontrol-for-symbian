@@ -606,22 +606,19 @@ void CHtmlElementDiv::SetFocus(TBool aFocus)
 	{
 		if(aFocus)
 		{
-			if(!iFocusedElement)
-			{
-				if(!iOwner->Impl()->iState.IsSet(EHCSNavReverseDirection))
-					SetFirstFocus();
-				else
-					SetLastFocus();
-			}
-			else
+			if(iOwner->Impl()->iState.IsSet(EHCSNavKeyNext))
+				SetFirstFocus();
+			else if(iOwner->Impl()->iState.IsSet(EHCSNavKeyPrev))
+				SetLastFocus();
+			else if(iFocusedElement)
 				iFocusedElement->SetFocus(ETrue);
+			else
+				SetFirstFocus();
 		}
 		else
 		{
-			if(iFocusedElement && iFocusedElement->IsFocused()) { 
+			if(iFocusedElement && iFocusedElement->IsFocused())
 				iFocusedElement->SetFocus(EFalse);
-				iFocusedElement = NULL;
-			}
 		}
 	}
 }
@@ -632,7 +629,7 @@ void CHtmlElementDiv::FocusChangingTo(CHtmlElementImpl* aElement)
 	{
 	 	if(iFocusedElement && !iFocusedElement->IsFocused()) 
 	 	{
-	 		if(!IsFocused())
+	 		if(IsFocused())
 	 		{
 				iFocusedElement->SetFocus( ETrue );
 				iState.Set(EElementStateFocusChanged);
@@ -664,47 +661,55 @@ void CHtmlElementDiv::FocusChangingTo(CHtmlElementImpl* aElement)
 
 void CHtmlElementDiv::SetFirstFocus()
 {
-	iScrollbar->SetTopPos();
+	if(iList && !iList->IsEmpty())
+		iList->ScrollTop();
+	else {
+		iScrollbar->SetTopPos();
 	
-	CHtmlElementImpl* e = this->iNext;
-	while(e!=iEnd)
-	{
-		if(e->CanFocus() && !e->iState.IsSet(EElementStateHidden) && e->iFlags.IsSet(CHtmlElementImpl::ETabStop) )
+		CHtmlElementImpl* e = this->iNext;
+		while(e!=iEnd)
 		{
-			FocusChangingTo(e);
-			break;
+			if(e->CanFocus() && !e->iState.IsSet(EElementStateHidden) && e->iFlags.IsSet(CHtmlElementImpl::ETabStop) )
+			{
+				FocusChangingTo(e);
+				break;
+			}
+	
+			if(e->TypeId()==EElementTypeDiv 
+					&& (((CHtmlElementDiv*)e)->IsContainer() || e->iState.IsSet(EElementStateHidden)))
+				e = ((CHtmlElementDiv*)e)->iEnd;
+			e = e->iNext;
 		}
-
-		if(e->TypeId()==EElementTypeDiv 
-				&& (((CHtmlElementDiv*)e)->IsContainer() || e->iState.IsSet(EElementStateHidden)))
-			e = ((CHtmlElementDiv*)e)->iEnd;
-		e = e->iNext;
 	}
 }
 
 void CHtmlElementDiv::SetLastFocus()
 {
-	iScrollbar->SetBottomPos();
+	if(iList && !iList->IsEmpty())
+		iList->ScrollBottom();
+	else {
+		iScrollbar->SetBottomPos();
 	
-	CHtmlElementImpl* e = this->iEnd->iPrev;
-	CHtmlElementImpl* testing;
-	while(e!=this)
-	{
-		if(e->TypeId()==EElementTypeDivEnd)
-			testing = e->iParent;
-		else
-			testing = e;
-		if(testing->CanFocus() && testing->iFlags.IsSet(CHtmlElementImpl::ETabStop) && !testing->iState.IsSet(EElementStateHidden))
+		CHtmlElementImpl* e = this->iEnd->iPrev;
+		CHtmlElementImpl* testing;
+		while(e!=this)
 		{
-			FocusChangingTo(testing);
-			break;
+			if(e->TypeId()==EElementTypeDivEnd)
+				testing = e->iParent;
+			else
+				testing = e;
+			if(testing->CanFocus() && testing->iFlags.IsSet(CHtmlElementImpl::ETabStop) && !testing->iState.IsSet(EElementStateHidden))
+			{
+				FocusChangingTo(testing);
+				break;
+			}
+			
+			if(testing->TypeId()==EElementTypeDiv 
+					&& (((CHtmlElementDiv*)testing)->IsContainer() || testing->iState.IsSet(EElementStateHidden)))
+				e = testing->iPrev;
+			else
+				e = e->iPrev;
 		}
-		
-		if(testing->TypeId()==EElementTypeDiv 
-				&& (((CHtmlElementDiv*)testing)->IsContainer() || testing->iState.IsSet(EElementStateHidden)))
-			e = testing->iPrev;
-		else
-			e = e->iPrev;
 	}
 }
 
