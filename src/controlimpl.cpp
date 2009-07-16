@@ -1175,20 +1175,22 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 	switch(keyCode)
 	{
 		case EKeyLeftArrow:
-			iState.Set(EHCSNavReverseDirection);
+			iState.Set(EHCSNavKeyPrev);
 			HandleKeyLeft(aContainer);
 			break;
 			
 		case EKeyRightArrow:
+			iState.Set(EHCSNavKeyNext);
 			HandleKeyRight(aContainer);
 			break;
 			
 		case EKeyUpArrow:
-			iState.Set(EHCSNavReverseDirection);
+			iState.Set(EHCSNavKeyPrev);
 			HandleKeyUp(aContainer);
 			break;
 			
 		case EKeyDownArrow:
+			iState.Set(EHCSNavKeyNext);
 			HandleKeyDown(aContainer); 
 			break;
 //use accesskey property to gain these functions instead
@@ -1204,7 +1206,8 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 			break;
 */
 	}
-	iState.Clear(EHCSNavReverseDirection);
+	iState.Clear(EHCSNavKeyPrev);
+	iState.Clear(EHCSNavKeyNext);
 	if(aContainer->iScrollbar->Pos()!=aContainer->iScrollbar->RealPos())
 	{
 		if(!iState.IsSet(EHCSNeedRefresh))

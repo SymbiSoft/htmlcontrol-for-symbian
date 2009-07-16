@@ -27,7 +27,8 @@ enum THtmlControlState
 	EHCSNeedRefresh,
 	EHCSNeedRedraw,
 	EHCSExiting,
-	EHCSNavReverseDirection
+	EHCSNavKeyPrev,
+	EHCSNavKeyNext
 };
 
 class CHtmlControlImpl : public CBase, public MImageLoadedEventSubscriber
