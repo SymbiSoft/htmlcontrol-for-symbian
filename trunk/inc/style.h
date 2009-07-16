@@ -292,7 +292,7 @@ public:
 	{
 		return iMask.iFlags==0;
 	}
-	inline TInt THcTextStyle::GetLineHeight(TInt aFontHeight) const
+	inline TInt GetLineHeight(TInt aFontHeight) const
 	{
 		if(iMask.IsSet(ELineHeight)) 
 		{
