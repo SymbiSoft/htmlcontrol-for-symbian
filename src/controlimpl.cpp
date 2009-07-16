@@ -970,7 +970,8 @@ void CHtmlControlImpl::HandleKeyLeft(CHtmlElementDiv* aContainer, TBool aScrolle
 	
 	if(found)
 	{
-		TInt offset = found->iPosition.iY - aContainer->iDisplayRect.iTl.iY - 2;
+		TInt adjustY = aContainer->iScrollbar->RealPos() - aContainer->iScrollbar->Pos();
+		TInt offset = found->iPosition.iY + adjustY - aContainer->iDisplayRect.iTl.iY - 2;
 		if(offset<0 && offset<aContainer->iDisplayRect.Height())  //partical visible
 			aContainer->iScrollbar->AddPos(offset);	
 		aContainer->FocusChangingTo(found);
@@ -1004,7 +1005,8 @@ void CHtmlControlImpl::HandleKeyRight(CHtmlElementDiv* aContainer, TBool aScroll
 	
 	if(found)
 	{
-		TInt offset = found->iPosition.iY + found->iSize.iHeight  - aContainer->iDisplayRect.iBr.iY + 2;
+		TInt adjustY = aContainer->iScrollbar->RealPos() - aContainer->iScrollbar->Pos();
+		TInt offset = found->iPosition.iY + adjustY + found->iSize.iHeight  - aContainer->iDisplayRect.iBr.iY + 2;
 		if(offset>0 && offset<aContainer->iDisplayRect.Height())  //partical visible
 			aContainer->iScrollbar->AddPos(offset);
 		aContainer->FocusChangingTo(found);
@@ -1031,7 +1033,7 @@ void CHtmlControlImpl::HandleKeyUp(CHtmlElementDiv* aContainer, TBool aScrolled)
 			if(aContainer->iScrollbar->Max()==0) //can't scroll
 			{
 				//search from the bottom
-				if(iVFEs.Count()>0)
+				if(aContainer->iScrollbar->IsLoop() && iVFEs.Count()>0)
 					found = FindBelowElement(iVFEs.Count()-1, aContainer->iFocusedElement->iPosition.iX);
 			}
 			else if(!aScrolled && aContainer->iScrollbar->RemoveStepPos(ETrue)) //suc scroll
@@ -1067,7 +1069,8 @@ void CHtmlControlImpl::HandleKeyUp(CHtmlElementDiv* aContainer, TBool aScrolled)
 	
 	if(found)
 	{
-		TInt offset = found->iPosition.iY - aContainer->iDisplayRect.iTl.iY - 2;
+		TInt adjustY = aContainer->iScrollbar->RealPos() - aContainer->iScrollbar->Pos();
+		TInt offset = found->iPosition.iY + adjustY - aContainer->iDisplayRect.iTl.iY - 2;
 		if(offset<0 && offset<aContainer->iDisplayRect.Height())  //partical visible
 			aContainer->iScrollbar->AddPos(offset);
 		aContainer->FocusChangingTo(found);
@@ -1094,7 +1097,7 @@ void CHtmlControlImpl::HandleKeyDown(CHtmlElementDiv* aContainer, TBool aScrolle
 			if(aContainer->iScrollbar->Max()==0) //can't scroll
 			{
 				//search from the top
-				if(iVFEs.Count()>0)
+				if(aContainer->iScrollbar->IsLoop() && iVFEs.Count()>0)
 					found = FindBelowElement(0, aContainer->iFocusedElement->iPosition.iX);
 			}
 			else if(!aScrolled && aContainer->iScrollbar->AddStepPos(ETrue)) //suc scroll
@@ -1129,7 +1132,8 @@ void CHtmlControlImpl::HandleKeyDown(CHtmlElementDiv* aContainer, TBool aScrolle
 	
 	if(found)
 	{
-		TInt offset = found->iPosition.iY + found->iSize.iHeight - aContainer->iDisplayRect.iBr.iY + 2;
+		TInt adjustY = aContainer->iScrollbar->RealPos() - aContainer->iScrollbar->Pos();
+		TInt offset = found->iPosition.iY + adjustY + found->iSize.iHeight - aContainer->iDisplayRect.iBr.iY + 2;
 		if(offset>0 && offset<aContainer->iDisplayRect.Height())  //partical visible
 			aContainer->iScrollbar->AddPos(offset);	
 		aContainer->FocusChangingTo(found);	
@@ -1171,6 +1175,7 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 	switch(keyCode)
 	{
 		case EKeyLeftArrow:
+			iState.Set(EHCSNavReverseDirection);
 			HandleKeyLeft(aContainer);
 			break;
 			
@@ -1179,12 +1184,14 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 			break;
 			
 		case EKeyUpArrow:
+			iState.Set(EHCSNavReverseDirection);
 			HandleKeyUp(aContainer);
 			break;
 			
 		case EKeyDownArrow:
 			HandleKeyDown(aContainer); 
 			break;
+//use accesskey property to gain these functions instead
 /*			
 		case '*':
 			aContainer->iScrollbar->SetTopPos();
@@ -1197,7 +1204,7 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL2 (CHtmlElementDiv* aContainer, con
 			break;
 */
 	}
-	
+	iState.Clear(EHCSNavReverseDirection);
 	if(aContainer->iScrollbar->Pos()!=aContainer->iScrollbar->RealPos())
 	{
 		if(!iState.IsSet(EHCSNeedRefresh))
