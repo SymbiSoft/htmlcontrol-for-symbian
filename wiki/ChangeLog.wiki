@@ -1,5 +1,15 @@
 #summary Change Logs
 
+-------------htmlcontrol 1.1.6-------------------
+
+1.Improved: Add accesskey support.
+
+2.Fixed: return EKeyWasNotConsumed if htmlcontrol didn't handle the key, in OfferKeyEventL.
+
+3.Fixed: incorrect offset value in CHtmlControlImpl::ScrollToView (reported and fixed by Mimmo).
+
+4.Fixed: bug in navigation among containers.(reported by Mimmo).
+
 -------------htmlcontrol 1.1.5-------------------
 
 1.Improved: Change the input(type='text')/textarea element focusing behavior. The user should hit selection key to activate focus of edit control. However, you can set the 'direct-focus' property to be true to avoid it.
