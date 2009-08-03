@@ -129,6 +129,7 @@ ___LIT(KHStrDownStyle, "down-style");
 ___LIT(KHStrScrollLoop, "scroll-loop");
 ___LIT(KHStrScrollStep, "scroll-step");
 ___LIT(KHStrScrollPos, "scroll-pos");
+___LIT(KHStrScrollMax, "scroll-max");
 ___LIT(KHStrScrollVisible, "scroll-visible");
 ___LIT(KHStrScrollOnSlide, "scroll-on-slide");
 ___LIT(KHStrSrc, "src");

@@ -40,6 +40,8 @@ TBool CHcScrollbar::GetProperty(const TDesC& aName, TDes& aBuffer)
 {
 	if(aName.Compare(KHStrScrollPos)==0)
 		aBuffer.Num(iRealPos);
+	else if(aName.Compare(KHStrScrollMax)==0)
+		aBuffer.Num(iMax);
 	else
 		return EFalse;
 	
