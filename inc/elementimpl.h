@@ -68,6 +68,7 @@ public:
 	virtual void SetFocus(TBool aFocus);
 	virtual TBool GetProperty(const TDesC& aName, TDes& aBuffer) const ;
 	virtual TBool SetProperty(const TDesC& aName, const TDesC& aValue);
+	virtual void InvokeL(TRefByValue< const TDesC16 > aCommand, ...);
 	virtual void PrepareL();
 	virtual void Measure(CHcMeasureStatus& aStatus) = 0;
 	virtual void Layout();

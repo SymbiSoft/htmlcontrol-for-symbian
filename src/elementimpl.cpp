@@ -142,13 +142,20 @@ TBool CHtmlElementImpl::SetProperty(const TDesC& aName, const TDesC& aValue)
 	return ETrue;
 }
 
+void CHtmlElementImpl::InvokeL(TRefByValue< const TDesC16 > aCommand, ...)
+{
+	const TDesC& cmd = (const TDesC&)aCommand;
+	if(cmd.CompareF(KHStrClick)==0)
+		HandleButtonEventL(EButtonEventClick);
+}
+
 void CHtmlElementImpl::DoMeasure(CHcMeasureStatus& aStatus, const CHcStyle& aStyle, const TSize& aDefaultSize, TBool aForceSize)
 {
 	const TRect& parentRect = iParent->iDisplayRect;
 	TAlign align = ELeft;
 	TVAlign valign = EVTop;
 	
-	if(aStyle.IsSet(CHcStyle::EClearLeft) || aStatus.iPosition.iX>=parentRect.iBr.iX)
+	if(aStyle.IsClearLeft() || aStatus.iPosition.iX>=parentRect.iBr.iX)
 		aStatus.NewLine();
 	
 	TRect displayRect = TRect(aStatus.iPosition, parentRect.iBr);
@@ -220,6 +227,9 @@ void CHtmlElementImpl::DoMeasure(CHcMeasureStatus& aStatus, const CHcStyle& aSty
 		displayRect.iTl += TPoint(margins.iLeft, margins.iTop);
 	}
 	
+	if(displayRect.iTl.iX + width >= parentRect.iBr.iX)
+		width = parentRect.iBr.iX -  displayRect.iTl.iX - margins.iRight;
+	
 	if(aStyle.IsSet(CHcStyle::EMaxWidth))
 	{
 		TInt maxWidth = aStyle.iMaxWidth.GetRealValue(parentRect.Width(), width);
@@ -251,10 +261,10 @@ void CHtmlElementImpl::DoMeasure(CHcMeasureStatus& aStatus, const CHcStyle& aSty
 	if(!aStyle.IsSet(CHcStyle::ETop))
 		aStatus.CurrentLineInfo().SetHeightIfGreater(iLineHeight);
 
-	if(aStyle.IsSet(CHcStyle::EClearRight))
+	if(aStyle.IsClearRight())
 		aStatus.NewLine();
 
-	if(aStyle.IsSet(CHcStyle::EHidden))
+	if(aStyle.IsHidden())
 		iState.Set(EElementStateHidden);
 }
 

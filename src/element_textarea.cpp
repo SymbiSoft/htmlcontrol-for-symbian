@@ -243,7 +243,7 @@ void CHtmlElementTextArea::Measure(CHcMeasureStatus& aStatus)
 			iStyle.Style().iTextStyle.iSize = aStatus.CurrentTextStyle().iSize;
 	}
 	
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone)) 
+	if(iStyle.Style().IsDisplayNone()) 
 	{
 		iState.Set(EElementStateHidden);
 		return;
@@ -332,6 +332,11 @@ TKeyResponse CHtmlElementTextArea::OfferKeyEventL (const TKeyEvent &aKeyEvent, T
 			iEmbedObject->SetFocus(ETrue);
 			return EKeyWasConsumed;
 		}	
+	}
+	if(aType==EEventKeyDown && aKeyEvent.iScanCode>32 && aKeyEvent.iScanCode<128)
+	{
+		if(!iEmbedObject->IsFocused())
+			iEmbedObject->SetFocus(ETrue);
 	}
 	
 	if(iEmbedObject->IsFocused())

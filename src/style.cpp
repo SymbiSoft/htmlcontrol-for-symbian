@@ -351,6 +351,18 @@ void CHcStyle::Add(const CHcStyle& aStyle)
 	if(aStyle.IsSet(EScale9Grid))
 		iScale9Grid = aStyle.iScale9Grid;
 	
+	if(aStyle.IsSet(EClear))
+		iClear = aStyle.iClear;
+	
+	if(aStyle.IsSet(EDisplay))
+		iDisplay = aStyle.iDisplay;
+	
+	if(aStyle.IsSet(EHidden))
+		iHidden = aStyle.iHidden;
+	
+	if(aStyle.IsSet(EFaded))
+		iFaded = aStyle.iFaded;
+	
 	iMask.iFlags |= aStyle.iMask.iFlags;
 }
 

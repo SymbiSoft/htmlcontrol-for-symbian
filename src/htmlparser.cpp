@@ -127,7 +127,7 @@ void CHtmlParser::AppendElementL(const TDesC& aSource, CHtmlElementImpl* aNewEle
 
 void CHtmlParser::RemoveDiv(CHtmlElementDiv* aDiv)
 {
-	if(aDiv->iStyle.IsSetStyle(CHcStyle::EDisplayNone) || aDiv->iStyle.IsSetStyle(CHcStyle::EHidden))
+	if(aDiv->iStyle.IsInvisibleStyle())
 	{
 		CHtmlElementImpl* e = aDiv->iNext;
 		CHtmlElementImpl* n;
@@ -625,21 +625,40 @@ void CHtmlParser::ParseL(const TDesC& aSource, CHtmlElementImpl* aHead, TInt aFl
 				break;
 			}
 		}
-		else if(name.Compare(KHStrHead)==0 || name.Compare(KHStrStyle)==0
-			|| name.Compare(KHStrScript)==0 || name.Compare(KHStrObject)==0)
+		else if(name.Compare(KHStrStyle)==0)
 		{
-			if(tagType==0) 
-				waitingEndTag.Copy(name);
+			if(tagType==0)
+			{
+				skipText++;
+			}
+			else if(tagType==1) 
+			{
+				HBufC* text = HcUtils::DecodeHttpCharactersL(aSource.Mid(pos, pos2 - pos));
+				CleanupStack::PushL(text);
+				aHead->Owner()->AddStyleSheetL(*text);
+				CleanupStack::PopAndDestroy();
+				skipText--;
+			}
 		}
-		else if(name.Compare(KHStrComment)==0) //comment
+		else if(name.Compare(KHStrHead)==0)
 		{
-			//ignore
+			if(tagType==0)
+				skipText++;
+			else if(tagType==1)
+				skipText--;
 		}
 		else
 		{
 			#ifdef __WINSCW__
 			RDebug::Print(_L("CHtmlParser: ignore tag %S"), &name);
 			#endif
+			
+			//if(name.Compare(KHStrComment)==0) //comment
+			if(name.Compare(KHStrScript)==0)
+			{
+				if(tagType==0) 
+					waitingEndTag.Copy(name);
+			}
 		}
 		pos = pos2 + length;
 	}
@@ -1233,8 +1252,14 @@ void HtmlParser::ParseFilter(const TDesC& aSource, CHcStyle& aStyle)
 				
 				if(name.CompareF(KHStrEnabled)==0) 
 				{
-					if(HcUtils::StrToBool(value))
-						aStyle.Set( CHcStyle::EFaded);
+					if(value.Length()>0)
+					{
+						aStyle.Set(CHcStyle::EFaded);
+						if(HcUtils::StrToBool(value))
+							aStyle.iFaded = ETrue;
+						else
+							aStyle.iFaded = EFalse;
+					}
 					else
 						aStyle.Clear( CHcStyle::EFaded);
 				}
@@ -2223,17 +2248,20 @@ TBool HtmlParser::ParseSingleStyleL(const TDesC& aName, const TDesC& aValue, CHc
 	}
 	else if(aName.Compare(KHStrClear)==0)
 	{
-		aStyle.Clear(CHcStyle::EClearLeft);
-		aStyle.Clear(CHcStyle::EClearRight);
-		if(aValue.CompareF(KHStrLeft)==0) 
-			aStyle.Set(CHcStyle::EClearLeft);
-		else if(aValue.CompareF(KHStrRight)==0) 
-			aStyle.Set(CHcStyle::EClearRight);
-		else if(aValue.CompareF(KHStrBoth)==0) 
+		if(aValue.Length()!=0)
 		{
-			aStyle.Set(CHcStyle::EClearLeft);
-			aStyle.Set(CHcStyle::EClearRight);
+			aStyle.Set(CHcStyle::EClear);
+			if(aValue.CompareF(KHStrLeft)==0)
+				aStyle.iClear = EClearLeft;
+			else if(aValue.CompareF(KHStrRight)==0) 
+				aStyle.iClear = EClearRight;
+			else if(aValue.CompareF(KHStrBoth)==0) 
+				aStyle.iClear = EClearBoth;
+			else
+				aStyle.iClear = EClearNone;
 		}
+		else
+			aStyle.Clear(CHcStyle::EClear);
 	}
 	else if(aName.Compare(KHStrOverflow)==0)
 	{
@@ -2252,17 +2280,29 @@ TBool HtmlParser::ParseSingleStyleL(const TDesC& aName, const TDesC& aValue, CHc
 	}
 	else if(aName.Compare(KHStrVisibility)==0)
 	{
-		if(aValue.CompareF(KHStrHidden)==0) 
+		if(aValue.Length()!=0)
+		{
 			aStyle.Set(CHcStyle::EHidden);
+			if(aValue.CompareF(KHStrHidden)==0) 
+				aStyle.iHidden = ETrue;
+			else
+				aStyle.iHidden = EFalse;
+		}
 		else
 			aStyle.Clear(CHcStyle::EHidden);
 	}
 	else if(aName.Compare(KHStrDisplay)==0)
 	{
-		if(aValue.CompareF(KHStrNone)==0) 
-			aStyle.Set(CHcStyle::EDisplayNone);
+		if(aValue.Length()!=0)
+		{
+			aStyle.Set(CHcStyle::EDisplay);
+			if(aValue.CompareF(KHStrNone)==0) 
+				aStyle.iDisplay = EDisplayNone;
+			else
+				aStyle.iDisplay = EDisplayBlock;
+		}
 		else
-			aStyle.Clear(CHcStyle::EDisplayNone);
+			aStyle.Clear(CHcStyle::EDisplay);
 	}
 	else
 		return EFalse;
@@ -2499,14 +2539,20 @@ void HtmlParser::GetStyleString(const CHcStyle& aStyle, const TDesC& aName, TDes
 	else if(aName.Compare(KHStrFilter)==0) 
 	{
 	}
-	*/else if(aName.Compare(KHStrClear)==0)
+	*/
+	else if(aName.Compare(KHStrClear)==0)
 	{
-		if(aStyle.IsSet(CHcStyle::EClearLeft) && aStyle.IsSet(CHcStyle::EClearRight))
-			aBuf.Copy(KHStrBoth);
-		else if(aStyle.IsSet(CHcStyle::EClearLeft))
-			aBuf.Copy(KHStrLeft);
-		else if(aStyle.IsSet(CHcStyle::EClearRight))
-			aBuf.Copy(KHStrRight);
+		if(aStyle.IsSet(CHcStyle::EClear))
+		{
+			if(aStyle.iClear==EClearLeft)
+				aBuf.Copy(KHStrLeft);
+			else if(aStyle.iClear==EClearRight)
+				aBuf.Copy(KHStrRight);
+			else if(aStyle.iClear==EClearBoth)
+				aBuf.Copy(KHStrBoth);
+			else
+				aBuf.Copy(KHStrNone);
+		}
 		else
 			aBuf.Zero();
 	}
@@ -2529,14 +2575,24 @@ void HtmlParser::GetStyleString(const CHcStyle& aStyle, const TDesC& aName, TDes
 	else if(aName.Compare(KHStrVisibility)==0)
 	{
 		if(aStyle.IsSet(CHcStyle::EHidden))
-			aBuf.Copy(KHStrHidden);
+		{
+			if(aStyle.iHidden)
+				aBuf.Copy(KHStrHidden);
+			else
+				aBuf.Copy(KHStrVisible);
+		}
 		else
 			aBuf.Zero();
 	}
 	else if(aName.Compare(KHStrDisplay)==0)
 	{
-		if(aStyle.IsSet(CHcStyle::EDisplayNone))
-			aBuf.Copy(KHStrNone);
+		if(aStyle.IsSet(CHcStyle::EDisplay))
+		{
+			if(aStyle.iDisplay==EDisplayNone)
+				aBuf.Copy(KHStrNone);
+			else
+				aBuf.Copy(KHStrBlock);
+		}
 		else
 			aBuf.Zero();
 	}

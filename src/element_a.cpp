@@ -143,7 +143,7 @@ void CHtmlElementA::Measure(CHcMeasureStatus& aStatus)
 			iStyle.Style().iTextStyle.Clear(THcTextStyle::EBorder);
 	}
 	
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone))
+	if(iStyle.Style().IsDisplayNone())
 	{
 		aStatus.SkipElements(iEnd);
 		return;
@@ -152,7 +152,7 @@ void CHtmlElementA::Measure(CHcMeasureStatus& aStatus)
 	if(iState.IsSet(EElementStateFocused))
 		aStatus.iInLink++;
 
-	if(iStyle.Style().IsSet(CHcStyle::EHidden))
+	if(iStyle.Style().IsHidden())
 		iState.Set(EElementStateHidden);
 	
 	if(iState.IsSet(EElementStateHidden))

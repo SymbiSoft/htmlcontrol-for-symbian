@@ -144,7 +144,7 @@ CHtmlElementImpl* CHtmlElementObject::CloneL() const
 void CHtmlElementObject::Measure(CHcMeasureStatus& aStatus)
 {
 	iStyle.Update(iOwner->Impl());
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone)) 
+	if(iStyle.Style().IsDisplayNone()) 
 	{
 		iState.Set(EElementStateHidden);
 		return;
@@ -154,7 +154,7 @@ void CHtmlElementObject::Measure(CHcMeasureStatus& aStatus)
 		DoMeasure(aStatus, iStyle.Style(), iEmbedObject->MinimumSize());
 	else
 	{
-		if(iStyle.Style().IsSet(CHcStyle::EClearLeft))
+		if(iStyle.Style().IsClearLeft())
 			aStatus.NewLine();
 		
 		if(iAlterText)
@@ -164,7 +164,7 @@ void CHtmlElementObject::Measure(CHcMeasureStatus& aStatus)
 			iSize = iAlterText->iSize;
 		}
 		
-		if(iStyle.Style().IsSet(CHcStyle::EClearRight))
+		if(iStyle.Style().IsClearRight())
 			aStatus.NewLine();
 	}
 }

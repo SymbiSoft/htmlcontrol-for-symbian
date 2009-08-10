@@ -57,10 +57,10 @@ void RHcAbstractStyle::SetSingleStyleL(const TDesC& aName, const TDesC& aValue)
 	iVersion = 0;
 }
 
-TBool RHcAbstractStyle::IsSetStyle(CHcStyle::TStyleId aStyleId) const
+TBool RHcAbstractStyle::IsInvisibleStyle() const
 {
 	if(iFragmentStyle)
-		return iFragmentStyle->IsSet(aStyleId);
+		return iFragmentStyle->IsDisplayNone() || iFragmentStyle->IsHidden(); 
 	else
 		return EFalse;
 }

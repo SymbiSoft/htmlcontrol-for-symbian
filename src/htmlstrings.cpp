@@ -222,3 +222,4 @@ ___LIT(KHStrRemoveOption, "remove-option");
 ___LIT(KHStrClearOptions, "clear-options");
 ___LIT(KHStrUpdate, "update");
 ___LIT(KHStrUpdateAll, "update-all");
+___LIT(KHStrClick, "click");

@@ -338,7 +338,10 @@ void CHcList::BuildItemsL()
 	{
 		CHtmlElementDiv* e = (CHtmlElementDiv*)iDiv->Owner()->Impl()->CopyElementListL(iTemplate, iTemplate->iPrev, iDiv, EBeforeEnd);
 		//if(iLayout!=ELayoutSlides && (i+1)%iViewColCount==0)
-		//	e->iStyle.Set(CHcStyle::EClearRight);
+		//{
+		//	e->iStyle.Set(EClear);
+		//	e->iClear = EClearRight;
+		//}
 		e->iFlags.Set(CHtmlElementDiv::EDisabled);
 		iItems.Append(e);
 	}
