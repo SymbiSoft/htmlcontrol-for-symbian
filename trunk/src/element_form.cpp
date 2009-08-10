@@ -164,13 +164,13 @@ CHtmlElementImpl* CHtmlElementForm::CloneL() const
 void CHtmlElementForm::Measure(CHcMeasureStatus& aStatus)
 {
 	iStyle.Update(iOwner->Impl());	
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone))
+	if(iStyle.Style().IsDisplayNone())
 	{
 		aStatus.SkipElements(iEnd);
 		return;
 	}
 	
-	if(iStyle.Style().IsSet(CHcStyle::EHidden))
+	if(iStyle.Style().IsHidden())
 		iState.Set(EElementStateHidden);
 	
 	if(iState.IsSet(EElementStateHidden))

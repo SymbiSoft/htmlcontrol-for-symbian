@@ -62,20 +62,6 @@ TInt CHtmlElement::Index(const CHtmlElement* aContainer) const
 	return -1;
 }
 
-TBool CHtmlElement::GetProperty(const TDesC&  , TDes& )  const
-{
-	return EFalse;
-}
-
-TBool CHtmlElement::SetProperty(const TDesC& , const TDesC& )
-{
-	return EFalse;
-}
-
-void CHtmlElement::InvokeL(TRefByValue< const TDesC16 > , ... ) 
-{
-}
-
 TBool CHtmlElement::GetProperty(const TDesC& aName, TInt& aResult) const
 {
 	TBuf<20> buf;

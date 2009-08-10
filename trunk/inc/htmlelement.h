@@ -41,19 +41,19 @@ public:
 	CHtmlElement* Element(const TDesC& aId, TInt aIndex = 0) const;
 	CHtmlElement* ElementByTag(const TDesC& aTagName, TInt aIndex = 0) const;
 
-	virtual TBool GetProperty(const TDesC& aName, TDes& aBuffer) const ;
+	virtual TBool GetProperty(const TDesC& aName, TDes& aBuffer) const = 0;
 	TBool GetProperty(const TDesC& aName, TInt& aResult) const;
 	
 	TBool GetStyle(const TDesC& aStyle, TDes& aBuffer) const;
 	TBool GetStyle(const TDesC& aStyle, TInt aBuffer) const;
 	
-	virtual TBool SetProperty(const TDesC& aName, const TDesC& aValue);
+	virtual TBool SetProperty(const TDesC& aName, const TDesC& aValue) = 0;
 	TBool SetProperty(const TDesC& aName, TInt aValue);
 	
 	TBool SetStyle(const TDesC& aStyle, const TDesC& aValue);
 	TBool SetStyle(const TDesC& aStyle, TInt aValue);
 
-	virtual void InvokeL(TRefByValue< const TDesC16 > aCommand, ...);
+	virtual void InvokeL(TRefByValue< const TDesC16 > aCommand, ...) = 0;
 
 protected:
 	CHtmlElement(CHtmlControl* aOwner);

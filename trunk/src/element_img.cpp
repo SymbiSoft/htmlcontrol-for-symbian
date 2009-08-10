@@ -199,7 +199,7 @@ void CHtmlElementImg::Measure(CHcMeasureStatus& aStatus)
 		iDrawParams.iScale9Grid = iStyle.Style().IsSet(CHcStyle::EScale9Grid)?iStyle.Style().iScale9Grid:TRect();
 	}
 	
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone)) {
+	if(iStyle.Style().IsDisplayNone()) {
 		iState.Set(EElementStateHidden);
 		return;
 	}

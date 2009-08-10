@@ -234,5 +234,6 @@ __LIT(KHStrRemoveOption, "remove-option");
 __LIT(KHStrClearOptions, "clear-options");
 __LIT(KHStrUpdate, "update");
 __LIT(KHStrUpdateAll, "update-all");
+__LIT(KHStrClick, "click");
 
 #endif

@@ -89,7 +89,8 @@ void CHtmlControl::ClearContent()
 void CHtmlControl::RefreshAndDraw()
 {
 	Refresh();
-	DrawNow();
+	//DrawNow();
+	this->Window().Invalidate(Rect());
 }
 
 CHtmlElement* CHtmlControl::Element(const TDesC& aId, TInt aIndex) const

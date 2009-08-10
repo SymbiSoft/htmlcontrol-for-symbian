@@ -44,6 +44,20 @@ enum THcPosition
 	EPosAbsolute
 };
 
+enum THcClear
+{
+	EClearNone,
+	EClearLeft,
+	EClearRight,
+	EClearBoth
+};
+
+enum THcDisplay
+{
+	EDisplayBlock,
+	EDisplayNone
+};
+
 class THcLength
 {
 public:
@@ -339,11 +353,10 @@ public:
 		EBackRepeatY,
 		ECorner,
 		EAlign,
-		EClearLeft,
-		EClearRight,
+		EClear,
 		EOverflow,
 		EHidden,
-		EDisplayNone,
+		EDisplay,
 		EFaded,
 		EOpacity,
 		EScale9Grid
@@ -369,6 +382,11 @@ public:
 	void SetBackgroundImageL(const THcImageLocation& aLocation);
 	inline CHcImage* BackgroundImage() const;
 
+	inline TBool IsDisplayNone() const;
+	inline TBool IsHidden() const;
+	inline TBool IsClearLeft() const;
+	inline TBool IsClearRight() const;
+	
 public:
 	THcTextStyle iTextStyle;
 
@@ -386,7 +404,11 @@ public:
 	THcOverflow iOverflow;
 	TUint8 iOpacity;
 	TRect iScale9Grid;
-	
+	THcClear iClear;
+	THcDisplay iDisplay;
+	TBool iHidden;
+	TBool iFaded;
+
 	THcBorders iBorders;
 	THcMargins iMargins;
 	THcMargins iPaddings;
@@ -399,6 +421,26 @@ private:
 inline CHcImage* CHcStyle::BackgroundImage() const
 {
 	return iBackImage;
+}
+
+inline TBool CHcStyle::IsDisplayNone() const
+{
+	return IsSet(EDisplay) && iDisplay==EDisplayNone;
+}
+
+inline TBool CHcStyle::IsHidden() const
+{
+	return IsSet(EHidden) && iHidden;
+}
+
+inline TBool CHcStyle::IsClearLeft() const
+{
+	return IsSet(EClear) && (iClear==EClearLeft || iClear==EClearBoth);
+}
+
+inline TBool CHcStyle::IsClearRight() const
+{
+	return IsSet(EClear) && (iClear==EClearRight || iClear==EClearBoth);
 }
 
 #endif

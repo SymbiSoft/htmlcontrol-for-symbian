@@ -113,6 +113,10 @@ TBool CHtmlElementDiv::SetProperty(const TDesC& aName, const TDesC& aValue)
 		else if(aValue.CompareF(KHStrScroll)==0)
 			iLineWrapMode = ELWScroll;
 	}
+	else if(aName.CompareF(KHStrDisabled)==0) 
+	{
+		iFlags.Assign(EDisabled, HcUtils::StrToBool(aValue));
+	}
 	else if(aName.CompareF(KHStrInnerText)==0)
 	{
 		ClearContent();
@@ -222,6 +226,8 @@ void CHtmlElementDiv::InvokeL(TRefByValue< const TDesC16 > aCommand, ...)
 			iScrollbar = new (ELeave)CHcScrollbar(this);
 		iScrollbar->iFlags.Set(CHcScrollbar::ELoop);
 	}
+	else if(cmd.CompareF(KHStrClick)==0)
+		HandleButtonEventL(EButtonEventClick);
 
     VA_END(arg_list);
 }
@@ -258,7 +264,7 @@ void CHtmlElementDiv::Measure(CHcMeasureStatus& aStatus)
 	iStyle.Update(iOwner->Impl());
 	const CHcStyle& style = iStyle.Style();
 
-	if(style.IsSet(CHcStyle::EDisplayNone))
+	if(style.IsDisplayNone())
 	{
 		aStatus.SkipElements(iEnd);
 		return;
@@ -269,7 +275,7 @@ void CHtmlElementDiv::Measure(CHcMeasureStatus& aStatus)
 		TAlign align = ELeft;
 		TVAlign valign = EVTop;
 		
-		if(style.IsSet(CHcStyle::EClearLeft) 
+		if(style.IsClearLeft()
 				|| aStatus.iPosition.iX>=iParent->iDisplayRect.iBr.iX)
 			aStatus.NewLine();
 		
@@ -340,11 +346,11 @@ void CHtmlElementDiv::Measure(CHcMeasureStatus& aStatus)
 		iPosition = displayRect.iTl;
 		iLineNumber = aStatus.LineNumber();
 
-		if(style.IsSet(CHcStyle::EHidden))
+		if(style.IsHidden())
 			iState.Set(EElementStateHidden);
 		if(iState.IsSet(EElementStateHidden))
 			aStatus.iHidden++;
-		iState.Assign(EElementStateFaded, style.IsSet(CHcStyle::EFaded) || iParent->iState.IsSet(EElementStateFaded));
+		iState.Assign(EElementStateFaded, style.IsSet(CHcStyle::EFaded) && style.iFaded || iParent->iState.IsSet(EElementStateFaded));
 		iState.Assign(EElementStateInFocus, iFlags.IsSet(EFocusing) && iState.IsSet(EElementStateFocused) || iParent->iState.IsSet(EElementStateInFocus));
 	}
 	else
@@ -353,7 +359,7 @@ void CHtmlElementDiv::Measure(CHcMeasureStatus& aStatus)
 		iSize = iOwner->Size();
 		iLineNumber = aStatus.LineNumber();
 		
-		iState.Assign(EElementStateFaded, style.IsSet(CHcStyle::EFaded));
+		iState.Assign(EElementStateFaded, style.IsSet(CHcStyle::EFaded) && style.iFaded);
 		iState.Assign(EElementStateInFocus, iFlags.IsSet(EFocusing) && iState.IsSet(EElementStateFocused));
 		
 		UpdateScrollbarsL();
@@ -453,7 +459,7 @@ void CHtmlElementDiv::EndMeasure(CHcMeasureStatus& aStatus)
 	if(!style.IsSet(CHcStyle::ETop))
 		aStatus.CurrentLineInfo().SetHeightIfGreater(iLineHeight);
 	
-	if(style.IsSet(CHcStyle::EClearRight))
+	if(style.IsClearRight())
 	{
 		aStatus.iCurrent = this;
 		aStatus.NewLine();

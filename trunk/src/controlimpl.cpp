@@ -217,7 +217,8 @@ void CHtmlControlImpl::OnTimerL(TInt aError, TInt aIndex)
 	if(aIndex==0) //iDelayRefreshTimer
 	{
 		Refresh();
-		iControl->DrawNow();
+		//iControl->DrawNow();
+		((RWindow*)iControl->DrawableWindow())->Invalidate(iControl->Rect());
 	}
 	else //iTextScrollTimer
 		DoScrollText();
@@ -1258,7 +1259,8 @@ TKeyResponse CHtmlControlImpl::OfferKeyEventL (const TKeyEvent &aKeyEvent, TEven
 		Refresh();
 	
 	if(iState.IsSet(EHCSNeedRedraw))
-		iControl->DrawNow();
+		//iControl->DrawNow();
+		((RWindow*)iControl->DrawableWindow())->Invalidate(iControl->Rect());
 
 	return ret;
 }
@@ -1377,8 +1379,10 @@ void CHtmlControlImpl::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 	if(iState.IsSet(EHCSInTransition))
 		return;
 	
+	TPointerEvent eventCopy = aPointerEvent;
+	eventCopy.iPosition -= iControl->Rect().iTl;
 	TRAPD(error,
-		HandlePointerEventL2(aPointerEvent);
+		HandlePointerEventL2(eventCopy);
 	);
 	
 	if(error==KErrAbort)
@@ -1390,7 +1394,8 @@ void CHtmlControlImpl::HandlePointerEventL(const TPointerEvent& aPointerEvent)
 		Refresh();
 	
 	if(iState.IsSet(EHCSNeedRedraw))
-		iControl->DrawNow();
+		//iControl->DrawNow();
+		((RWindow*)iControl->DrawableWindow())->Invalidate(iControl->Rect());
 }
 
 void CHtmlControlImpl::HandlePointerEventL2(const TPointerEvent& aPointerEvent)

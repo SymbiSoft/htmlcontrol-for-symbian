@@ -47,6 +47,13 @@ TBool CHtmlElementSelect::GetProperty(const TDesC& aName, TDes& aBuffer) const
 		else
 			aBuffer.Zero();
 	}
+	else if(aName.CompareF(KHStrText)==0) 
+	{
+		if(iTextArray->Count()>0)
+			aBuffer.Copy((*iTextArray)[iSelected]);
+		else
+			aBuffer.Zero();
+	}
 	else if(aName.CompareF(KHStrBufSize)==0) 
 	{
 		if(iValueArray->Count()>0)
@@ -229,6 +236,8 @@ void CHtmlElementSelect::InvokeL(TRefByValue< const TDesC16 > aCommand, ...)
 		iValueArray->Reset();
 		iSelected = 0;
 	}
+	else if(cmd.CompareF(KHStrClick)==0)
+		HandleButtonEventL(EButtonEventClick);
 	
     VA_END(arg_list);
 }
@@ -261,14 +270,14 @@ void CHtmlElementSelect::Measure(CHcMeasureStatus& aStatus)
 	}
 	iButtonStyle.Update(iOwner->Impl());
 
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone)) 
+	if(iStyle.Style().IsDisplayNone()) 
 	{
 		iState.Set(EElementStateHidden);
 		return;
 	}
 
 	const CFont* font = iOwner->Impl()->GetFont(iStyle.Style().iTextStyle);	
-	DoMeasure(aStatus, iStyle.Style(), TSize(font->WidthZeroInPixels()*10, Max(font->HeightInPixels() + 7,15)));
+	DoMeasure(aStatus, iStyle.Style(), TSize(font->WidthZeroInPixels()*10, Max(font->HeightInPixels() + 12,15)));
 }
 
 void CHtmlElementSelect::Draw(CFbsBitGc& aGc) const
@@ -300,7 +309,7 @@ void CHtmlElementSelect::Draw(CFbsBitGc& aGc) const
 		aGc.DrawText(p, rect, baseline, CBitmapContext::ELeft, 0);
 	}
 
-	if(!iButtonStyle.Style().IsSet(CHcStyle::EHidden))
+	if(!iButtonStyle.Style().IsHidden())
 	{
 		HcUtils::DrawBackgroundAndBorders(*iOwner, aGc, dropBoxRect, iButtonStyle.Style());
 

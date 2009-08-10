@@ -312,7 +312,6 @@ void CHtmlElementInput::PrepareL()
 		
 		if(iFlags.IsSet(EDisabled))
 			editor->SetDimmed(ETrue);
-		
 		SetEditorTextL(*iText);
 	}
 }
@@ -394,7 +393,7 @@ void CHtmlElementInput::MeasureTextEditor(CHcMeasureStatus& aStatus)
 			iStyle.Style().iTextStyle.iSize = aStatus.CurrentTextStyle().iSize;
 	}
 	
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone))
+	if(iStyle.Style().IsDisplayNone())
 	{
 		iState.Set(EElementStateHidden);
 		return;
@@ -419,7 +418,7 @@ void CHtmlElementInput::MeasureCheckBox(CHcMeasureStatus& aStatus)
 {
 	iStyle.Update(iOwner->Impl());
 	
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone))
+	if(iStyle.Style().IsDisplayNone())
 	{
 		iState.Set(EElementStateHidden);
 		return;
@@ -460,7 +459,7 @@ void CHtmlElementInput::MeasureRadio(CHcMeasureStatus& aStatus)
 {
 	iStyle.Update(iOwner->Impl());
 	
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone))
+	if(iStyle.Style().IsDisplayNone())
 	{
 		iState.Set(EElementStateHidden);
 		return;
@@ -499,7 +498,7 @@ void CHtmlElementInput::MeasureButton(CHcMeasureStatus& aStatus)
 			iStyle.Style().iTextStyle.iSize = aStatus.CurrentTextStyle().iSize;
 	}
 	
-	if(iStyle.Style().IsSet(CHcStyle::EDisplayNone))
+	if(iStyle.Style().IsDisplayNone())
 	{
 		iState.Set(EElementStateHidden);
 		return;
@@ -563,6 +562,12 @@ TKeyResponse CHtmlElementInput::OfferKeyEventL(const TKeyEvent &aKeyEvent, TEven
 			{
 				return EKeyWasNotConsumed;
 			}
+		}
+		
+		if(aType==EEventKeyDown && aKeyEvent.iScanCode>32 && aKeyEvent.iScanCode<128)
+		{
+			if(!iEmbedObject->IsFocused())
+				iEmbedObject->SetFocus(ETrue);
 		}
 
 		if(iEmbedObject->IsFocused())		

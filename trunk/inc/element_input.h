@@ -39,7 +39,7 @@ public:
 	virtual void SetFocus(TBool aFocus);
 	virtual TKeyResponse OfferKeyEventL(const TKeyEvent &aKeyEvent, TEventCode aType);
 	virtual void HandleButtonEventL(TInt aButtonEvent);
-	
+
 	inline TInputType InputType() const;
 	inline TBool IsChecked() const;
 	

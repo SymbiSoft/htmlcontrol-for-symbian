@@ -11,8 +11,8 @@ public:
 	inline const TDesC& Class() const;
 	void SetStyleL(const TDesC& aSource);
 	void SetSingleStyleL(const TDesC& aName, const TDesC& aValue);
-	TBool IsSetStyle(CHcStyle::TStyleId aStyleId) const;
 	void GetSingleStyle(const TDesC& aName, TDes& aBuf) const;
+	TBool IsInvisibleStyle() const;
 	
 	void SetTag(const TDesC& aTag);
 	inline const TDesC& Tag() const;
