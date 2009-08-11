@@ -51,3 +51,9 @@ SOURCE	element_textarea.cpp
 USERINCLUDE   ..\inc
 SYSTEMINCLUDE \Epoc32\include
 
+#ifndef UIQ_UMTS_AVAILABLE
+MACRO __SERIES60__
+#else
+MACRO __UIQ__
+#endif
+
