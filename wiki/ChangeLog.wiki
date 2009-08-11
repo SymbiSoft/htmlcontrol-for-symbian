@@ -1,5 +1,27 @@
 #summary Change Logs
 
+-------------htmlcontrol 1.1.7-------------------
+
+1.Improved: Added KHStrScrollMax.
+
+2.Fixed: DrawNow;
+
+3.Fixed: margin-right;
+
+4.Improved: Increased default SELECT height;
+
+5.Improved: Changed default focusing style of form elements.
+
+6.Improved: Added STYLE tag support.
+
+7.Improved: css attributes: display/clear/visibility/fade filter.
+
+8.Improved: Added KHStrClick command on elements.
+
+9.Improved: Immediately enter edit mode after alpha keys pressed.
+
+10.Improved: Move the macros from MMP to standalone header file, htmlcontrol.hrh
+
 -------------htmlcontrol 1.1.6-------------------
 
 1.Improved: Add accesskey support.
