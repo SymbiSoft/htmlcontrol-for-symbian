@@ -21,16 +21,16 @@ public:
 	TInt iFrameIndex;
 	TSize iCorner;
 	TInt iOpacity;
-	TPoint iScreenPosition;
 	TRect iScale9Grid;
-	
+	CCoeControl* iOwningControl;
+
 	inline THcDrawImageParams()
 	{
 		iFrameIndex = 0;
 		iCorner = TSize(0,0);
 		iOpacity = 255;
-		iScreenPosition = TPoint(0,0);
 		iScale9Grid = TRect(0,0,0,0);
+		iOwningControl = NULL;
 	}
 };
 

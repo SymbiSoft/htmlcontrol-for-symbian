@@ -1,5 +1,6 @@
 #include <eikenv.h>
 
+#include "htmlcontrol.hrh"
 #include "htmlcontrol.h"
 #include "htmlelement.h"
 #include "htmlelementiter.h"

@@ -1,0 +1,60 @@
+/**
+ * 
+ IMPORTANT NOTES: 
+ 1) Suggested tool to compile this project is Carbide C++. If you are using other tools, make sure the following macros are properly defined.
+ 2) If you are compiling the library in Symbian7.0s, please add following line in EPOC32\include\variant\Symbian_OS_v7.0.hrh
+	#define __SERIES60_21__
+*/
+#ifndef HTMLCONTROL_HRH
+#define HTMLCONTROL_HRH
+
+#ifdef UIQ_UMTS_AVAILABLE //UIQ detection
+
+	#define __UIQ__
+	#define __SYMBIAN_9_ONWARDS__
+	#define __SYMBIAN_8_ONWARDS__
+	
+#else //not UIQ_UMTS_AVAILABLE
+	
+	#ifdef EKA2
+	
+		#define __SERIES60__
+		#define __SERIES60_3_ONWARDS__
+		#define __SYMBIAN_9_ONWARDS__
+		#define __SYMBIAN_8_ONWARDS__
+
+		#ifdef __SERIES60_30__
+			#define __SERIES60_3_MR__
+		#endif
+
+		#ifdef __S60_50__
+
+			#define __SERIES60_5_ONWARDS__
+			#define TOUCH_FEEDBACK_SUPPORT
+
+		#endif
+	
+	#else //not EKA2
+	
+		#ifdef __SERIES60_21__
+		
+			#define __SERIES60__
+			#define __SERIES60_3_DOWNWARDS__
+			#define __SYMBIAN_9_DOWNWARDS__
+			#define __SYMBIAN_8_DOWNWARDS__
+		
+		#else //not __SERIES60_21__
+		
+			#define __SERIES60__
+			#define __SERIES60_3_DOWNWARDS__
+			#define __SYMBIAN_9_DOWNWARDS__
+			#define __SYMBIAN_8_ONWARDS__
+			
+		#endif //__SERIES60_21__
+	
+	#endif //EKA2
+
+#endif //UIQ_UMTS_AVAILABLE
+
+#endif //HTMLCONTROL_HRH
+

@@ -1,6 +1,7 @@
 #ifndef HCMEASURESTATUS_H
 #define HCMEASURESTATUS_H
 
+#include "htmlcontrol.hrh"
 #include "style.h"
 #include "stack.h"
 

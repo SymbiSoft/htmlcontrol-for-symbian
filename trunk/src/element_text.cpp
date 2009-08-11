@@ -391,7 +391,7 @@ void CHtmlElementText::RefreshSingleLine()
 			rect.iBr.iX = rect.iTl.iX + lineWidth;
 			
 #ifdef __SYMBIAN_9_ONWARDS__
-#ifdef __SERIES60_30__ //on 3rd_MR FontMaxHeight() would return 0
+#ifdef __SERIES60_3_MR__ //on 3rd_MR FontMaxHeight() would return 0
 			rect.iTl.iY +=  (tb->iLineHeight - (tb->iFont->HeightInPixels()+2))/2 - 1;
 			rect.iBr.iY = rect.iTl.iY + (tb->iFont->HeightInPixels()+2) + 2;
 #else
@@ -407,7 +407,7 @@ void CHtmlElementText::RefreshSingleLine()
 					&& rect.iBr.iY<=iParent->iClippingRect.iBr.iY+rect.Height())
 			{
 #ifdef __SYMBIAN_9_ONWARDS__
-#ifdef __SERIES60_30__ //on 3rd_MR FontMaxHeight() would return 0
+#ifdef __SERIES60_3_MR__ //on 3rd_MR FontMaxHeight() would return 0
 				tb->iBaseLine = 1 + tb->iFont->AscentInPixels();
 #else
 				tb->iBaseLine = (tb->iFont->FontMaxHeight() - tb->iFont->HeightInPixels())/2 + Max(tb->iFont->AscentInPixels(), tb->iFont->FontMaxAscent());
@@ -499,7 +499,7 @@ void CHtmlElementText::RefreshMultiLine()
 		{
 			//RDebug::Print(_L("max-height=%i,height=%i,ascent=%i,descent=%i,max-ascent=%i,max-descent=%i"), tb->iFont->FontMaxHeight(), tb->iFont->HeightInPixels(), tb->iFont->AscentInPixels(), tb->iFont->DescentInPixels(), tb->iFont->FontMaxAscent(), tb->iFont->FontMaxDescent());
 #ifdef __SYMBIAN_9_ONWARDS__
-#ifdef __SERIES60_30__ //on 3rd_MR FontMaxHeight() would return 0
+#ifdef __SERIES60_3_MR__ //on 3rd_MR FontMaxHeight() would return 0
 			tb->iBaseLine = 1 + tb->iFont->AscentInPixels();
 #else
 			tb->iBaseLine = (tb->iFont->FontMaxHeight() - tb->iFont->HeightInPixels())/2 + Max(tb->iFont->AscentInPixels(), tb->iFont->FontMaxAscent());
@@ -545,7 +545,7 @@ void CHtmlElementText::RefreshMultiLine()
 					TTextRect tr;
 					tr.iBlock = tb;
 #ifdef __SYMBIAN_9_ONWARDS__
-#ifdef __SERIES60_30__ //on 3rd_MR FontMaxHeight() would return 0
+#ifdef __SERIES60_3_MR__ //on 3rd_MR FontMaxHeight() would return 0
 					rect.iTl.iY +=  (tb->iLineHeight - (tb->iFont->HeightInPixels()+2))/2 - 1;
 					rect.iBr.iY = rect.iTl.iY + (tb->iFont->HeightInPixels()+2) + 2;
 #else

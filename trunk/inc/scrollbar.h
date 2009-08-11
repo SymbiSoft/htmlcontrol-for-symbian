@@ -1,6 +1,8 @@
 #ifndef HCSCROLLBAR_H
 #define HCSCROLLBAR_H
 
+#include "htmlcontrol.hrh"
+
 #include <coemain.h>
 #include <fbs.h>
 #ifdef __UIQ__

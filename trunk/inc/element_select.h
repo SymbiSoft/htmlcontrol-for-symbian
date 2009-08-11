@@ -1,13 +1,13 @@
 #ifndef HTMLELEMENTSELECT_H
 #define HTMLELEMENTSELECT_H
 
+#include "elementimpl.h"
+
 #ifdef __UIQ__
 #include <QikCommandManager.h>
 #include <QikCommand.h>
 #include <QikMenuPopout.h>
 #endif
-
-#include "elementimpl.h"
 
 class CHtmlElementSelect : public CHtmlElementImpl
 #ifdef __UIQ__

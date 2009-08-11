@@ -5,6 +5,8 @@
 #include <apgcli.h>
 #include <APGICNFL.H>
 
+#include "htmlcontrol.hrh"
+
 #ifdef __SERIES60__
 #include <AknsConstants.hrh>
 #include <aknutils.h>
@@ -493,7 +495,10 @@ TBool CHcImageAknsBackground::DoDraw(CBitmapContext& aGc, const TRect& aDestRect
 {
 	if(iAknsBackground)
 	{
-		TRect rect = TRect(aDestRect.iTl + aParams.iScreenPosition, aDestRect.Size());
+		TPoint screenPosition(0,0);
+		if(aParams.iOwningControl)
+			screenPosition = aParams.iOwningControl->PositionRelativeToScreen();
+		TRect rect = TRect(aDestRect.iTl + screenPosition, aDestRect.Size());
 		AknsDrawUtils::DrawBackground( AknsUtils::SkinInstance(),
 		     iAknsBackground,
 		     NULL,
@@ -607,7 +612,8 @@ TBool CHcImageUIQSkin::DoDraw(CBitmapContext& aGc, const TRect& aDestRect, const
 	if(skinUid==KSkinUidScreen)
 	{
 		TRect sourceRect(TRect(TPoint(0,0),iSize));
-		sourceRect.Move(-aParams.iScreenPosition);
+		if(aParams.iOwningControl)
+			sourceRect.Move(-aParams.iOwningControl->PositionRelativeToScreen());
 		sp.DrawBitmap(aGc, sourceRect, aDestRect, iLocation.iIndex3);
 	}
 	else

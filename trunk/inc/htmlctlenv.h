@@ -2,9 +2,10 @@
 #define HTMLCTLENV_H
 
 #include <coemain.h>
-#ifdef __S60_50__
+#include "htmlcontrol.hrh"
+
+#ifdef TOUCH_FEEDBACK_SUPPORT
 #include <touchfeedback.h>
-#define TOUCH_FEEDBACK_SUPPORT
 #endif
 
 #include "controlimpl.h"
