@@ -4,6 +4,7 @@
 #include <coemain.h>
 #include <coedef.h>
 
+#include "htmlcontrol.hrh"
 #include "htmlctlenv.h"
 #include "lirenderer.h"
 #include "imagepool.h"

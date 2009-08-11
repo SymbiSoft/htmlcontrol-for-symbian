@@ -3,6 +3,7 @@
 
 #include <e32base.h>
 
+#include "htmlcontrol.hrh"
 #include "transition.h"
 
 class CHtmlElement;

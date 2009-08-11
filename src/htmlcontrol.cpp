@@ -1,5 +1,7 @@
 #include <eikenv.h>
 
+#include "htmlcontrol.hrh"
+
 #ifdef __SERIES60__
 #include <aknutils.h>
 #endif

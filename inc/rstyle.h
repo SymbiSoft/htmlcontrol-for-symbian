@@ -1,6 +1,7 @@
 #ifndef RHCSTYLE_H
 #define RHCSTYLE_H
 
+#include "htmlcontrol.hrh"
 #include "style.h"
 
 class RHcAbstractStyle

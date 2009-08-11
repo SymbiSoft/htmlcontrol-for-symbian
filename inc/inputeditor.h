@@ -4,6 +4,7 @@
 #include <eikedwin.h>
 #include <lafmain.h>
 
+#include "htmlcontrol.hrh"
 #include "style.h"
 
 class CHtmlControl;

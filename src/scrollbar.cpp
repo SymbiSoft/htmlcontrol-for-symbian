@@ -1,6 +1,8 @@
 #include <eikenv.h>
 #include <eikscrlb.h>
 
+#include "htmlcontrol.hrh"
+
 #ifdef __SERIES60__
 #include <AknsConstants.h>
 #include <AknsConstants.hrh>

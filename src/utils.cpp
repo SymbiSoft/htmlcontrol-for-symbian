@@ -2,6 +2,9 @@
 #include <coeutils.h>
 #include <eikenv.h>
 #include <gdi.h>
+
+#include "htmlcontrol.hrh"
+
 #ifdef __SERIES60__
 #include <aknutils.h>
 #endif
@@ -1577,7 +1580,7 @@ void HcUtils::DrawBackgroundAndBorders(CHtmlControl& aControl, CBitmapContext& a
 		params.iOpacity = aStyle.iOpacity;
 	if(aStyle.IsSet(CHcStyle::EScale9Grid))
 		params.iScale9Grid = aStyle.iScale9Grid;
-	params.iScreenPosition = aControl.PositionRelativeToScreen();
+	params.iOwningControl = &aControl;
 	
 	if(aStyle.IsSet(CHcStyle::EBackColor) && !aStyle.iBackColor.IsNone())
 	{

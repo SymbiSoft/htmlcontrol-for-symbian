@@ -5,6 +5,7 @@
 #include <coemain.h>
 #include <babitflags.h>
 
+#include "htmlcontrol.hrh"
 #include "image.h"
 #include "htmlcontrol.h"
 #include "measurestatus.h"

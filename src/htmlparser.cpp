@@ -1,6 +1,8 @@
 #include <Uri16.h>
 #include <eikenv.h>
 
+#include "htmlcontrol.hrh"
+
 #ifdef __SERIES60__
 #include <aknutils.h>
 #include <AknsConstants.hrh>

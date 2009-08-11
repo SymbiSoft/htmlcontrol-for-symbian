@@ -51,23 +51,3 @@ SOURCE	element_textarea.cpp
 USERINCLUDE   ..\inc
 SYSTEMINCLUDE \Epoc32\include
 
-//WARNING: Suggested tool to compile this project is Carbide C++.
-
-//NOTE: If you are compiling the library in Symbian7.0s, please add following line in EPOC32\include\variant\Symbian_OS_v7.0.hrh
-// #define __SERIES60_21__
-
-#ifdef UIQ_UMTS_AVAILABLE
-MACRO __UIQ__ __SYMBIAN_9_ONWARDS__ __SYMBIAN_8_ONWARDS__
-#else
-	#ifdef EKA2
-MACRO __SERIES60__ __SERIES60_3_ONWARDS__ __SYMBIAN_9_ONWARDS__ __SYMBIAN_8_ONWARDS__
-	#else
-		#ifdef __SERIES60_21__
-MACRO __SERIES60__ __SERIES60_3_DOWNWARDS__ __SYMBIAN_9_DOWNWARDS__ __SYMBIAN_8_DOWNWARDS__
-		#else
-MACRO __SERIES60__ __SERIES60_3_DOWNWARDS__ __SYMBIAN_9_DOWNWARDS__ __SYMBIAN_8_ONWARDS__
-		#endif
-	#endif
-#endif
-
-

@@ -4,6 +4,7 @@
 #include <coecntrl.h>
 #include <babitflags.h>
 
+#include "htmlcontrol.hrh"
 #include "rstyle.h"
 
 //Forward declaration

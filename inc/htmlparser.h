@@ -1,6 +1,7 @@
 #ifndef HTMLPARSER_H
 #define HTMLPARSER_H
 
+#include "htmlcontrol.hrh"
 #include "stylesheet.h"
 #include "stack.h"
 

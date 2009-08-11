@@ -7,6 +7,7 @@
 #include <coedef.h>
 #include <gdi.h>
 
+#include "htmlcontrol.hrh"
 #include "style.h"
 
 class CHtmlControl;

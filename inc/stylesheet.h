@@ -1,6 +1,7 @@
 #ifndef HCSTYLESHEET_H
 #define HCSTYLESHEET_H
 
+#include "htmlcontrol.hrh"
 #include "style.h"
 
 class THcSelector

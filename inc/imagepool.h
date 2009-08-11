@@ -1,6 +1,7 @@
 #ifndef HCIMAGEPOOL_H
 #define HCIMAGEPOOL_H
 
+#include "htmlcontrol.hrh"
 #include "image.h"
 
 class CHtmlControl;

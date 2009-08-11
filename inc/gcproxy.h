@@ -2,6 +2,7 @@
 #define GCPROXY_H
 
 #include <coemain.h>
+#include "htmlcontrol.hrh"
 
 class CGcProxy : public CWindowGc
 {

@@ -1,6 +1,8 @@
 #ifndef HCIMAGEIMPL_H
 #define HCIMAGEIMPL_H
 
+#include "htmlcontrol.hrh"
+
 #ifdef __SERIES60_3_ONWARDS__
 #include <AknIconUtils.h> 
 #endif

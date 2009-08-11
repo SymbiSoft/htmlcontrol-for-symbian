@@ -5,6 +5,7 @@
 #include <gdi.h>
 #include <gulutil.h>
 #include <gulalign.h>
+#include "htmlcontrol.hrh"
 
 class CHcImage;
 class CHcStyleSheet;

@@ -1,6 +1,8 @@
 #include <eikenv.h>
 #include <coemain.h>
 
+#include "htmlcontrol.hrh"
+
 #ifdef __SERIES60__
 #include <aknappui.h>
 #include <aknutils.h>
