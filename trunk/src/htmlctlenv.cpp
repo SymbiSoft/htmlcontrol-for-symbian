@@ -133,28 +133,49 @@ void CHtmlCtlEnv::ConstructL()
     iScrollbarDrawer = CHcScrollbarDrawer::NewL();
 
     iStyleSheet = new (ELeave) CHcStyleSheet();
-	_LIT(KDefaultStyleSheet, 
-			"body {  background-color:#FFFFFF; color:#000000; font-size:medium; width:100%; height:100%; overflow:hidden; } \
-			input { background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; } \
-			input[type=button] { background-color:#eeeeee; border:1 outset #eeeeee} \
-			input[type=checkbox] {color: #008000} \
-			input[type=radio] { color: #008000; filter:corner(9999,9999)} \
-			input[type=button]:focus { margin:-2; border:2 solid #FF9E39} \
-			input[type=checkbox]:focus {margin:-2; border:2 solid #FF9E39} \
-			input[type=radio]:focus { margin:-2; border:2 solid #FF9E39} \
-			input[type=text]:focus { margin:-2; border:2 solid #FF9E39} \
-			input[type=button]:down { border:1 inset #eeeeee } \
-			textarea { background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; clear:both} \
-			textarea:focus { margin:-2; border:2 solid #FF9E39} \
-			select {  background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; font-size:medium; } \
-			select:focus { margin:-2; border:2 solid #FF9E39 } \
-			.selectbutton {background-color:#C5D3FC; color:#4D6185; border:1 solid #7AC4EA; filter:corner(2,2); background-pattern:diamond-cross-hatch #7AC4EA} \
-			a:link { color: #0000FF; text-decoration: underline} \
-			a:hover { color: #000000; text-decoration: underline; background-color:#A4A2FF} \
-			.blockquote { background-color:#eeeeee; clear:both; width:100%} \
-			object {clear:both }"
-		  );
-	HtmlParser::ParseStyleSheetL(KDefaultStyleSheet, *iStyleSheet);
+    {
+		_LIT(KCSS, "body {  background-color:#FFFFFF; color:#000000; font-size:medium; width:100%; height:100%; overflow:hidden; } \
+					.blockquote { background-color:#eeeeee; clear:both; width:100%} \
+					object {clear:both } \
+					input { background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; }");
+    	HtmlParser::ParseStyleSheetL(KCSS, *iStyleSheet);
+    }
+    {
+    	_LIT(KCSS, "input[type=button] { background-color:#eeeeee; border:1 outset #eeeeee}\
+					input[type=button]:focus { margin:-2; border:2 solid #FF9E39} \
+					input[type=button]:down { border:1 inset #eeeeee }");
+    	HtmlParser::ParseStyleSheetL(KCSS, *iStyleSheet);
+    }
+    {
+		_LIT(KCSS, "input[type=checkbox] {color: #008000} \
+					input[type=checkbox]:focus {margin:-2; border:2 solid #FF9E39}");
+    	HtmlParser::ParseStyleSheetL(KCSS, *iStyleSheet);
+    }
+    {
+    	_LIT(KCSS, "input[type=radio] { color: #008000; filter:corner(9999,9999)} \
+					input[type=radio]:focus { margin:-2; border:2 solid #FF9E39}");
+    	HtmlParser::ParseStyleSheetL(KCSS, *iStyleSheet);
+    }
+    {
+    	_LIT(KCSS, "input[type=text]:focus { margin:-2; border:2 solid #FF9E39}");
+    	HtmlParser::ParseStyleSheetL(KCSS, *iStyleSheet);
+    }
+    {
+    	_LIT(KCSS, "textarea { background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; clear:both} \
+					textarea:focus { margin:-2; border:2 solid #FF9E39}");
+    	HtmlParser::ParseStyleSheetL(KCSS, *iStyleSheet);
+    }
+    {
+    	_LIT(KCSS, "select {  background-color:#FFFFFF; color:#000000; border:1 solid #7F9DB9; margin:3; font-size:medium; } \
+					select:focus { margin:-2; border:2 solid #FF9E39 } \
+					.selectbutton {background-color:#C5D3FC; color:#4D6185; border:1 solid #7AC4EA; filter:corner(2,2); background-pattern:diamond-cross-hatch #7AC4EA}");
+    	HtmlParser::ParseStyleSheetL(KCSS, *iStyleSheet);
+    }
+    {
+    	_LIT(KCSS, "a:link { color: #0000FF; text-decoration: underline} \
+					a:hover { color: #000000; text-decoration: underline; background-color:#A4A2FF}");
+    	HtmlParser::ParseStyleSheetL(KCSS, *iStyleSheet);
+    }
 
 #ifdef TOUCH_FEEDBACK_SUPPORT
 	iTouchFeedback = MTouchFeedback::Instance();

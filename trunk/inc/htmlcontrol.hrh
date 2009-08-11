@@ -2,23 +2,15 @@
  * 
  IMPORTANT NOTES: 
  1) Suggested tool to compile this project is Carbide C++. If you are using other tools, make sure the following macros are properly defined.
- 2) If you are compiling the library in Symbian7.0s, please add following line in EPOC32\include\variant\Symbian_OS_v7.0.hrh
+ 2) __SERIES60__/__UIQ__ are predefined in MMP file.
+ 3) If you are compiling the library in Symbian7.0s, please add following line in EPOC32\include\variant\Symbian_OS_v7.0.hrh
 	#define __SERIES60_21__
 */
 #ifndef HTMLCONTROL_HRH
 #define HTMLCONTROL_HRH
 
-#ifdef UIQ_UMTS_AVAILABLE //UIQ detection
-
-	#define __UIQ__
-	#define __SYMBIAN_9_ONWARDS__
-	#define __SYMBIAN_8_ONWARDS__
-	
-#else //not UIQ_UMTS_AVAILABLE
-	
+#ifdef __SERIES60__  //__SERIES60__
 	#ifdef EKA2
-	
-		#define __SERIES60__
 		#define __SERIES60_3_ONWARDS__
 		#define __SYMBIAN_9_ONWARDS__
 		#define __SYMBIAN_8_ONWARDS__
@@ -35,26 +27,24 @@
 		#endif
 	
 	#else //not EKA2
-	
+
+		#define __SERIES60_3_DOWNWARDS__
+		#define __SYMBIAN_9_DOWNWARDS__
+
 		#ifdef __SERIES60_21__
-		
-			#define __SERIES60__
-			#define __SERIES60_3_DOWNWARDS__
-			#define __SYMBIAN_9_DOWNWARDS__
 			#define __SYMBIAN_8_DOWNWARDS__
-		
 		#else //not __SERIES60_21__
-		
-			#define __SERIES60__
-			#define __SERIES60_3_DOWNWARDS__
-			#define __SYMBIAN_9_DOWNWARDS__
 			#define __SYMBIAN_8_ONWARDS__
-			
 		#endif //__SERIES60_21__
 	
 	#endif //EKA2
 
-#endif //UIQ_UMTS_AVAILABLE
+#else //not __SERIES60__
+
+	#define __SYMBIAN_9_ONWARDS__
+	#define __SYMBIAN_8_ONWARDS__
+	
+#endif //__UIQ__
 
 #endif //HTMLCONTROL_HRH
 
