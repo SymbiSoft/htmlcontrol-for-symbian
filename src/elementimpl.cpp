@@ -227,9 +227,6 @@ void CHtmlElementImpl::DoMeasure(CHcMeasureStatus& aStatus, const CHcStyle& aSty
 		displayRect.iTl += TPoint(margins.iLeft, margins.iTop);
 	}
 	
-	if(displayRect.iTl.iX + width >= parentRect.iBr.iX)
-		width = parentRect.iBr.iX -  displayRect.iTl.iX - margins.iRight;
-	
 	if(aStyle.IsSet(CHcStyle::EMaxWidth))
 	{
 		TInt maxWidth = aStyle.iMaxWidth.GetRealValue(parentRect.Width(), width);
@@ -239,6 +236,9 @@ void CHtmlElementImpl::DoMeasure(CHcMeasureStatus& aStatus, const CHcStyle& aSty
 			width = maxWidth;
 		}
 	}
+	if(margins.iRight>0 && displayRect.iTl.iX + width >= parentRect.iBr.iX)
+		width = parentRect.iBr.iX -  displayRect.iTl.iX - margins.iRight;
+
 	iSize = TSize(width, height);
 	iPosition = displayRect.iTl;
 
